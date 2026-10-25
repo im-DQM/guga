@@ -192,7 +192,14 @@ main{flex:1 1 auto;position:relative;min-height:0}
 .hdot.ok{background:#2E6B45}
 .hdot.down{background:var(--err);box-shadow:0 0 8px #FF453ACC;animation:pulse 1.8s var(--ease) infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.42}}
-.side-head{padding:var(--s3);border-bottom:1px solid var(--border)}
+.side-head{padding:var(--s3);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.side-head .newbtn{width:auto;flex:1}
+/* 手动同步：重新拉会话列表 + 当前对话正文 */
+.syncbtn{flex:0 0 auto;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--r-sm);padding:9px 12px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.syncbtn:hover{color:var(--fg);border-color:var(--border-h)}
+.syncbtn:active{transform:scale(.97)}
+.syncbtn.spin svg{animation:syncspin .8s linear infinite}
+@keyframes syncspin{to{transform:rotate(360deg)}}
 .newbtn{width:100%;background:var(--accent);color:#0A0A0A;border:none;border-radius:var(--r-sm);padding:9px;font-size:14px;font-weight:600;cursor:pointer;transition:background var(--d1) var(--ease)}
 .newbtn:hover{background:var(--accent-h)}
 .sessions{flex:1 1 auto;overflow-y:auto;padding:var(--s2)}
@@ -662,7 +669,7 @@ textarea:focus-visible,input:focus-visible{outline-offset:0}
 <main>
   <section id="view-butler" class="view active">
     <aside class="sidebar" id="sidebar">
-      <div class="side-head"><button class="newbtn" id="newBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-3px;margin-right:5px"><path d="M12 5v14M5 12h14"/></svg>新对话</button></div>
+      <div class="side-head"><button class="newbtn" id="newBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-3px;margin-right:5px"><path d="M12 5v14M5 12h14"/></svg>新对话</button><button class="syncbtn" id="syncBtn" type="button" title="同步：重新拉会话列表和当前对话——另一端新开的对话、刚说的话都会补上"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11a8.5 8.5 0 0 0-14.6-5.6L4 7.2"/><path d="M4 3.5v3.7h3.7"/><path d="M3.5 13a8.5 8.5 0 0 0 14.6 5.6l1.9-1.8"/><path d="M20 20.5v-3.7h-3.7"/></svg>同步</button></div>
       <div class="sessions" id="sessions"></div>
     </aside>
     <div class="chatwrap">
@@ -884,6 +891,7 @@ const chat=$('#chat'), input=$('#input'), form=$('#composer'), sendBtn=$('#send'
       sessionsEl=$('#sessions'), sidebar=$('#sidebar'), sideToggle=$('#sideToggle');
 
 let sessions=[], currentId=null, busy=false, abortCtrl=null, runId=null;
+let USER_COUNTS={};   // 会话 id → 主人自己发的条数（/api/todos/session-counts）
 
 /* ── 本机操作页：每台机器有自己的「专属记忆」和自己的那段对话；共用的只有总记忆文档 ── */
 const remoteCtx = { alias:null, name:'', os:'', memory:'', memo_path:'', session_id:null };
@@ -925,7 +933,7 @@ function renderSessions(){
   for(const s of sessions){
     const el=document.createElement('div');
     el.className='sess'+(s.id===currentId?' active':'');
-    el.innerHTML='<div class="t">'+esc(s.title||'新对话')+'</div><div class="m">'+(s.message_count||0)+' 条 · '+timeAgo(s.last_active||s.started_at)+'</div>';
+    el.innerHTML='<div class="t">'+esc(s.title||'新对话')+'</div><div class="m">'+(USER_COUNTS[s.id]!=null?USER_COUNTS[s.id]:(s.message_count||0))+' 条 · '+timeAgo(s.last_active||s.started_at)+'</div>';
     el.onclick=()=>selectSession(s.id);
     const del=document.createElement('button');
     del.type='button'; del.className='sdel'; del.textContent='✕'; del.title='删除这段对话';
@@ -950,8 +958,41 @@ function renderSessions(){
 }
 async function refreshSessions(){
   try{ const d=await jget('/api/sessions'); sessions=(d.data||[]).filter(s=>!s.hidden); }catch(e){}
+  await loadUserCounts();
   renderSessions();
 }
+/* 「N 条」＝主人自己发了几条（不含我的回复和工具记录） */
+async function loadUserCounts(){
+  try{ const r=await fetch('/api/todos/session-counts',{cache:'no-store'});
+    if(!r.ok) return; const d=await r.json(); USER_COUNTS=(d&&d.counts)||{}; }catch(e){}
+}
+/* ── 手动同步：重拉会话列表 + 当前对话正文（另一端新开的对话、刚说的话都补上） ── */
+let syncing=false;
+async function syncAll(){
+  if(syncing) return;
+  syncing=true;
+  const btn=$('#syncBtn');
+  if(btn){ btn.disabled=true; btn.classList.add('spin'); }
+  let skipBody=false, added=0;
+  try{
+    const beforeIds=new Set(sessions.map(s=>s.id));
+    await refreshSessions();
+    added=sessions.filter(s=>!beforeIds.has(s.id)).length;
+    if(!currentId || !sessions.some(s=>s.id===currentId)){
+      if(sessions.length){ currentId=sessions[0].id; butlerSession=currentId; renderSessions(); }
+      else await newSession();
+    }
+    if(currentId){
+      if(busy) skipBody=true;                 // 正在跑一轮，别把正文和干活条重画掉
+      else await loadMessages(currentId,true);
+    }
+    try{ await refreshInbox(); }catch(_){}
+    toast((added?'已同步 · 另一端多了 '+added+' 段对话':'已同步')+(skipBody?'（这段还在干活，正文没重拉）':''));
+  }catch(e){ toast('同步失败：'+((e&&e.message)||e)); }
+  syncing=false;
+  if(btn){ btn.disabled=false; btn.classList.remove('spin'); }
+}
+{ const b=$('#syncBtn'); if(b) b.onclick=()=>syncAll(); }
 async function newSession(){
   try{ const d=await jpost('/api/sessions',{}); const s=d.session;
     sessions.unshift({id:s.id,title:null,message_count:0,last_active:s.started_at});
@@ -3208,8 +3249,11 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden) refreshU
 /* ── 启动 ── */
 (async function init(){
   await refreshSessions();
-  if(!sessions.length){ await newSession(); }
-  else { currentId=sessions[0].id; renderSessions(); await loadMessages(currentId); }
+  // 不要把定时任务 / 子代理的会话当管家对话接上：那些会话归任务自己用，
+  // 一旦被接成管家对话，手机端（按设计藏掉 cron 会话）就永远看不到这段聊天。
+  const usable=sessions.filter(s=>!String(s.id).startsWith('cron')&&!s.is_internal_child);
+  if(usable.length){ currentId=usable[0].id; renderSessions(); await loadMessages(currentId); }
+  else { await newSession(); }
   butlerSession=currentId;      // 管家页自己的会话（切到本机操作页时会被暂存/恢复）
 })();
 })();

@@ -135,3 +135,26 @@ cron 输出落 `~/.hermes/cron/output/<job_id>/*.md`，界面打开时经 `GET /
 - 安卓 Chrome 的 Web Speech API 是把音频送谷歌识别，国内 8s 零响应 → 页面上麦克风点了没反应，前端改不好。
 - 正解只有两条：服务器自建 Whisper（免费/不出网/常驻约 0.5G 内存/一句话两三秒）或接国内云端 ASR（火山/腾讯/硅基流动，需密钥、可能有费）。两条都解释过，主人一句「算了吧」收场。
 - 现在 `m.html` 里那套 SR 代码留着不动，当 iPhone Safari（走苹果识别，国内一般通）的备用；主人再问就说「这事你说过算了」，不要重新推销方案。
+
+## 手动同步按钮（2026-10-25 主人要的）
+
+- 起因：主人问「手机端为什么没同步电脑端的新对话」。实测结论：两端都只在**打开页面**和（手机）**拉开抽屉**时拉一次 `/api/sessions`；之后每 60 秒的定时器和切回前台只是拿旧数组重画（`renderSessions()`），不会再问服务器。所以另一端新开的对话要重开抽屉/刷新页面才出现。
+- 做法：两端各加一枚「同步」按钮，点一下 = `syncAll()`：重拉会话列表 + 重拉当前对话正文（`loadMessages(currentId,true)`）+ 刷收件箱，完事弹「已同步」。本机正在跑一轮（`busy`）时只同步列表、不重画正文，避免把干活条和流式回复冲掉；当前会话若已被另一端删掉，自动切到最新一段。
+- 入口：手机 `m.html` 顶栏一枚环形箭头图标（`#syncBtn`）+ 抽屉「对话」标题旁一枚「同步」文字按钮（`#syncBtn2`）；电脑 `index.html` 侧栏「新对话」右边一枚「同步」（`#syncBtn`，`.side-head` 改成 flex 布局）。都带旋转动画（`.spin` + `@keyframes syncspin`）。
+- 定时器/切回前台为什么没改成自动拉：主人要的是**手动按钮**，别自作聪明加轮询。
+- 备份/一键还原：`~/stack/backups/syncbtn-20261025_202455/`（`index.html` / `m.html` + `restore.sh`）。
+
+## 会话条数改成「主人自己发了几条」（2026-10-25）
+
+- 会话列表那行「N 条」原本读 `/api/sessions` 的 `message_count`（含我的回复与工具记录，动辄上百条），主人要的是**他自己发了几条**。
+- 现在的做法：`todo_api.py` 新增 `GET /api/todos/session-counts` → 只读打开 `~/.hermes/state.db`（`file:...?mode=ro`），`SELECT session_id, SUM(role='user') FROM messages GROUP BY session_id`，结果缓存 8 秒（`session_user_counts()`）。前端 `loadUserCounts()` 在每次 `refreshSessions()` 后拉一次，`USER_COUNTS[s.id]` 优先、取不到才回落到 `message_count`。
+- 注意：沙箱/其他 profile 的会话不算（只查 default 的 state.db）；`api_server`/cron 的会话里 role=user 分别是主人说话和定时任务提示词，cron 那段显示 1 条属正常。
+- 同步按钮也加了回执：另一端真多了对话时提示「已同步 · 另一端多了 N 段对话」。
+- 备份：`~/stack/todo_service/todo_api.py.bak-usercount-<时间戳>`；删掉那两段（函数 + do_GET 分支）即回滚。
+
+## 定时任务会话与「管家对话」互不侵占（2026-10-25）
+
+- **事故**：电脑端 `index.html` 启动时直接挑 `sessions[0]`（最新那段），某天最新的是 `cron_…· 早报` 的会话，于是主人整晚的对话都聊进了定时任务会话里；手机端按设计藏掉 cron 会话，那段对话在手机上永远看不到。查这件事别再怀疑网络/同步。
+- **现状（主人 2026-10-25 点头）**：手机端 `m.html` 的会话列表**不再过滤 cron 会话**，但每条前面带蓝色「定时」小标（`.tagcron`），免得当成普通对话。两端启动时都只自动接「非 cron、非 is_internal_child」的最新一段（`usable` 过滤），不会再把任务会话当管家对话。
+- 手机端 `refreshSessions()` 的过滤条件现在只剩 `!s.hidden`；桌面端一直就是 `!s.hidden`。
+- 会话「N 条」＝主人自己发了几条，见上面那节（`/api/todos/session-counts`）。

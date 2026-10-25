@@ -32,6 +32,28 @@ CRON_OUTPUT = Path("/home/ubuntu/.hermes/cron/output")
 SEEN_FILE = Path("/home/ubuntu/stack/todo_service/seen.json")
 STATE_DB = "/home/ubuntu/.hermes/state.db"
 
+# ── 会话里「主人自己发的」条数（给 hub 会话列表显示，代替总条数） ──
+_USER_COUNT_CACHE = {"at": 0.0, "map": {}}
+
+
+def session_user_counts(max_age=8.0):
+    now = time.time()
+    if _USER_COUNT_CACHE["map"] and now - _USER_COUNT_CACHE["at"] < max_age:
+        return _USER_COUNT_CACHE["map"]
+    out = {}
+    if os.path.exists(STATE_DB):
+        con = sqlite3.connect("file:%s?mode=ro" % STATE_DB, uri=True, timeout=5)
+        try:
+            for sid, n in con.execute(
+                "SELECT session_id, SUM(CASE WHEN role='user' THEN 1 ELSE 0 END) "
+                "FROM messages GROUP BY session_id"
+            ):
+                out[sid] = int(n or 0)
+        finally:
+            con.close()
+    _USER_COUNT_CACHE.update({"at": now, "map": out})
+    return out
+
 SOURCE_LABELS = {
     "api_server": "对话", "cron": "定时任务", "subagent": "子代理",
     "cli": "命令行", "tui": "终端界面", "desktop": "桌面端",
@@ -868,6 +890,12 @@ class Handler(BaseHTTPRequestHandler):
         if "inbox" in path:
             try:
                 self._send(list_inbox())
+            except Exception as exc:  # noqa: BLE001
+                self._send({"error": str(exc)}, 500)
+            return
+        if path.rstrip("/").endswith("/session-counts"):
+            try:
+                self._send({"ok": True, "counts": session_user_counts()})
             except Exception as exc:  # noqa: BLE001
                 self._send({"error": str(exc)}, 500)
             return

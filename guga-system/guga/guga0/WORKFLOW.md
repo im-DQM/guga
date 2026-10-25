@@ -15,6 +15,10 @@
 ## 交付
 能跑的代码 + 更新后的 `README.md`（怎么跑）+ `PROGRESS.md`（做了什么、下一步）+ `out/`。
 
+**代码托管（2026-10-25 起）**：做完的活儿推到 GitHub `im-DQM` 名下，只走 SSH 密钥 `~/.ssh/guga_github`（
+`GIT_SSH_COMMAND="ssh -i ~/.ssh/guga_github -o IdentitiesOnly=yes"`）；**HTTPS 在这台机器不通（443 超时）**，别用。
+规则细节在 `~/workspace/CLAUDE.md` 的「GitHub 代码托管」一节。服务器上不留仓库副本，用完即删。
+
 ## 收尾自评（每次都做）
 - 这次卡在哪？是环境、需求不清、还是设计没想透？
 - 下次同类活能提前避开什么？值得固化的写进 `CLAUDE.md` 或本文件经验段。

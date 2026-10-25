@@ -23,6 +23,7 @@ rsync -a --delete $EX --exclude=data.json --exclude=data.json.bak --exclude=seen
 rsync -a --delete $EX ~/stack/jiaxin_service/ platform/jiaxin_service/
 rsync -a --delete $EX ~/stack/term/ platform/term/
 cp ~/stack/Caddyfile ~/stack/docker-compose.yml platform/
+cp ~/workspace/CLAUDE.md guga-system/CLAUDE.md   # 0号的编码规则书也进仓库
 rsync -a --delete $EX --exclude=state/ ~/.hermes/guga/ guga-system/guga/
 rsync -a --delete $EX ~/.hermes/scripts/ guga-system/scripts/
 rsync -a --delete $EX ~/.hermes/knowledge/ guga-system/knowledge/
