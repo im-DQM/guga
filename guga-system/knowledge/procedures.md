@@ -101,3 +101,11 @@ curl -sS -H 'Accept: application/json' "https://check-host.net/check-result/$rid
 - Windows OpenSSH 默认是 PowerShell 5.1：命令里用 `;` 不用 `&&`；输出中文要先 `chcp 65001` + `[Console]::OutputEncoding=[Text.Encoding]::UTF8`，否则回显是 GBK 乱码。
 - 中文文件名可以走 ssh/scp（UTF-8 直通），但**命令里要建含中文的目录**时，稳妥做法是用 `[char]0x5495+[char]0x560E+...` 拼，避免终端编码差异。
 - 传完必核 md5（`Get-FileHash -Algorithm MD5` 对 `md5sum`），别看「已发送」就当成功。
+
+## 8. GitHub 代码托管（2026-10-25 起）
+
+- 账号 `im-DQM`（主人本人），**认证只走 SSH**：服务器私钥 `~/.ssh/guga_github`（ed25519，已登记在他账号）。**主机 443 到 github.com 不通、22 通**，所以 HTTPS 克隆/推送会卡死，一律用 `git@github.com:` 形式。
+- 两个仓库：`im-DQM/guga`（整站源码 + 咕嘎系统：site/ platform/ guga-system/ docs/）、`im-DQM/dqm-mini-Llama`（C++ 推理内核，代码在 `sampler` 分支，`main` 与它同步；`models/chat/*.gguf` 不入库）。
+- **服务器上不留仓库副本**（主人 2026-10-25 要求省空间）：`~/.hermes/scripts/guga_repo_push.sh` 会临时 clone 到 scratch、rsync 覆盖、提交推送、自动删临时目录。改完网站跑一次即可。
+- 笔记本上的源码在 WSL：`/home/mqd/mini-llama/dqm-mini-llama`（`mini-llama-cpp` 是另一份 1.1G 的副本）。WSL 里没配 GitHub 密钥，**推法**：`git bundle create /tmp/x.bundle --all` → `cp` 到 `/mnt/e/` → 服务器 `scp win-asus:E:/x.bundle` → 以 bundle 为源推 GitHub → 删掉两端临时文件。
+- 传密码/令牌一律不做：主人给的密码不进对话、不进配置，要权限就用 SSH 密钥或 fine-grained PAT。
