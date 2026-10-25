@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>放通 443 · 轻量应用服务器</title>
+<style>
+  :root{ --ink:#1c2024; --dim:#5b6672; --line:#e3e8ef; --red:#E34234; --bg:#f6f7f9; }
+  *{ box-sizing:border-box }
+  body{ margin:0; padding:28px 20px 60px; background:var(--bg); color:var(--ink);
+        font:15px/1.7 -apple-system,"Segoe UI",Roboto,"Helvetica Neue","Microsoft YaHei",sans-serif }
+  .wrap{ max-width:880px; margin:0 auto }
+  h1{ font-size:20px; margin:0 0 6px }
+  .sub{ color:var(--dim); margin:0 0 24px }
+  .step{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px 14px; margin:0 0 20px }
+  .num{ display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%;
+        background:var(--red); color:#fff; font-size:13px; margin-right:8px; vertical-align:2px }
+  .step h2{ font-size:16px; margin:0 0 10px; display:flex; align-items:center }
+  .step p{ margin:0 0 10px; color:var(--dim) }
+  img{ width:100%; height:auto; display:block; border:1px solid var(--line); border-radius:10px; background:#fff }
+  code{ background:#eef1f6; padding:1px 6px; border-radius:5px; font-size:13px }
+  .tbl{ width:100%; border-collapse:collapse; margin:4px 0 12px; font-size:14px }
+  .tbl td{ border-bottom:1px solid var(--line); padding:6px 4px }
+  .tbl td:first-child{ color:var(--dim); width:96px }
+  .foot{ color:var(--dim); font-size:13px; text-align:center; margin-top:26px }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>放通 443 · 轻量应用服务器</h1>
+  <p class="sub">这台是轻量（Lighthouse），不是云服务器，所以入口在「防火墙」，不是「安全组」。图是腾讯云官方文档界面，红框是我标的。</p>
+
+  <div class="step">
+    <h2><span class="num">1</span>进这台机器的防火墙页</h2>
+    <p>控制台搜「轻量应用服务器」→ 实例列表里找名字带 <code>lhins-k3vao65d</code> 的那台（就是它）→ 点进详情 → 选<b>「防火墙」</b>页签。</p>
+  </div>
+
+  <div class="step">
+    <h2><span class="num">2</span>加 443</h2>
+    <p>点左上角<b>「添加规则」</b>，按下面填，确定即可（立即生效，不用重启）：</p>
+    <table class="tbl">
+      <tr><td>应用类型</td><td>自定义</td></tr>
+      <tr><td>协议</td><td>TCP</td></tr>
+      <tr><td>端口</td><td>443</td></tr>
+      <tr><td>来源</td><td>0.0.0.0/0</td></tr>
+      <tr><td>策略</td><td>允许</td></tr>
+      <tr><td>备注</td><td>https（随便写）</td></tr>
+    </table>
+    <p>嫌麻烦就点<b>「一键放通」</b>，它一次把 22 / 80 / 443 / 3389 都放通。</p>
+    <img src="help-443-lh.png" alt="轻量应用服务器防火墙页：添加规则 / 一键放通">
+  </div>
+
+  <div class="foot">改完跟我说一声，我立刻从国外节点和成都两边复测。</div>
+</div>
+</body>
+</html>

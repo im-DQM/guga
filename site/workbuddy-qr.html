@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>WorkBuddy 登录码</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+         background:#0d0f14; color:#e6e8ee; font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+  .card { background:#151922; border:1px solid #232838; border-radius:16px; padding:26px 28px; text-align:center;
+          box-shadow:0 8px 40px rgba(0,0,0,.45); }
+  h1 { font-size:16px; font-weight:600; margin:0 0 4px; }
+  p  { margin:0 0 16px; color:#8b93a7; font-size:13px; }
+  img { width:300px; height:auto; border-radius:10px; background:#fff; padding:10px; display:block; }
+  .foot { margin-top:14px; font-size:12px; color:#6b7285; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>WorkBuddy 微信扫码登录</h1>
+    <p>用手机微信扫下面这张码，登录这台服务器上的浏览器</p>
+    <img id="qr" src="/workbuddy-qr.png" alt="二维码">
+    <div class="foot">图片每 3 秒自动刷新，过期了稍等一下就换新的（页面别关）</div>
+  </div>
+<script>
+  // 每 3 秒换一张（加随机参数绕过缓存），咕嘎那边重抓后这里会自动显示最新的码
+  var img = document.getElementById('qr');
+  setInterval(function () { img.src = '/workbuddy-qr.png?t=' + Date.now(); }, 3000);
+</script>
+</body>
+</html>

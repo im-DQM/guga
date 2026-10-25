@@ -1,0 +1,123 @@
+# ── 公共路由片段：私网站点(:8080) 与公网站点共用 ──
+(huproutes) {
+	# VS Code（code-server，只监回环 8081）：编到同源路径下，省得嵌 http://localhost:8081
+	# 它自己用的是相对路径资源（./_static/…），所以能吃路径前缀；WebSocket 由 reverse_proxy 自动透传。
+	redir /code /code/ permanent
+	handle_path /code/* {
+		reverse_proxy 127.0.0.1:8081
+	}
+	handle_path /api/hermes/* {
+		reverse_proxy 127.0.0.1:8642 {
+			header_up Authorization "Bearer ce236f4358b1e7bbd87ce8b1a2578c933cfade1cd288548b"
+			header_up -Origin
+			header_up -Referer
+		}
+	}
+	handle /api/todos* {
+		reverse_proxy 127.0.0.1:8790
+	}
+	# 门卫（登录页的接口）：公网站点靠它签/验 cookie；私网站点也能用（方便测）。
+	handle /api/gate/* {
+		reverse_proxy 127.0.0.1:8790
+	}
+	handle_path /api/term/* {
+		reverse_proxy 127.0.0.1:8791
+	}
+	handle_path /api/remote/* {
+		reverse_proxy 127.0.0.1:8792
+	}
+	handle_path /api/join/* {
+		reverse_proxy 127.0.0.1:8793 {
+			header_up X-Guga-Join-Admin "Bearer 02a7c7a2c1bf543c4738dae45fb4955f126afef1c84e6fba"
+		}
+	}
+	handle_path /api/jiaxin/* {
+		reverse_proxy 127.0.0.1:8794
+	}
+	# 对方直接访问的（带一次性 token，不走 admin 头）
+	handle /join/onboard* {
+		reverse_proxy 127.0.0.1:8793
+	}
+	handle /join/offboard* {
+		reverse_proxy 127.0.0.1:8793
+	}
+	handle /api/inbox* {
+		reverse_proxy 127.0.0.1:8790
+	}
+	handle /api/sysinfo* {
+		reverse_proxy 127.0.0.1:8790
+	}
+	handle /api/usage* {
+		reverse_proxy 127.0.0.1:8790
+	}
+	handle /hermes* {
+		reverse_proxy 127.0.0.1:7681
+	}
+	# 用精确路径，不用 /claude* —— 否则 /claude2、/claude3 会被前缀匹配悄悄兜住
+	handle /claude {
+		reverse_proxy 127.0.0.1:7682
+	}
+	handle /claude/* {
+		reverse_proxy 127.0.0.1:7682
+	}
+	handle /shell* {
+		reverse_proxy 127.0.0.1:7683
+	}
+	handle {
+		header Cache-Control "no-store"
+		root * /srv
+		file_server
+	}
+}
+
+# ── 私网入口：只绑回环可达的 8080（隧道专用，不对公网） ──
+:8080 {
+	import huproutes
+}
+
+# ── 公网主站：hub 整套。门卫 = 自己的登录页 + 签名 cookie（2026-10-13 替掉浏览器原生 basic_auth）──
+#   未通过 → forward_auth 回 401 → handle_errors 送去 /login.html?next=…
+#   登录页与门卫接口本身放行；隧道 8080 那条路免密，是万一门卫出问题时的后门。
+dqmguga.site, www.dqmguga.site {
+	route {
+		@gateui path /login.html
+		handle @gateui {
+			header Cache-Control "no-store"
+			root * /srv
+			file_server
+		}
+		@gateapi path /api/gate/login /api/gate/verify /api/gate/logout
+		handle @gateapi {
+			reverse_proxy 127.0.0.1:8790
+		}
+		forward_auth 127.0.0.1:8790 {
+			uri /api/gate/verify
+			method GET
+			header_up X-Orig-Uri {http.request.uri}
+		}
+		import huproutes
+	}
+}
+
+# ── 公网 join 子域名：只白名单「网页授权接入」，不设密码（靠一次性 token + 连接密码） ──
+join.dqmguga.site {
+	@joinpage path / /join /join/ /join.html
+	handle @joinpage {
+		rewrite * /join.html
+		root * /srv
+		file_server
+	}
+	@onboard path /join/onboard* /join/offboard*
+	handle @onboard {
+		reverse_proxy 127.0.0.1:8793
+	}
+	# 白名单六条接口；8793 只认去掉 /api 后的 /join/xxx，故先 strip_prefix
+	@joinapi path /api/join/claim /api/join/status /api/join/alive /api/join/connect /api/join/heartbeat /api/join/revoke_self
+	handle @joinapi {
+		uri strip_prefix /api
+		reverse_proxy 127.0.0.1:8793
+	}
+	handle {
+		respond "Not Found" 404
+	}
+}

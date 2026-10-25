@@ -1,0 +1,30 @@
+# 密钥与凭证
+secrets/
+*.key
+*.pem
+*.p12
+.env
+
+# 会话与状态
+sessions.json
+sites.json
+group.json
+state/
+*.log
+audit.log
+
+# 上传与备份
+uploads/
+backups/
+*.bak
+*.bak-*
+
+# Python
+__pycache__/
+*.pyc
+
+# 模型与构建产物
+*.gguf
+build/
+out/
+node_modules/

@@ -1,0 +1,4 @@
+<!doctype html><meta charset=utf-8><title>扫码登录</title>
+<style>body{background:#111;color:#eee;font:14px/1.6 sans-serif;text-align:center;padding:16px}img{width:min(300px,80vw);border-radius:12px;background:#fff;padding:8px}</style>
+<p>二维码（每 3 秒自动刷新）</p><img id=q><script>
+setInterval(()=>{document.getElementById('q').src='/taobao-qr-live.png?t='+Date.now();},3000);</script>

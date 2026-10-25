@@ -1,0 +1,445 @@
+<!doctype html><html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>咕嘎六号 · 接入</title>
+<style>
+:root{--bg:#08090C;--surface:#12141A;--sunken:#0C0E13;--border:rgba(255,255,255,.08);--border-h:rgba(255,255,255,.17);
+ --fg:#EFF1F5;--muted:#9BA1AE;--faint:#6C7280;--accent:#7C8CFF;--accent-h:#93A0FF;--gold:#C6A15B;--gold-hi:#E4C57E;
+ --ok:#30D158;--warn:#FF9F0A;--err:#FF453A;--r-sm:10px;--r-md:16px;--r-lg:20px;
+ --ease:cubic-bezier(.16,1,.3,1);--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:grid;place-items:center;padding:34px 20px;color:var(--fg);background:var(--bg);
+ font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.65;
+ background-image:radial-gradient(820px 460px at 10% -10%,rgba(124,140,255,.16),transparent 62%),
+  radial-gradient(660px 420px at 98% 6%,rgba(198,161,91,.10),transparent 62%),
+  radial-gradient(900px 620px at 50% 120%,rgba(124,140,255,.07),transparent 68%);
+ background-attachment:fixed;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+
+.card{position:relative;width:min(560px,100%);padding:28px 28px 26px;border:1px solid var(--border);
+ border-radius:var(--r-lg);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.008)),var(--surface);
+ box-shadow:0 1px 0 rgba(255,255,255,.06) inset,0 26px 60px -26px rgba(0,0,0,.92),0 2px 10px rgba(0,0,0,.45)}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+ background:radial-gradient(420px 190px at 50% -34%,rgba(124,140,255,.15),transparent 72%)}
+
+.brand{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;letter-spacing:.2px;margin-bottom:18px}
+.brand i{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--gold-hi),var(--gold));
+ box-shadow:0 0 14px rgba(198,161,91,.5),0 0 0 4px rgba(198,161,91,.10)}
+.brand .grow{flex:1}
+.tag{font-size:11.5px;color:var(--faint);border:1px solid var(--border);border-radius:999px;padding:2px 10px;letter-spacing:.5px}
+
+.steps{display:flex;align-items:center;gap:9px;margin-bottom:18px;font-size:12px;color:var(--faint)}
+.steps b{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:var(--faint);
+ border:1px solid var(--border);border-radius:999px;padding:3px 11px 3px 4px;transition:.18s var(--ease)}
+.steps b em{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.07);color:var(--muted);
+ font-style:normal;font-size:10.5px;font-weight:700;display:grid;place-items:center}
+.steps b.on{color:var(--fg);border-color:rgba(124,140,255,.45);background:rgba(124,140,255,.12)}
+.steps b.on em{background:var(--accent);color:#0A0A0C}
+.steps b.done em{background:rgba(48,209,88,.18);color:var(--ok)}
+.steps .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+h1{font-size:23px;font-weight:650;letter-spacing:.2px;line-height:1.35;margin-bottom:10px}
+.desc{color:var(--muted);font-size:14px}
+.desc b{color:var(--fg);font-weight:600}
+.desc ul{margin:11px 0 0;padding:0;list-style:none}
+.desc li{position:relative;margin:5px 0;padding-left:18px;font-size:13.5px}
+.desc li::before{content:"";position:absolute;left:4px;top:.75em;width:5px;height:5px;border-radius:50%;
+ background:var(--accent);opacity:.9;box-shadow:0 0 8px rgba(124,140,255,.6)}
+
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 9px}
+.scope button{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
+ background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px 13px;cursor:pointer;
+ color:var(--muted);font-family:inherit;transition:.18s var(--ease)}
+.scope button strong{font-size:14px;font-weight:620;color:var(--fg);letter-spacing:.2px}
+.scope button small{font-size:11.5px;color:var(--faint);line-height:1.5}
+.scope button::after{content:"";position:absolute;top:11px;right:11px;width:13px;height:13px;border-radius:50%;
+ border:1.5px solid var(--border-h);transition:.18s var(--ease)}
+.scope button:hover{border-color:var(--border-h)}
+.scope button.on{background:linear-gradient(180deg,rgba(124,140,255,.17),rgba(124,140,255,.05));
+ border-color:rgba(124,140,255,.5);box-shadow:0 0 0 3px rgba(124,140,255,.10)}
+.scope button.on::after{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,140,255,.22)}
+.scope-hint{margin-bottom:18px;padding-left:10px;border-left:2px solid rgba(124,140,255,.35);
+ font-size:12px;color:var(--faint);line-height:1.55}
+
+.pwrow{margin-bottom:16px}
+.pwrow label{display:block;margin-bottom:7px;font-size:12px;color:var(--muted);letter-spacing:.3px}
+.pwrow input{width:100%;background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm);
+ color:var(--fg);padding:12px 13px;font-size:14px;font-family:var(--mono);letter-spacing:.14em;outline:none;
+ transition:.18s var(--ease)}
+.pwrow input::placeholder{font-family:inherit;letter-spacing:0;color:var(--faint)}
+.pwrow input:focus{border-color:rgba(124,140,255,.6);box-shadow:0 0 0 3px rgba(124,140,255,.14)}
+
+.primary{width:100%;border:0;border-radius:var(--r-sm);padding:14px;font-size:15px;font-weight:680;
+ font-family:inherit;letter-spacing:.18em;color:#0A0A0C;cursor:pointer;transition:.18s var(--ease);
+ background:linear-gradient(180deg,var(--accent-h),var(--accent));
+ box-shadow:0 10px 26px -12px rgba(124,140,255,.8),0 1px 0 rgba(255,255,255,.4) inset}
+.primary:hover{transform:translateY(-1px);box-shadow:0 14px 32px -12px rgba(124,140,255,.9),0 1px 0 rgba(255,255,255,.5) inset}
+.primary:active{transform:translateY(0) scale(.995)}
+
+.note{margin-top:16px;padding:12px 14px;background:var(--sunken);border:1px solid var(--border);
+ border-left:2px solid rgba(198,161,91,.5);border-radius:var(--r-sm);font-size:12.5px;color:var(--muted);line-height:1.7}
+.note b{color:var(--fg);font-weight:600}
+
+.cmdwrap{margin-top:16px}
+.cmdhead{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);
+ border:1px solid var(--border);border-bottom:0;border-radius:var(--r-sm) var(--r-sm) 0 0;font-size:12px;color:var(--faint)}
+.cmdhead .dots{display:flex;gap:4px}
+.cmdhead .dots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.10)}
+.cmdhead .dots i:first-child{background:rgba(255,69,58,.45)}
+.cmdhead .dots i:nth-child(2){background:rgba(255,159,10,.45)}
+.cmdhead .dots i:nth-child(3){background:rgba(48,209,88,.45)}
+.cmdhead b{color:var(--muted);font-weight:600;font-family:var(--mono);font-size:11.5px}
+.cmd{margin:0;padding:13px 14px;background:var(--sunken);border:1px solid var(--border);
+ border-radius:0 0 var(--r-sm) var(--r-sm);font-family:var(--mono);font-size:12.5px;line-height:1.8;
+ color:#CBD3E6;white-space:pre-wrap;word-break:break-all;user-select:all}
+
+.status{display:flex;align-items:center;gap:9px;margin-top:14px;padding:10px 12px;background:var(--sunken);
+ border:1px solid var(--border);border-radius:var(--r-sm);font-size:13px;color:var(--muted)}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:0 0 auto;
+ animation:pulse 2s ease-out infinite}
+.sdot.ok{background:var(--ok);box-shadow:0 0 10px rgba(48,209,88,.55);animation:none}
+.sdot.bad{background:var(--err);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,159,10,.45)}70%{box-shadow:0 0 0 7px rgba(255,159,10,0)}100%{box-shadow:0 0 0 0 rgba(255,159,10,0)}}
+
+.mini{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-size:12.5px;
+ font-family:inherit;color:var(--muted);cursor:pointer;transition:.18s var(--ease)}
+.mini:hover{border-color:var(--border-h);color:var(--fg)}
+.mini.tiny{margin-left:auto;padding:4px 10px;font-size:11.5px}
+.mini.danger{width:100%;margin-top:13px;border-color:rgba(255,69,58,.4);color:var(--err)}
+.mini.danger:hover{border-color:rgba(255,69,58,.7);background:rgba(255,69,58,.08)}
+.hide{display:none !important}
+.foot{margin-top:14px;font-size:11.5px;color:var(--faint);text-align:center;font-family:var(--mono)}
+.stale{margin:-4px 0 16px;padding:10px 12px;border:1px solid rgba(255,159,10,.42);background:rgba(255,159,10,.10);
+ border-radius:var(--r-sm);font-size:12.5px;color:#FFCB8F;line-height:1.6}
+.stale b{color:#FFE2BC;font-weight:650}
+.cmdhint{margin-top:9px;font-size:11.5px;color:var(--faint);line-height:1.6}
+.cmdhint b{color:var(--gold-hi);font-weight:600}
+.permline{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:12px;color:var(--muted)}
+.permline b{font-weight:650}
+.perm{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11.5px;
+ border:1px solid var(--border);color:var(--fg);background:rgba(255,255,255,.04)}
+.perm.full{border-color:rgba(255,159,10,.45);color:#FFC98A;background:rgba(255,159,10,.10)}
+.perm.read{border-color:rgba(124,140,255,.35);color:#C3CBFF;background:rgba(124,140,255,.10)}
+.permline .mini.tiny{margin-left:0}
+
+@media (max-width:520px){
+ body{padding:18px 14px;align-content:start}
+ .card{padding:22px 18px 20px;border-radius:var(--r-md)}
+ h1{font-size:20px}
+ .scope{grid-template-columns:1fr}
+ .primary{letter-spacing:.12em}
+}
+</style></head><body>
+<div class="card">
+  <div id="stale" class="stale hide"><span id="staleText"></span></div>
+  <div class="brand"><i></i>咕嘎六号<span class="grow"></span><span class="tag">远程接入</span><span class="tag" id="verTag" title="页面版本 —— 与服务器一致才不是旧页面">v…</span></div>
+
+  <!-- 无效邀请 -->
+  <div id="bad" class="hide">
+    <h1>这个邀请链接无效</h1>
+    <div class="desc">它可能已经用过、被别人先用了，或者过期了。请让发起的人重新生成一个。</div>
+  </div>
+
+  <!-- 阶段 A：请求 -->
+  <div id="ask" class="hide">
+    <div class="steps"><b class="on"><em>1</em>看权限</b><span class="ln"></span><b><em>2</em>跑命令</b></div>
+    <h1>咕嘎六号请求访问</h1>
+    <div class="desc">
+      <span id="askLead">有人用咕嘎向你发起了协助请求。</span>你同意后，咕嘎可以<b>在你这台电脑上</b>：
+      <ul>
+        <li>查看系统信息、磁盘、进程等</li>
+        <li>运行命令，帮你把活干完</li>
+      </ul>
+    </div>
+    <div class="scope" id="scope">
+      <button type="button" data-mode="full" class="on"><strong>完整协助</strong><small>可运行命令、改东西</small></button>
+    </div>
+    <div class="scope-hint" id="scopeHint">完整：可以在这台电脑上运行命令、改东西。随时可在本页撤销。</div>
+    <div class="pwrow hide" id="pwRow">
+      <label for="pwInput">连接密码</label>
+      <input id="pwInput" type="text" autocomplete="off" spellcheck="false" placeholder="向发起人索取">
+    </div>
+    <button class="primary" id="agree">同 意</button>
+    <div class="note">
+      还需要在<b>你自己的电脑</b>上跑一条命令才会真正生效；<b>随时可以撤销</b>。
+      咕嘎<b>不会</b>在服务器上留下你这台机器的任何记录 —— 操作日志只保存在<b>你这台机器</b>上。
+    </div>
+  </div>
+
+  <!-- 阶段 B：跑命令 -->
+  <div id="grant" class="hide">
+    <div class="steps"><b class="done"><em>✓</em>看权限</b><span class="ln"></span><b class="on"><em>2</em>跑命令</b></div>
+    <h1>最后一步</h1>
+    <div class="desc" id="grantHint">在<b>你自己这台电脑</b>上打开终端，粘贴并运行下面这条命令（只需跑一次）：</div>
+    <div class="cmdwrap" id="cmdwrap">
+      <div class="cmdhead">
+        <span class="dots"><i></i><i></i><i></i></span><b id="osLabel">终端</b>
+        <button class="mini tiny" id="copy">复制命令</button>
+      </div>
+      <div class="cmd" id="cmdText">…</div>
+    </div>
+    <div class="permline">当前权限：<b class="perm full" id="permBadge">完整协助</b></div>
+    <div class="cmdhint">命令里<b>不该出现 &amp;</b>（与号）。若出现了，说明你手上这份是旧页面 —— 按 <b>Ctrl+F5</b> 强刷，重新复制一遍。</div>
+    <div class="status"><span class="sdot" id="sdot"></span><span id="stext">等待连接…</span></div>
+    <button class="mini danger hide" id="revoke">断开并撤销</button>
+    <div class="foot" id="auditHint"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const BUILD = '2026-10-24a';   // 页面版本：动过这个文件就改这里 —— 页面靠它跟服务器上的版本对账，防止拿到缓存里的旧命令
+  const $ = s => document.querySelector(s);
+  let T = new URLSearchParams(location.search).get('t') || '';
+  const STANDING = !T;          // 常驻入口：地址不带 token，由本页自己现场签一个（页面永不过期）
+  const SS_KEY = 'gugaJoinTok'; // 常驻入口的 token 放 sessionStorage：刷新页面不用重来，关标签页即清
+  let mode = 'full';                // 2026-10-24 主人定：只留「完整协助」，不再有只读那一档
+  const MODE_KEY = 'gugaJoinMode';
+  let pushed = null;                // 刚推给服务器的那份权限（免得状态轮询又把它冲回去）
+  try{ sessionStorage.removeItem(MODE_KEY); }catch(e){}
+
+  function detectOS(){
+    const p = (navigator.userAgentData && navigator.userAgentData.platform) || '';
+    const s = (p || navigator.userAgent || '').toLowerCase();
+    if (/windows|win32|win64/.test(s)) return 'win';
+    if (/mac|darwin|iphone|ipad/.test(s)) return 'mac';
+    return 'sh';
+  }
+  const OS = detectOS();
+  const isWin = OS === 'win';
+
+  function show(id){ ['bad','ask','grant'].forEach(x => $('#'+x).classList.toggle('hide', x !== id)); }
+
+  /* 现场签一个 token。带着 ?t= 来的（被人邀请）直接用；不带的就是常驻入口，自己签（要过密码）。 */
+  let minting = null;
+  function saveTok(){ if (STANDING && T){ try{ sessionStorage.setItem(SS_KEY, T); }catch(e){} } }
+  function clearTok(){ T = ''; try{ sessionStorage.removeItem(SS_KEY); }catch(e){} }
+  function ensureToken(){
+    if (T) return Promise.resolve(T);
+    if (!minting){
+      const pwEl = $('#pwInput');
+      minting = fetch('/api/join/connect', {method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({mode, password: pwEl ? pwEl.value : ''})})
+        .then(r => r.json().then(d => ({code:r.status, d})))
+        .then(({code, d}) => {
+          minting = null;
+          if (code !== 200 || !d || !d.token) throw new Error((d && d.error) || ('HTTP ' + code));
+          T = d.token; saveTok(); return T;
+        })
+        .catch(e => { minting = null; throw e; });
+    }
+    return minting;
+  }
+
+  /* 心跳：页面开着就每 20 秒续一次租约。页面一关心跳就停 —— 服务器约 2 分钟后自动撤销。 */
+  let hbTimer = null;
+  function startHB(){
+    if (hbTimer) return;
+    const tick = () => {
+      if (!T) return;
+      fetch('/api/join/heartbeat', {method:'POST', headers:{'content-type':'application/json'},
+        body:JSON.stringify({token:T, mode})}).catch(() => {});
+    };
+    tick();
+    hbTimer = setInterval(tick, 20000);
+  }
+  window.addEventListener('pagehide', () => { if (hbTimer){ clearInterval(hbTimer); hbTimer = null; } });
+
+  /* 已经能出命令了：渲染 + 轮询 + 起心跳 */
+  function goGrant(){ stopped = false; renderGrant(); show('grant'); syncScopeUI(); poll(); startHB(); }
+
+  if (STANDING){
+    const lead = $('#askLead');
+    if (lead) lead.textContent = '咕嘎六号随时可以协助你 —— 不用等谁邀请，现在就能把你这台电脑接进来。';
+    $('#pwRow').classList.remove('hide');
+    // 刷新回来的？sessionStorage 里存着上一轮 token，先问服务器它还在不在
+    let resumed = '';
+    try{ resumed = sessionStorage.getItem(SS_KEY) || ''; }catch(e){}
+    if (resumed){
+      fetch('/api/join/status?t=' + encodeURIComponent(resumed), {cache:'no-store'})
+        .then(r => r.json())
+        .then(d => {
+          if (d && (d.state === 'waiting' || d.state === 'claimed')){ T = resumed; goGrant(); }
+          else { clearTok(); show('ask'); }
+        })
+        .catch(() => { T = resumed; show('ask'); });
+    } else {
+      show('ask');
+    }
+    // 注意：**不**在页面加载时就签 token —— 否则光打开页面就占掉一个待用名额，
+    // 开几次就把「邀请」那条路挤爆了。等真点了「同意」再签。
+  } else {
+    // 先问一下这个邀请还有效吗
+    fetch('/api/join/status?t=' + encodeURIComponent(T), {cache:'no-store'})
+      .then(r => r.json())
+      .then(d => {
+        if (!d || d.state === 'unknown'){ show('bad'); return; }
+        if (d.state === 'claimed'){ goGrant(); return; }   // 已经点过同意，直接进第二阶段
+        if (d.state === 'expired' || d.state === 'revoked'){ show('bad'); return; }
+        setMode('full', true);   // 现在只有一档权限，邀请里记的 read 也统一按完整协助走
+        show('ask');
+      })
+      .catch(() => show('bad'));
+  }
+
+  /* 权限只剩一档：界面照实显示「完整协助」，不再有切换。 */
+  function syncScopeUI(){
+    const sc = $('#scope');
+    if (sc) [...sc.children].forEach(x => x.classList.toggle('on', x.dataset.mode === 'full'));
+    const h = $('#scopeHint');
+    if (h) h.textContent = '完整：可以在这台电脑上运行命令、改东西。随时可在本页撤销。';
+    const b = $('#permBadge');
+    if (b){ b.textContent = '完整协助'; b.className = 'perm full'; }
+  }
+  /* 权限的最终真源是服务器上那枚令牌：这儿定死了就顺手推过去（心跳顺路捎带）。
+     2026-10-24 起只保留完整协助 —— 老邀请里记的 read 也一并推成 full。 */
+  function pushMode(){
+    if (!T) return;
+    pushed = 'full';
+    fetch('/api/join/heartbeat', {method:'POST', headers:{'content-type':'application/json'},
+      body: JSON.stringify({token:T, mode:'full'})}).catch(() => {});
+  }
+  function setMode(m, fromServer){
+    const same = (mode === 'full');
+    mode = 'full';
+    syncScopeUI();
+    if (T && !same && !fromServer) pushMode();
+  }
+  syncScopeUI();
+
+  // 对方要跑的那条命令
+  function buildCmd(){
+    // 只放 os、token 走查询串：整条 URL **不含 &**，粘进 PowerShell 不用加引号也不会被解析错。
+    // 权限**不进网址** —— 服务器只认令牌里记的那份，网址上写什么都改不动它。
+    const u = location.origin + '/join/onboard/' + OS + '?t=' + encodeURIComponent(T);
+    return isWin
+      ? `powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; irm ${u} | iex"`
+      : `curl -fsSL "${u}" | sh`;
+  }
+  function renderGrant(){
+    $('#cmdText').textContent = buildCmd();
+    const ol = $('#osLabel'); if (ol) ol.textContent = isWin ? 'PowerShell' : '终端';
+    $('#grantHint').innerHTML = isWin
+      ? '在<b>你自己这台电脑</b>上，右键开始菜单 → 打开【管理员】PowerShell（Windows 终端），粘贴并运行下面这条命令（只需跑一次）：'
+      : '在<b>你自己这台电脑</b>上打开终端，粘贴并运行下面这条命令（只需跑一次）：';
+    $('#auditHint').textContent = '操作记录保存在你本机：' + (isWin ? '%USERPROFILE%\\.guga\\audit.log' : '~/.guga/audit.log');
+  }
+
+  $('#agree').onclick = () => {
+    mode = 'full';
+    const btn = $('#agree');
+    btn.textContent = '正在准备…';
+    ensureToken()
+      .then(() => { btn.textContent = '同 意'; goGrant(); })
+      .catch(e => {
+        btn.textContent = '同 意';
+        const msg = (e && e.message) || '';
+        $('#scopeHint').textContent = (msg === '密码不对')
+          ? '密码不对 —— 再核对一下（问发起人要）。'
+          : '连不上服务器，稍等一下再点一次。';
+        const p = $('#pwInput'); if (p) p.focus();
+      });
+  };
+
+  $('#copy').onclick = () => {
+    navigator.clipboard.writeText($('#cmdText').textContent).then(() => {
+      $('#copy').textContent = '已复制 ✓'; setTimeout(() => $('#copy').textContent = '复制命令', 1500);
+    }).catch(() => { $('#copy').textContent = '复制失败，手动选中吧'; });
+  };
+
+  let stopped = false;
+  async function poll(){
+    if (stopped) return;
+    try{
+      const d = await fetch('/api/join/status?t=' + encodeURIComponent(T), {cache:'no-store'}).then(r => r.json());
+      if (d.mode && d.mode !== 'full') pushMode();   // 老邀请里记的是「只读」→ 直接推成完整协助
+      setMode('full', true);
+      const dot = $('#sdot'), tx = $('#stext');
+      if (d.state === 'connected'){
+        dot.className = 'sdot ok'; tx.textContent = '已连接 ✓ 咕嘎可以协助你了';
+        $('#revoke').classList.remove('hide');
+        return;
+      }
+      if (d.state === 'claimed'){ dot.className = 'sdot'; tx.textContent = '等待连接…（跑完命令就连上）'; }
+      else if (d.state === 'expired' && STANDING){
+        // 常驻入口：拖太久没跑，那条命令作废了 —— 默默换一条新的，让他重新复制
+        try{
+          clearTok(); await ensureToken(); renderGrant();
+          dot.className = 'sdot'; tx.textContent = '上一条超时了，已换成新的一条 —— 重新复制跑一次';
+        }catch(e){
+          // 换不成（比如刷新回来的人手里没密码）→ 退回让他重新输一次
+          stopped = true; show('ask');
+          const sc = $('#scopeHint');
+          if (sc) sc.textContent = '上一条超时了，请重新输一次密码再点「同意」。';
+        }
+      }
+      else if (d.state === 'expired' || d.state === 'revoked'){
+        dot.className = 'sdot bad'; tx.textContent = '连接已结束'; stopped = true; return;
+      }
+    }catch(e){}
+    setTimeout(poll, 2500);
+  }
+
+  /* 断开并撤销：直接叫服务器作废钥匙（隧道由那台机的看门狗十几秒内自己拆）。
+     这条接口万一不通，再把「在本机跑一次」的命令摆出来当后路 —— 后路永远在。 */
+  function manualOffboardCmd(){
+    const u = location.origin + '/join/offboard/' + OS + '?t=' + encodeURIComponent(T);
+    return isWin
+      ? `powershell -NoProfile -ExecutionPolicy Bypass -Command "irm ${u} | iex"`
+      : `curl -fsSL "${u}" | sh`;
+  }
+  function showManualOffboard(msg){
+    $('#grantHint').innerHTML = msg || '要断开，请把下面这条命令在<b>你这台电脑</b>上跑一次（它会移除钥匙、停掉隧道）：';
+    $('#cmdwrap').classList.remove('hide');
+    $('#cmdText').textContent = manualOffboardCmd();
+    $('#cmdText').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+  $('#revoke').onclick = async () => {
+    const btn = $('#revoke');
+    if (btn.dataset.busy) return;
+    btn.dataset.busy = '1'; btn.textContent = '正在断开…';
+    const dot = $('#sdot'), tx = $('#stext');
+    try{
+      const r = await fetch('/api/join/revoke_self', {method:'POST',
+                      headers:{'content-type':'application/json'}, body: JSON.stringify({t: T})});
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || (d && d.error)) throw new Error((d && d.error) || ('HTTP ' + r.status));
+      stopped = true;                                   // 停掉状态轮询
+      if (hbTimer){ clearInterval(hbTimer); hbTimer = null; }
+      dot.className = 'sdot bad'; tx.textContent = '已断开 ✓ 这次连接已作废，隧道十几秒内拆干净';
+      btn.classList.add('hide');
+      $('#cmdwrap').classList.add('hide');              // 那条命令已经没用了
+      $('#grantHint').innerHTML = '断开了 —— 咕嘎已经不是这台电脑的访客。想再接一次，刷新本页重新点「同意」即可。';
+      const fb = document.createElement('button');
+      fb.type = 'button'; fb.className = 'mini tiny';
+      fb.textContent = '跑不了？改在本机跑这条命令';
+      fb.onclick = () => { fb.classList.add('hide'); showManualOffboard(); };
+      tx.parentNode.after(fb);
+    }catch(e){
+      btn.dataset.busy = ''; btn.textContent = '断开并撤销';
+      dot.className = 'sdot bad';
+      tx.textContent = '没连上服务器，自动断开按不动 —— ';
+      showManualOffboard('那就走手工这条：把下面这条命令在<b>你这台电脑</b>上跑一次（它会移除钥匙、停掉隧道）：');
+    }
+  };
+  /* 页面版本自检：浏览器把旧页面缓存着也无所谓 —— 打开时顺手把服务器上的这份抓回来对一眼版本号。
+     踩过的坑：拿缓存里的旧命令去粘，URL 里带 & 被 PowerShell 当运算符，白折腾一轮。 */
+  const verTag = $('#verTag'); if (verTag) verTag.textContent = 'v' + BUILD;
+  async function checkStale(){
+    try{
+      const r = await fetch('join.html?nc=' + Date.now(), {cache:'no-store'});
+      if (!r.ok) return;
+      const t = await r.text();
+      const m = t.match(/const BUILD = '([^']+)'/);
+      if (!m || !m[1] || m[1] === BUILD) return;
+      const el = $('#stale'), tx = $('#staleText');
+      if (!el || !el.classList.contains('hide')) return;
+      tx.innerHTML = '你打开的是<b>旧版页面</b>（服务器上已经是 v' + m[1] + '）。按 <b>Ctrl+F5</b> 强制刷新，再重新复制命令 —— 旧页面里的命令会失败。';
+      el.classList.remove('hide');
+      if (verTag) verTag.textContent = 'v' + BUILD + ' · 旧';
+    }catch(e){}
+  }
+  checkStale();
+})();
+</script>
+</body></html>

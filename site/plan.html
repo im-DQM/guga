@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>人生规划 · Human 3.0</title>
+<style>
+  :root{
+    --bg:#090a0e; --card:#12141b; --card2:#161922;
+    --line:rgba(255,255,255,.075); --line2:rgba(255,255,255,.12);
+    --tx:#e7e9ef; --tx2:#9aa1b1; --tx3:#6b7280;
+    --indigo:#6d7cff; --gold:#e8b64c;
+    --mind:#7c9dff; --body:#4ec9a7; --spirit:#c08bff; --voc:#e8a24c;
+    --ok:#4ec9a7; --bad:#ef6b6b;
+    --s3:16px; --s4:24px; --s5:36px; --r:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 520px at 12% -8%, rgba(109,124,255,.16), transparent 60%),
+      radial-gradient(900px 480px at 92% 4%, rgba(192,139,255,.10), transparent 62%),
+      var(--bg);
+    color:var(--tx);
+    font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+    padding:28px 18px 64px;
+  }
+  .wrap{max-width:1000px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--tx3);font-size:12.5px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px rgba(232,182,76,.55)}
+  h1{font-size:26px;line-height:1.3;margin:14px 0 6px;letter-spacing:-.01em}
+  h1 small{font-size:14px;color:var(--tx2);font-weight:400;margin-left:8px}
+  .sub{color:var(--tx2);font-size:14px;margin:0 0 var(--s4)}
+  .card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);
+        border-radius:var(--r);box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  .pad{padding:var(--s3)}
+  .tabs{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:999px;
+        background:rgba(255,255,255,.03);margin:0 0 var(--s3)}
+  .tabs button{appearance:none;border:0;background:transparent;color:var(--tx2);font:inherit;font-size:14px;
+        padding:7px 18px;border-radius:999px;cursor:pointer;transition:.18s}
+  .tabs button.on{background:linear-gradient(180deg,rgba(109,124,255,.9),rgba(109,124,255,.72));color:#fff;
+        box-shadow:0 4px 14px rgba(109,124,255,.28)}
+  .verdict{display:flex;gap:14px;align-items:flex-start;padding:18px;margin-bottom:var(--s3);border-left:3px solid var(--gold)}
+  .verdict .k{font-size:11px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase;white-space:nowrap;padding-top:3px}
+  .verdict p{margin:0;font-size:15.5px}.verdict b{color:#fff}
+  h2{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);margin:var(--s5) 0 var(--s3);
+     font-weight:600;display:flex;align-items:center;gap:10px}
+  h2:after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* 今天 · 实时同步 */
+  .live{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:12px 14px;margin-bottom:6px;
+        border-color:rgba(78,201,167,.28);background:linear-gradient(180deg,rgba(78,201,167,.07),var(--card))}
+  .live .lt{font-size:12.5px;color:var(--tx3);letter-spacing:.04em}
+  .live .lp{margin-left:auto;font-size:13px;color:var(--ok);font-weight:600}
+  .live .lc{display:flex;gap:6px;flex-wrap:wrap;width:100%}
+  .chip{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--tx3);background:rgba(255,255,255,.02)}
+  .chip.on{color:var(--ok);border-color:rgba(78,201,167,.4);background:rgba(78,201,167,.09)}
+  .live .ln{width:100%;font-size:12px;color:var(--tx3);border-top:1px dashed var(--line);padding-top:7px;margin-top:2px}
+
+  .names{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px}
+  @media(max-width:860px){.names{grid-template-columns:1fr}}
+  .nm{padding:15px 16px;position:relative;overflow:hidden}
+  .nm .tag{font-size:11px;letter-spacing:.14em;color:var(--tx3)}
+  .nm .big{font-size:22px;font-weight:700;letter-spacing:.06em;margin:3px 0 2px;
+           background:linear-gradient(90deg,#fff,#c9cfff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .nm .why{font-size:13px;color:var(--tx2)}
+  .nm:after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;border-radius:50%;
+            background:radial-gradient(circle,rgba(109,124,255,.22),transparent 70%)}
+  .nm.cur{border-color:rgba(109,124,255,.55);box-shadow:0 0 0 1px rgba(109,124,255,.28),0 14px 40px rgba(109,124,255,.14)}
+  .nm.cur .big{font-size:31px}
+  .nm .flag{position:absolute;right:12px;top:12px;font-size:10.5px;letter-spacing:.1em;color:#9aa7ff;
+            border:1px solid rgba(109,124,255,.5);background:rgba(109,124,255,.14);border-radius:999px;padding:2px 8px}
+
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.two,.three{grid-template-columns:1fr}}
+  .note{font-size:13px;color:var(--tx3);margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
+  /* 今天要做什么 · 当天清单 */
+  h2 .h2x{font-size:11.5px;font-weight:400;letter-spacing:0;color:var(--tx3);text-transform:none}
+  .tlh{font-size:11.5px;letter-spacing:.12em;color:var(--gold);margin:15px 0 3px}
+  .tlh:first-child{margin-top:0}
+  .tlrow{display:flex;gap:10px;align-items:baseline;padding:7px 9px;border-radius:9px;cursor:pointer;
+        transition:background .15s,transform .15s;user-select:none}
+  .tlrow:hover{background:rgba(255,255,255,.045)}
+  .tlrow:active{transform:scale(.996)}
+  .tlrow .c{flex:0 0 auto;width:15px;color:var(--tx3);font-size:12.5px}
+  .tlrow .x{flex:1 1 auto;font-size:14.5px;color:var(--tx);line-height:1.55}
+  .tlrow .t{flex:0 0 auto;font-size:12px;color:var(--tx3);font-variant-numeric:tabular-nums}
+  .tlrow.done .x{color:var(--tx3);text-decoration:line-through;opacity:.65}
+  .tlrow.done .c{color:var(--ok)}
+  .tle{font-size:13.5px;color:var(--tx3);padding:6px 2px}
+  .tlmsg{font-size:12px;color:#f0a35e;margin-top:8px}
+  .tpl{margin-top:14px;border-top:1px dashed var(--line);padding-top:11px}
+  .tpl summary{cursor:pointer;font-size:12.5px;color:var(--tx3);letter-spacing:.04em;list-style:none}
+  .tpl summary::-webkit-details-marker{display:none}
+  .tpl summary:before{content:"▸ ";color:var(--tx3)}
+  .tpl[open] summary:before{content:"▾ "}
+  .tpl summary:hover{color:var(--tx2)}
+  .tplb{margin-top:6px;opacity:.92}
+  .note b{color:var(--tx2)}
+
+  .blk{display:grid;grid-template-columns:96px 1fr;gap:16px;padding:14px 2px;border-bottom:1px dashed var(--line)}
+  .blk:last-child{border-bottom:none}
+  .blk .when{font-size:13px;color:var(--gold);letter-spacing:.06em;padding-top:2px}
+  .blk .when em{display:block;font-style:normal;color:var(--tx3);font-size:11.5px;letter-spacing:0}
+  .blk ul{list-style:none;margin:0;padding:0}
+  .blk li{display:flex;gap:10px;align-items:baseline;padding:5px 0;font-size:14px;color:var(--tx2)}
+  .blk li .nmz{color:var(--tx);font-weight:600;flex:0 0 auto}
+  .blk li .dur{color:var(--tx3);font-size:12.5px;flex:0 0 auto}
+  .blk li .tg{margin-left:auto}
+  .blk li.hot{background:linear-gradient(90deg,rgba(109,124,255,.1),transparent 70%);border-radius:8px;padding-left:8px;margin-left:-8px}
+  .blk li.later .nmz{color:var(--tx3)}
+  .blk li.later .dur{opacity:.8}
+  @media(max-width:720px){
+    .blk{grid-template-columns:1fr;gap:6px}
+    .blk li{flex-wrap:wrap}
+    .blk li .dur{margin-left:0}
+    .blk li .tg{margin-left:0}
+  }
+  .tg{font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line2);color:var(--tx2);white-space:nowrap}
+  .tg-v{color:var(--voc);border-color:rgba(232,162,76,.38);background:rgba(232,162,76,.08)}
+  .tg-b{color:var(--body);border-color:rgba(78,201,167,.38);background:rgba(78,201,167,.08)}
+  .tg-m{color:var(--mind);border-color:rgba(124,157,255,.38);background:rgba(124,157,255,.08)}
+  .tg-r{color:var(--tx3)}
+  .tg-k{color:var(--indigo);border-color:rgba(109,124,255,.5);background:rgba(109,124,255,.12)}
+
+  .wk{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}
+  @media(max-width:720px){.wk{grid-template-columns:repeat(2,1fr)}}
+  .day{padding:11px 10px;text-align:center;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.02)}
+  .day .d{font-size:12.5px;color:var(--tx3)}
+  .day .a{font-size:13px;margin-top:4px;color:var(--tx2)}
+  .day.gym{border-color:rgba(78,201,167,.4);background:rgba(78,201,167,.07)}
+  .day.gym .a{color:var(--body)}
+  .day.rev{border-color:rgba(109,124,255,.45);background:rgba(109,124,255,.09)}
+  .day.rev .a{color:#9aa7ff}
+  .day.today{border-color:rgba(232,182,76,.6);background:rgba(232,182,76,.10);position:relative;
+            box-shadow:0 0 0 1px rgba(232,182,76,.45),0 10px 26px rgba(232,182,76,.13)}
+  .day.today .d{color:var(--gold);font-weight:600}
+  .day.today .a{color:var(--tx)}
+  .day .now{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:10px;
+            letter-spacing:.08em;padding:1px 7px;border-radius:999px;background:var(--gold);
+            color:#1a1408;font-weight:700;white-space:nowrap}
+
+  .chk{list-style:none;margin:0;padding:0}
+  .chk li{position:relative;padding-left:22px;margin:9px 0;font-size:13.5px;color:var(--tx2)}
+  .chk li:before{content:"";position:absolute;left:0;top:5px;width:11px;height:11px;border-radius:3px;border:1.5px solid var(--line2)}
+  .chk li.alt:before{content:"◇";width:auto;height:auto;border:none;top:0;font-size:13px;color:var(--tx3)}
+  .chk li span.q1{color:var(--mind)}.chk li span.q2{color:var(--body)}
+  .chk li span.q3{color:var(--spirit)}.chk li span.q4{color:var(--voc)}
+  .chk li b{color:var(--tx);font-weight:600}
+
+  /* 段位配色 */
+  .tier-1{--c:#9aa1b1}.tier-2{--c:#c08552}.tier-3{--c:#cfd6e4}.tier-4{--c:#e8b64c}.tier-5{--c:#5eead4}
+  .tier-6{--c:#34d399}.tier-7{--c:#6aa8ff}.tier-8{--c:#b18cff}.tier-9{--c:#ff7a9c}.tier-10{--c:#ff5f56}
+  .ach{padding:16px}
+  .ach.tier-1{--c:#9aa1b1}.ach.tier-2{--c:#c08552}.ach.tier-3{--c:#cfd6e4}.ach.tier-4{--c:#e8b64c}
+  .ach.tier-5{--c:#5eead4}.ach.tier-6{--c:#34d399}.ach.tier-7{--c:#6aa8ff}.ach.tier-8{--c:#b18cff}
+  .ach.tier-9{--c:#ff7a9c}.ach.tier-10{--c:#ff5f56}
+  .ach[class*="tier-"]{border-color:color-mix(in srgb,var(--c) 42%,transparent);
+    background:linear-gradient(180deg,color-mix(in srgb,var(--c) 11%,var(--card2)),var(--card));
+    box-shadow:inset 0 1px 0 color-mix(in srgb,var(--c) 24%,transparent)}
+  .ach[class*="tier-"] .ar{color:var(--c);border-color:color-mix(in srgb,var(--c) 48%,transparent);
+    background:color-mix(in srgb,var(--c) 13%,transparent);font-weight:600}
+  .ach .ah{display:flex;align-items:baseline;gap:10px;margin-bottom:2px}
+  .ach .an{font-size:19px;font-weight:700;letter-spacing:.08em}
+  .ach .ar{margin-left:auto;font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid var(--line2);
+           background:rgba(255,255,255,.03);color:var(--tx2)}
+  .ach .as{font-size:12.5px;color:var(--tx3);margin-bottom:10px}
+  /* 成就徽章墙 */
+  .bgr{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:2px 0 8px}
+  .bdg{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:14px;
+       border:1px solid color-mix(in srgb,var(--c,#6b7280) 40%,transparent);
+       background:linear-gradient(180deg,color-mix(in srgb,var(--c,#6b7280) 10%,var(--card2)),var(--card))}
+  .bdg .ic{width:34px;height:34px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;
+       font-size:15px;color:var(--c,#8b93a7);border:1px solid color-mix(in srgb,var(--c,#8b93a7) 50%,transparent);
+       background:color-mix(in srgb,var(--c,#8b93a7) 14%,transparent)}
+  .bdg .nm{font-size:13px;color:var(--tx);margin-bottom:2px;font-weight:600}
+  .bdg .lv{font-size:10.5px;letter-spacing:.05em;color:var(--c,#7d8494)}
+  .bdg .pg{font-size:10.5px;color:var(--tx3);font-variant-numeric:tabular-nums;margin-top:3px}
+  .bdg.lv0{opacity:.5}
+  .bdg.lv1{--c:#c08552}.bdg.lv2{--c:#cfd6e4}.bdg.lv3{--c:#e8b64c}
+  .rail{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 12px}
+  .rail span{font-size:11px;padding:2px 7px;border-radius:6px;border:1px solid;color:var(--c,#9aa1b1);
+             border-color:color-mix(in srgb,var(--c,#9aa1b1) 40%,transparent);background:color-mix(in srgb,var(--c,#9aa1b1) 9%,transparent)}
+  .rail span.on{color:#0b0c11;font-weight:700;background:var(--c);
+             border-color:transparent;box-shadow:0 3px 12px color-mix(in srgb,var(--c) 40%,transparent)}
+  .tiers{list-style:none;margin:0;padding:0}
+  .tiers li{display:grid;grid-template-columns:52px 1fr;gap:10px;font-size:13px;color:var(--tx2);padding:4px 0}
+  .tiers li .t{color:var(--c,#9aa1b1);font-size:12px;font-weight:600}
+  .tiers li.now{color:var(--tx)}
+  .tiers li.now .t:after{content:" ◂";font-size:9px}
+  .ach .fct{font-size:11.5px;color:var(--tx3);margin:-4px 0 10px;padding-bottom:8px;
+            border-bottom:1px dashed var(--line)}
+  .ach .fct b{color:var(--tx2);font-weight:600}
+  .tiers li{grid-template-columns:56px 1fr;row-gap:1px}
+  .tiers li .p{grid-column:2;font-size:10.5px;color:var(--tx3);font-variant-numeric:tabular-nums}
+  .tiers li.done{color:var(--tx3)}
+  .tiers li.done .t{opacity:.55}
+  .tiers li.done .p{color:var(--ok)}
+  .tiers li.now{background:linear-gradient(90deg,rgba(232,182,76,.10),transparent 70%);
+                border-radius:8px;padding-left:7px;margin-left:-7px}
+  .tiers li.now .p{color:var(--gold)}
+  .nm .tagx{font-size:10.5px;color:var(--gold);letter-spacing:.06em;margin-top:2px}
+  .nm .flag{display:none}
+  .nm.cur .flag{display:block}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+  .q{position:relative;overflow:hidden;padding:16px 16px 14px}
+  .q .bar{position:absolute;left:0;top:0;bottom:0;width:3px}
+  .q h3{margin:0;font-size:16px;display:flex;align-items:baseline;gap:8px}
+  .q h3 em{font-style:normal;font-size:11.5px;color:var(--tx3);letter-spacing:.08em}
+  .lv{margin-left:auto;font-size:13px;font-weight:600;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);background:rgba(255,255,255,.03)}
+  .qhead{display:flex;align-items:center;margin-bottom:10px}
+  .scale{position:relative;height:34px;margin:8px 0 14px}
+  .scale .track{position:absolute;left:0;right:0;top:6px;height:4px;border-radius:3px;
+    background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.06))}
+  .scale .fill{position:absolute;left:0;top:6px;height:4px;border-radius:3px}
+  .scale .mk{position:absolute;top:1px;width:14px;height:14px;border-radius:50%;transform:translateX(-7px);
+    border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line2),0 0 14px currentColor}
+  .scale .t{position:absolute;top:16px;font-size:10.5px;color:var(--tx3)}
+  .scale .t1{left:0}.scale .t2{left:50%;transform:translateX(-50%)}.scale .t3{right:0}
+  ul.b{list-style:none;margin:0;padding:0}
+  ul.b li{position:relative;padding-left:18px;margin:5px 0;font-size:13.5px;color:var(--tx2)}
+  ul.b li:before{position:absolute;left:0;top:0;font-size:12px}
+  ul.b li.p:before{content:"＋";color:var(--ok)}
+  ul.b li.m:before{content:"－";color:var(--bad)}
+  ul.b li b{color:var(--tx);font-weight:600}
+  .kv{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:14px}
+  .kv .tag{flex:0 0 auto;font-size:11.5px;padding:3px 8px;border-radius:999px;border:1px solid var(--line2);
+           background:rgba(255,255,255,.03);color:var(--tx2)}
+  .road{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:860px){.road{grid-template-columns:1fr}}
+  .stage{padding:16px}
+  .stage .hd{display:flex;align-items:baseline;gap:8px;margin-bottom:2px}
+  .stage .d{font-size:20px;font-weight:700}
+  .stage .until{font-size:12px;color:var(--tx3)}
+  .stage .goal{font-size:12.5px;color:var(--gold);margin:2px 0 12px}
+  .foot{margin-top:var(--s5);color:var(--tx3);font-size:12px;text-align:center;line-height:1.9}
+  .lvl-legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--tx3);margin-top:10px}
+  .lvl-legend b{color:var(--tx2);font-weight:600}
+  [hidden]{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand"><span class="dot"></span> 咕嘎一号 · 人生规划（常规页面 · /plan.html）</div>
+  <h1>Human 3.0 人生规划<small>孟庆达</small></h1>
+  <p class="sub">只写顺序与时长，不写死钟点——具体怎么排由每晚 22:00 那次确认决定。周六整休、周日正常干活。</p>
+
+  <div class="card verdict">
+    <div class="k">核心<br>结论</div>
+    <p>你不缺努力、不缺思考、不缺纪律——缺的是<b>「把东西交到外部世界并被评价」</b>这条通道。<br>
+    这条通道关闭的代价，正由身体（深夜刷直播）和事业（三个月不投简历）两边同时支付。第一瓶颈是身体。</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button id="btnExec" class="on" onclick="showPane('exec')">执行表 · 每天照着做</button>
+    <button id="btnDiag" onclick="showPane('diag')">诊断 · 定位与依据</button>
+  </div>
+
+  <!-- ══════════ 执行表 ══════════ -->
+  <div id="paneExec">
+
+    <div class="card live" id="liveBar">
+      <span class="lt">今天 · <span id="liveDate">—</span></span>
+      <span id="liveEod"></span>
+      <span class="lp" id="liveProg">—</span>
+      <div class="ln">这一行读的是 hub 右侧「计划」里的当天数据。清单在下面「今天要做什么」，在那儿点一下也能勾掉，两边同步。整体完成率在周六早晨的复盘里结算。</div>
+    </div>
+
+    <h2>三个阶段，三个名字</h2>
+    <div class="names">
+      <div class="card nm cur" data-phase="1">
+        <span class="flag">当前阶段</span>
+        <div class="tag">第一阶段 · 30 天</div>
+        <div class="big">断链</div>
+        <div class="why">剪断「不投递 · 不运动 · 熬夜」这条死循环，把通道打开。到 11 月中旬。</div>
+        <div class="tagx" data-days></div>
+      </div>
+      <div class="card nm" data-phase="2">
+        <span class="flag">当前阶段</span>
+        <div class="tag">第二阶段 · 90 天</div>
+        <div class="big">登岸</div>
+        <div class="why">日常实习上岸，硬约束 1 月 15 日。技能换第一份现金流。</div>
+        <div class="tagx" data-days></div>
+      </div>
+      <div class="card nm" data-phase="3">
+        <span class="flag">当前阶段</span>
+        <div class="tag">第三阶段 · 180 天</div>
+        <div class="big">夺旗</div>
+        <div class="why">28 届暑期实习主战场，2027 年 2–6 月。这一仗决定秋招的起点。</div>
+        <div class="tagx" data-days></div>
+      </div>
+    </div>
+
+    <h2 id="tlH2">今天要做什么<span class="h2x" id="tlSub">读计划数据…</span></h2>
+    <div class="card pad">
+      <div id="tlList"><div class="tle">正在读今天的计划…</div></div>
+      <div class="note">这份清单就是 hub 右侧「计划」里的当天条目，在这里点一下也能勾掉，两边同步。按 上午 / 下午 / 晚上 归位；具体怎么排由每晚 22:00 那次确认决定。有课的日子整体顺延。</div>
+      <div class="tlmsg" id="tlMsg"></div>
+      <details class="tpl">
+        <summary>常规模板 · 工作日每天做什么（顺序 + 建议时长）</summary>
+        <div class="tplb">
+      <div class="blk">
+        <div class="when">上午<em>起床 08:00 起</em></div>
+        <ul>
+          <li><span class="nmz">项目开发</span><span class="dur">1.5–2.5 小时　主力任务，开新坑前先把昨天那步收口</span><span class="tg tg-v">事业</span></li>
+          <li><span class="nmz">算法题</span><span class="dur">1–1.5 小时　四道，做到能 60 秒讲清</span><span class="tg tg-v">事业</span></li>
+          <li class="later"><span class="nmz">求职动作</span><span class="dur">30 分钟　投递 / 内推 / 复盘——项目完工后加入，我会替你补进清单</span><span class="tg tg-r">待加入</span></li>
+        </ul>
+      </div>
+      <div class="blk">
+        <div class="when">午间<em>醒来留 30 分钟醒神</em></div>
+        <ul>
+          <li><span class="nmz">午饭</span><span class="dur">一天里最丰盛的一餐，慢慢吃</span><span class="tg tg-r">生活</span></li>
+          <li><span class="nmz">午睡</span><span class="dur">30 分钟</span><span class="tg tg-b">身体</span></li>
+        </ul>
+      </div>
+      <div class="blk">
+        <div class="when">下午<em>高精力块的后半</em></div>
+        <ul>
+          <li><span class="nmz">八股</span><span class="dur">30 分钟　按当天要背的点，不贪多</span><span class="tg tg-v">事业</span></li>
+          <li class="hot"><span class="nmz">60 秒口述</span><span class="dur">2 分钟　讲今天做过的题：要什么 / 思路 / 复杂度与边界</span><span class="tg tg-m">心智</span></li>
+          <li><span class="nmz">面试复盘</span><span class="dur">20–30 分钟　有面试就复盘，没有就整理当天的题</span><span class="tg tg-m">心智</span></li>
+          <li><span class="nmz">日照散步</span><span class="dur">15 分钟　出门见太阳，给明天充电</span><span class="tg tg-b">身体</span></li>
+          <li><span class="nmz">健身</span><span class="dur">60–90 分钟　周一 / 三 / 五（不连着排）；其余日子拉伸或散步</span><span class="tg tg-b">身体</span></li>
+        </ul>
+      </div>
+      <div class="blk">
+        <div class="when">晚上<em>生活与收尾</em></div>
+        <ul>
+          <li><span class="nmz">晚饭</span><span class="dur">讲究一点，或者去探店</span><span class="tg tg-r">生活</span></li>
+          <li><span class="nmz">自由时间</span><span class="dur">女朋友 / 网站 / 看比赛 / 发呆——保护区，不排任务</span><span class="tg tg-r">休息</span></li>
+          <li class="hot"><span class="nmz">收尾</span><span class="dur">15 分钟　看晚报，跟管家把明天的计划逐条确认一遍</span><span class="tg tg-k">关键</span></li>
+          <li><span class="nmz">洗漱 → 上床</span><span class="dur">23:15 洗漱，23:45 前上床、手机放远</span><span class="tg tg-b">身体</span></li>
+        </ul>
+      </div>
+      <div class="note">事业类合计约 <b>4–4.5 小时</b>（项目 1.5–2.5 小时 + 算法 1–1.5 小时 + 八股 30 分，项目完工后再加求职动作 30 分）＋ 口述与复盘约 30 分钟。有课的日子整体顺延。</div>
+        </div>
+      </details>
+    </div>
+
+    <h2>每周节奏</h2>
+    <div class="card pad">
+      <div class="wk" id="wkGrid">
+        <div class="day gym" data-d="1"><div class="d">周一</div><div class="a">正常 + 健身</div></div>
+        <div class="day" data-d="2"><div class="d">周二</div><div class="a">正常</div></div>
+        <div class="day gym" data-d="3"><div class="d">周三</div><div class="a">正常 + 健身</div></div>
+        <div class="day" data-d="4"><div class="d">周四</div><div class="a">正常</div></div>
+        <div class="day gym" data-d="5"><div class="d">周五</div><div class="a">正常 + 健身</div></div>
+        <div class="day rev" data-d="6"><div class="d">周六</div><div class="a">整休 · 早晨复盘</div></div>
+        <div class="day" data-d="0"><div class="d">周日</div><div class="a">正常干活</div></div>
+      </div>
+      <div class="note">唯一预先排定的结构就是这一条：<b>周一至周五正常，周六整天休息（只在早晨做复盘与下周计划），周日照常干活。</b>复盘内容：本周锚点完成天数、投递与面试数、转化率、下周三个重点、健身排哪三天、哪个成就升了段；末尾另起一节问你两三个问题对齐下周（哪天不方便健身、有没有必须完成的事、这周有什么想让我记住的）。<br>动态排计划时守两条硬规矩：<b>周六整休</b>——不排任何锚点任务、没做完的事也不往周六挪；<b>健身不连着排</b>——健身日之间至少隔一天，漏掉的那次往后顺延到不相邻的日子，不补到周六。</div>
+    </div>
+
+    <h2>成就 · 徽章<span class="h2x" id="badgeStamp">解锁时待办面板会弹一下</span></h2>
+    <div class="bgr" id="badgeGrid"></div>
+
+  </div>
+
+  <!-- ══════════ 诊断 ══════════ -->
+  <div id="paneDiag" hidden>
+
+    <h2>四象限定位</h2>
+    <div class="grid">
+      <div class="card q">
+        <div class="bar" style="background:linear-gradient(180deg,var(--mind),rgba(124,157,255,.15))"></div>
+        <div class="qhead"><h3><span style="color:var(--mind)">心智</span><em>MIND</em></h3>
+          <span class="lv" style="color:var(--mind);border-color:rgba(124,157,255,.4)">2.3 · 发现期</span></div>
+        <div class="scale">
+          <span class="t t1">1.0 从众</span><span class="t t2">2.0 个体</span><span class="t t3">3.0 整合</span>
+          <div class="track"></div>
+          <div class="fill" style="width:65%;background:linear-gradient(90deg,rgba(124,157,255,.35),var(--mind))"></div>
+          <div class="mk" style="left:65%;background:var(--mind);color:var(--mind)"></div>
+        </div>
+        <ul class="b">
+          <li class="p">自建六子理论体系并写成定稿长文，能与知己聊到同一层</li>
+          <li class="p">情绪调节良好：三个月只有几天波动，不是持续低气压</li>
+          <li class="m">误诊瓶颈：把 1% 的转化率归因给「口语」，实为漏斗前端</li>
+          <li class="m">框架跑在经验前面（你自己的子理论六写的就是这个病）</li>
+        </ul>
+        <div class="note">升到 3.0 的标志：框架能改变别人，且「打工」与「一人事业」在两个层次上并存而不互斥。</div>
+      </div>
+      <div class="card q">
+        <div class="bar" style="background:linear-gradient(180deg,var(--body),rgba(78,201,167,.15))"></div>
+        <div class="qhead"><h3><span style="color:var(--body)">身体</span><em>BODY</em></h3>
+          <span class="lv" style="color:var(--body);border-color:rgba(78,201,167,.4)">1.4 · 不谐期</span></div>
+        <div class="scale">
+          <span class="t t1">1.0 从众</span><span class="t t2">2.0 个体</span><span class="t t3">3.0 整合</span>
+          <div class="track"></div>
+          <div class="fill" style="width:20%;background:linear-gradient(90deg,rgba(78,201,167,.35),var(--body))"></div>
+          <div class="mk" style="left:20%;background:var(--body);color:var(--body)"></div>
+        </div>
+        <ul class="b">
+          <li class="p">饮食方案已量化成文，药连续七天不断，<b>午睡 30 分钟达标</b></li>
+          <li class="p"><b>有健身基础</b>（薄肌理论就是从那儿来的），不是零起点</li>
+          <li class="m">健身中断（当前 0 次/周）、日照 0、久坐</li>
+          <li class="m">00:30 入睡、08:30 起：睡够了，节律偏晚，晚上补的是刺激不是觉</li>
+        </ul>
+        <div class="note">唯一「投入为零」的象限，却是你自己理论里性价比最高的一条。</div>
+      </div>
+      <div class="card q">
+        <div class="bar" style="background:linear-gradient(180deg,var(--spirit),rgba(192,139,255,.15))"></div>
+        <div class="qhead"><h3><span style="color:var(--spirit)">精神</span><em>SPIRIT</em></h3>
+          <span class="lv" style="color:var(--spirit);border-color:rgba(192,139,255,.4)">2.2 · 过渡中</span></div>
+        <div class="scale">
+          <span class="t t1">1.0 从众</span><span class="t t2">2.0 个体</span><span class="t t3">3.0 整合</span>
+          <div class="track"></div>
+          <div class="fill" style="width:60%;background:linear-gradient(90deg,rgba(192,139,255,.35),var(--spirit))"></div>
+          <div class="mk" style="left:60%;background:var(--spirit);color:var(--spirit)"></div>
+        </div>
+        <ul class="b">
+          <li class="p">女朋友关系稳定（3.5h/天）；有一位同层的室友知己，两三天一顿饭</li>
+          <li class="p">已有 3.0 的种子：恋爱理论（按对方的收获计价）、同时到达理论</li>
+          <li class="m">女朋友不知道你在求职、也不知道字节那场——关系停在陪伴层</li>
+          <li class="m">意义感只靠内部框架 + 一位知己，缺「被更大群体校验」的通道</li>
+        </ul>
+        <div class="note">认知已越级（能写出整合层的理论），行为还没跟上——这是这一象限唯一要补的。</div>
+      </div>
+      <div class="card q">
+        <div class="bar" style="background:linear-gradient(180deg,var(--voc),rgba(232,162,76,.15))"></div>
+        <div class="qhead"><h3><span style="color:var(--voc)">事业</span><em>VOCATION</em></h3>
+          <span class="lv" style="color:var(--voc);border-color:rgba(232,162,76,.4)">2.1 · 不谐期</span></div>
+        <div class="scale">
+          <span class="t t1">1.0 从众</span><span class="t t2">2.0 个体</span><span class="t t3">3.0 整合</span>
+          <div class="track"></div>
+          <div class="fill" style="width:55%;background:linear-gradient(90deg,rgba(232,162,76,.35),var(--voc))"></div>
+          <div class="mk" style="left:55%;background:var(--voc);color:var(--voc)"></div>
+        </div>
+        <ul class="b">
+          <li class="p">每天 7h 硬投入、执行力真实；能独立造系统（多智能体 / 隧道 / 门卫）</li>
+          <li class="p">不认「必须打工」的模板：打工是资金引擎，不是身份</li>
+          <li class="m">收入为零；300 份简历 → 3 面 → 0 通过（转化率 1%）</li>
+          <li class="m">三个月零投递，停在「准备阶段」——「等 11 月完工」是最贵的拖延</li>
+        </ul>
+        <div class="note">判定口径按「自由度」算，不按职位算。把手段当成唯一的路，自由度反而最小。</div>
+      </div>
+    </div>
+    <div class="lvl-legend"><span><b>相位</b> .1 不谐（旧办法失效）→ .2 不确定（身份溶解、成长最快）→ .3 发现（新身份稳定）</span></div>
+
+    <h2>类型与瓶颈</h2>
+    <div class="two">
+      <div class="card pad">
+        <div class="kv"><span class="tag" style="color:var(--gold);border-color:rgba(232,182,76,.4)">Metatype</span>
+          <div><b>教授型</b>（心智 + 精神 强，事业有技能无变现，身体最弱）<br>
+          <span style="color:var(--tx2);font-size:13.5px">理解深、意义感强；风险是身体脆弱 + 变现失败 + 物质基础不稳。处方：加身体续命、加事业落地。</span></div></div>
+        <div class="kv"><span class="tag" style="color:var(--body);border-color:rgba(78,201,167,.4)">第一瓶颈</span>
+          <div><b>身体</b><br><span style="color:var(--tx2);font-size:13.5px">你要的是「干完主线还留富余精力」，而精力是前置条件；睡眠总量够，缺的是运动、日照与正常节律。</span></div></div>
+        <div class="kv"><span class="tag" style="color:var(--voc);border-color:rgba(232,162,76,.4)">第二瓶颈</span>
+          <div><b>事业的输出与变现</b>（不是技能）<br><span style="color:var(--tx2);font-size:13.5px">与心智的「用想」共用一个病根：懂 &gt; 做。</span></div></div>
+      </div>
+      <div class="card pad">
+        <div class="kv"><span class="tag">行为 vs 目标</span>
+          <div>目标拿实习 → 三个月零投递；想做 IP → 公开发布 0 次；想要富余精力的一天 → 每天透支再补偿。</div></div>
+        <div class="kv"><span class="tag">回避清单</span>
+          <div>投简历、见真实的人（最贵）＞ 公开输出 ＞ 健身与早睡。<br>
+          <span style="color:var(--tx2);font-size:13.5px">共同点：都需要被外部看见。你能连续七天吃药，却做不了这三件——因为它们没有勾可打。</span></div></div>
+        <div class="kv"><span class="tag">限制性身份</span>
+          <div>「技术型、不善言辞」「28 届岗位少吃了亏」「技术不够硬」——最后一条和上一句「我写了一整套思想体系」并存。</div></div>
+      </div>
+    </div>
+
+    <h2>路线图</h2>
+    <div class="road">
+      <div class="card stage">
+        <div class="hd"><span class="d">30 天</span><span class="until">→ 11 月中旬</span></div>
+        <div class="goal">断链 · 打开漏斗 + 身体还债</div>
+        <ul class="chk">
+          <li><span class="q4">事业</span> 项目约一周内完工（10/23 前后）；随后简历 v2 + 批量投 <b>40 家以上</b></li>
+          <li><span class="q4">事业</span> 找 <b>3–5 条内推</b>（学长 / 老师 / 牛客 / 脉脉）——把转化率从 1% 拉起来的头号手段</li>
+          <li><span class="q2">身体</span> <b>恢复健身，每周 3 次</b>（用以前那套老计划，不要重新设计）</li>
+          <li><span class="q2">身体</span> 每天日照散步 15 分钟；<b>23:45 前上床</b>；起床向 08:00 靠</li>
+          <li><span class="q1">心智</span> 每天 <b>录一条 60 秒口述</b></li>
+          <li><span class="q3">精神</span> 每周一次和女朋友聊「各自的规划」</li>
+        </ul>
+        <div class="note">验收：11 月中前拿到 ≥1 个面试机会；锚点各项 ≥20/30 天。</div>
+      </div>
+      <div class="card stage">
+        <div class="hd"><span class="d">90 天</span><span class="until">→ 2027 年 1 月中</span></div>
+        <div class="goal">登岸 · 日常实习上岸（硬约束 1/15）</div>
+        <ul class="chk">
+          <li><span class="q4">事业</span> 日常实习到手，或稳定进入面试循环；简历每 2 周迭代一次</li>
+          <li><span class="q1">心智</span> 60 秒录音晋级为 <b>每周 1 条公开内容</b>（IP 起点，你已选择暂缓）</li>
+          <li><span class="q2">身体</span> 健身稳定每周 3 次；睡眠稳定 23:30–07:30 区间</li>
+          <li><span class="q1">心智</span> 把牛肉粉理论公开一次，收第一次外部校验</li>
+          <li class="alt"><span class="q4">备选</span> 若日常实习未成：12–2 月改补「可展示的产出」，把 3–4 月暑期实习当主战场</li>
+        </ul>
+        <div class="note">28 届暑期实习窗口是 2027 年 2–6 月（4–6 月高峰）。现在这几个月本来就被 27 届秋招吃掉，别读成「我的届别吃亏」。</div>
+      </div>
+      <div class="card stage">
+        <div class="hd"><span class="d">180 天</span><span class="until">→ 2027 年 4 月中</span></div>
+        <div class="goal">夺旗 · 28 届暑期实习主战场</div>
+        <ul class="chk">
+          <li><span class="q4">事业</span> 暑期实习至少 1 个 offer 或稳定进入流程；手上要有实习履历 + 公开作品 + 内推网络</li>
+          <li><span class="q1">影响力</span> 公开内容累计 25 条以上，至少一条小回响</li>
+          <li><span class="q3">精神</span> 关系里出现「共同面对」的部分</li>
+          <li><span class="q2">身体</span> 体能与体成分有一个可指的变化</li>
+          <li class="alt"><span class="q4">备选</span> 若暑期不理想，2027 年 8–10 月秋招是 28 届真正的决战</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    常规页面 · 与 hub 右侧「计划」实时同步 · 每晚 22:00 一次动态排明天 · 段位每天按记录自动结算 · 周六早晨复盘<br>
+    完整文字版：~/.hermes/knowledge/human3-人生规划.md · 投递记录表：~/.hermes/job-tracker.md
+  </div>
+</div>
+
+<script>
+function showPane(which){
+  var exec = which === 'exec';
+  document.getElementById('paneExec').hidden = !exec;
+  document.getElementById('paneDiag').hidden = exec;
+  document.getElementById('btnExec').className = exec ? 'on' : '';
+  document.getElementById('btnDiag').className = exec ? '' : 'on';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+if (location.hash === '#diag') showPane('diag');
+
+/* 今天 · 读 hub 计划数据，渲染当天清单（两边勾选同步） */
+function stripDue(s){
+  return String(s||'')
+    .replace(/\s*@\s*\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2})?\s*$/,'')
+    .replace(/\s*[\u23f0\ud83d\udcc5]\s*\d{2}-\d{2}(\s+\d{2}:\d{2})?\s*$/,'')
+    .replace(/\s*[\u23f0\ud83d\udcc5]\s*\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2})?\s*$/,'')
+    .replace(/\s*[\uff08(]\u5269\s*\d+\s*\u5929[\uff09)]\s*$/,'')
+    .trim();
+}
+const TL_BLOCKS=['上午','下午','晚上','其他'];
+const TL_WD=['周日','周一','周二','周三','周四','周五','周六'];
+/* 分组规则与 hub 右侧计划面板保持一致 */
+function tlBlock(text,due){
+  const t=String(text||'');
+  if(/吃药/.test(t)) return '晚上';
+  if(/学习项目|项目开发|求职动作|简历|内推|投递|算法题|刷题/.test(t)) return '上午';
+  if(/八股|口述|健身|散步|拉伸|面试|复盘/.test(t)) return '下午';
+  const hm=due?String(due).slice(11,16):'';
+  if(hm && hm>='18:00') return '晚上';
+  return '其他';
+}
+let tlItems=[], tlDate='';
+function tlSay(m){
+  const el=document.getElementById('tlMsg');
+  if(!el) return;
+  el.textContent=m||'';
+  if(m) setTimeout(()=>{ if(el.textContent===m) el.textContent=''; },4000);
+}
+function tlFmtDate(d){
+  const t=new Date(String(d)+'T12:00:00');
+  if(isNaN(t)) return String(d||'');
+  return (t.getMonth()+1)+'月'+t.getDate()+'日 '+TL_WD[t.getDay()];
+}
+function tlRow(it){
+  const row=document.createElement('div');
+  row.className='tlrow'+(it.done?' done':'');
+  const c=document.createElement('span'); c.className='c'; c.textContent=it.done?'✓':'○';
+  const x=document.createElement('span'); x.className='x'; x.textContent=stripDue(it.text);
+  row.appendChild(c); row.appendChild(x);
+  const hm=it.due?String(it.due).slice(11,16):'';
+  if(hm){ const t=document.createElement('span'); t.className='t'; t.textContent=hm; row.appendChild(t); }
+  row.title=it.done?'点一下取消完成':'点一下标记完成';
+  row.onclick=()=>tlToggle(it);
+  return row;
+}
+function renderToday(items){
+  const box=document.getElementById('tlList');
+  box.innerHTML='';
+  if(!items.length){ box.innerHTML='<div class="tle">今天还没有计划——晚上跟我说一声，我替你排进去。</div>'; return; }
+  const open=items.filter(i=>!i.done), done=items.filter(i=>i.done);
+  for(const b of TL_BLOCKS){
+    const g=open.filter(i=>tlBlock(i.text,i.due)===b);
+    if(!g.length) continue;
+    const hd=document.createElement('div'); hd.className='tlh'; hd.textContent=b; box.appendChild(hd);
+    for(const it of g) box.appendChild(tlRow(it));
+  }
+  if(done.length){
+    const hd=document.createElement('div'); hd.className='tlh'; hd.textContent='已完成 · '+done.length; box.appendChild(hd);
+    for(const it of done) box.appendChild(tlRow(it));
+  }
+}
+async function tlToggle(it){
+  const act=it.done?'undone':'done';
+  it.done=!it.done; renderToday(tlItems);
+  try{
+    const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:act,n:it.n,date:tlDate})});
+    if(!r.ok) throw new Error(r.status);
+    await loadToday();
+  }catch(e){
+    it.done=!it.done; renderToday(tlItems);
+    tlSay('没勾上（'+e.message+'），刷新一下再试');
+  }
+}
+async function loadToday(){
+  const box=document.getElementById('tlList'), prog=document.getElementById('liveProg');
+  const dt=document.getElementById('liveDate'), sub=document.getElementById('tlSub'), eod=document.getElementById('liveEod');
+  try{
+    const r=await fetch('/api/todos?date=today',{cache:'no-store'});
+    if(!r.ok) throw new Error(r.status);
+    const j=await r.json();
+    const items=j.items||[];
+    tlItems=items; tlDate=j.date||'';
+    dt.textContent=j.date||'';
+    const total=items.length, done=items.filter(i=>i.done).length;
+    prog.textContent=total?('完成 '+done+' / '+total):'今天无条目';
+    sub.textContent=(j.date?tlFmtDate(j.date):'')+(total?(' · '+done+' 已完成 / '+total+' 条'):'');
+    if(eod){
+      eod.innerHTML='';
+      if(j.eod&&j.eod.time){
+        const c=document.createElement('span'); c.className='chip on'; c.textContent='☾ 已结束一天 '+j.eod.time;
+        eod.appendChild(c);
+      }
+    }
+    renderToday(items);
+    markToday();
+    if(j.ranks){ renderPhase(j.ranks.phase); if(j.ranks.badges) renderBadges(j.ranks.badges); }
+  }catch(e){
+    box.innerHTML='<div class="tle">读不到计划数据（'+e.message+'）</div>';
+    sub.textContent=''; prog.textContent='—';
+  }
+}
+/* 段位四线 · 数据渲染（每天按记录自动算，来源 /api/todos 的 ranks 字段） */
+const TIER_NAMES=['黑铁','青铜','白银','黄金','铂金','翡翠','钻石','大师','宗师','王者'];
+function renderRanks(rk){
+  if(!rk || !rk.lines) return;
+  const stamp=document.getElementById('rankStamp');
+  if(stamp) stamp.textContent=String(rk.computed_at||'').slice(11,16)+' 按记录自动算';
+  document.querySelectorAll('#achGrid .ach[data-line]').forEach(card=>{
+    const name=card.dataset.line, ln=rk.lines[name];
+    if(!ln) return;
+    card.className='card ach tier-'+ln.tier_i;
+    const ar=card.querySelector('.ar');
+    ar.textContent='当前 · '+ln.tier+(ln.manual?' · 手动':'');
+    const fct=card.querySelector('.fct');
+    fct.innerHTML='<b>'+escH(ln.facts||'')+'</b>';
+    const rail=card.querySelector('.rail');
+    rail.innerHTML='';
+    TIER_NAMES.forEach((t,i)=>{
+      const sp=document.createElement('span');
+      sp.className='tier-'+(i+1)+(i+1<=ln.tier_i?' on':'');
+      sp.textContent=t;
+      rail.appendChild(sp);
+    });
+    const ul=card.querySelector('.tiers');
+    ul.innerHTML='';
+    (ln.targets||[]).forEach((t,i)=>{
+      const li=document.createElement('li');
+      li.className='tier-'+(i+1)+(t.done?' done':'')+(t.now?' now':'');
+      const a=document.createElement('span'); a.className='t'; a.textContent=t.tier||TIER_NAMES[i];
+      const b=document.createElement('span'); b.textContent=t.txt;
+      const c=document.createElement('span'); c.className='p'; c.textContent='；'+t.prog;
+      li.appendChild(a); li.appendChild(b); li.appendChild(c);
+      ul.appendChild(li);
+    });
+  });
+}
+function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+/* 成就徽章墙（12 枚，铜 / 银 / 金） */
+function renderBadges(list){
+  const g=document.getElementById('badgeGrid'); if(!g) return;
+  const got=list.filter(b=>b.level).length;
+  const stamp=document.getElementById('badgeStamp');
+  if(stamp) stamp.textContent='已解锁 '+got+' / '+list.length+' 枚 · 解锁时待办面板会弹一下';
+  g.innerHTML='';
+  for(const b of list){
+    const el=document.createElement('div');
+    el.className='bdg lv'+(b.level||0);
+    el.title=b.name+(b.level?(' · 已解锁 '+b.level_name):' · 未解锁');
+    const ic=document.createElement('div'); ic.className='ic'; ic.textContent=b.icon||'◆';
+    const box=document.createElement('div');
+    const nm=document.createElement('div'); nm.className='nm'; nm.textContent=b.name;
+    const lv=document.createElement('div'); lv.className='lv';
+    lv.textContent=b.level?('已解锁 · '+b.level_name):'未解锁';
+    const pg=document.createElement('div'); pg.className='pg'; pg.textContent=b.prog+' '+b.unit;
+    box.appendChild(nm); box.appendChild(lv); box.appendChild(pg);
+    el.appendChild(ic); el.appendChild(box); g.appendChild(el);
+  }
+}
+/* 当前阶段 · 还剩几天 */
+const PH_CN=['一','二','三'];
+function renderPhase(ph){
+  if(!ph) return;
+  document.querySelectorAll('.names .nm[data-phase]').forEach(card=>{
+    const cur=String(card.dataset.phase)===String(ph.index);
+    card.classList.toggle('cur',cur);
+    const tag=card.querySelector('.tag');
+    if(tag&&cur) tag.textContent='第'+(PH_CN[ph.index-1]||ph.index)+'阶段 · 还剩 '+ph.days_left+' 天';
+    const dx=card.querySelector('[data-days]');
+    if(dx) dx.textContent=cur?('第 '+(ph.passed+1)+' / '+ph.days_total+' 天 · 到 '+ph.until+(ph.days_left<=7?' · 该准备收官了':'')):'';
+  });
+}
+/* 本周 · 今天高亮 */
+function markToday(){
+  document.querySelectorAll('#wkGrid .day.today').forEach(el=>{
+    el.classList.remove('today');
+    const b=el.querySelector('.now'); if(b) b.remove();
+  });
+  const n=new Date().getDay();
+  const d=document.querySelector('#wkGrid .day[data-d="'+n+'"]');
+  if(!d) return;
+  d.classList.add('today');
+  const b=document.createElement('span'); b.className='now'; b.textContent='今天';
+  d.appendChild(b);
+}
+loadToday();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadToday(); });
+</script>
+</body>
+</html>

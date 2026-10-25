@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>计算机系统结构 · 第三章作业答案（16题）</title>
+<style>
+ body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;max-width:820px;margin:0 auto;padding:24px 18px 80px;line-height:1.75;color:#1c1c1e;background:#fafafa}
+ h1{font-size:22px;margin:0 0 4px}
+ .sub{color:#8a8a8e;font-size:13px;margin-bottom:26px}
+ .q{background:#fff;border:1px solid #e8e8ea;border-radius:12px;padding:16px 18px;margin:0 0 16px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+ .q h2{font-size:16px;margin:0 0 8px;color:#0a0a0a}
+ .tag{display:inline-block;font-size:12px;color:#0a6cff;background:rgba(10,108,255,.08);padding:1px 7px;border-radius:4px;margin-right:6px;vertical-align:1px}
+ .stem{color:#3a3a3c;font-size:14px;background:#f5f5f7;border-left:3px solid #d1d1d6;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0 12px}
+ .ans{font-size:15px}
+ .ans b{color:#0a6cff}
+ ol,ul{padding-left:22px;margin:8px 0}
+ li{margin:3px 0}
+ .term{font-weight:600}
+ code{background:#f0f0f3;padding:1px 5px;border-radius:4px;font-size:13px}
+ .note{font-size:13px;color:#8a8a8e;margin-top:6px}
+</style>
+</head>
+<body>
+<h1>计算机系统结构 · 第三章作业（流水线）参考答案</h1>
+<div class="sub">试卷 examPaperId=414704132 ｜ 共16题 ｜ 供复习对照，请自己动手抄写一遍</div>
+
+<div class="q">
+<h2><span class="tag">一</span>提高向量处理机性能的方法（P104 3.8，8分）</h2>
+<div class="ans">
+① 设置多个功能部件，使它们并行工作（多条单功能流水线并行）；<br>
+② 采用链接技术，把有先写后读相关的向量指令链接起来流水执行，加快一串向量指令；<br>
+③ 采用分段开采（循环开采）技术，加快长向量循环的处理；<br>
+④ 采用多处理机系统，进一步提高性能。
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">二</span>静态多功能流水线计算 ∏(Ai+Bi)（P104 3.11，8分）</h2>
+<div class="stem">5段流水线，加法用 1、3、4、5 段，乘法用 1、2、5 段，第3段为 2Δt，其余各段 Δt，输出可直接返回输入端。</div>
+<div class="ans">
+算法：先做 4 次加法（A1+B1 … A4+B4），再做 3 次乘法（先 A×B、C×D 两个中间乘积，最后两乘积相乘）。<br>
+时空图：共 <b>18Δt</b>，输出 <b>7 个结果</b>。<br>
+吞吐率 TP = 7/(18Δt)；<br>
+不用流水线：一次求和 5Δt、一次求积 3Δt，共 4×5Δt + 3×3Δt = 29Δt，<br>
+加速比 S = 29/18 ≈ <b>1.61</b>；<br>
+效率 E = (4×5 + 3×3)/(5×18) = 29/90 ≈ <b>32.2%</b>（阴影面积÷总时空区）。
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">三</span>解决流水线瓶颈问题的两种常用方法（P103 3.3，4分）</h2>
+<div class="ans">
+① <b>细分瓶颈段</b>：把用时最长的瓶颈段再细分为若干子段，使各段时间尽量相等；<br>
+② <b>重复设置瓶颈段</b>：并联设置多个相同的瓶颈段部件，让多个任务错开（轮流）通过该段。
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">四</span>动态多功能流水线计算 Σ xiyizi（P104 3.12，8分）</h2>
+<div class="stem">6个功能段，S1、S4、S5、S6 组成乘法流水线，S1、S2、S3、S6 组成加法流水线，各段均为 50ns，输出可直接返回输入端，有足够缓冲寄存器，以最快方式计算 Σ(i=1..5) xiyizi。</div>
+<div class="ans">
+一共要做 <b>10 次乘法、4 次加法</b>。<br>
+最快方式：先并行流水算出 5 个 xi·yi，再乘 zi 得 5 个 qi，最后 4 次加法求和（动态流水线不必等功能排空，只需保证操作数就绪）。<br>
+时空图：共 <b>22 个 50ns（=1100ns）</b>，输出 14 个结果。<br>
+实际吞吐率 TP = 14/(22×50ns) = 14/1100ns；<br>
+串行时间 = (10×4 + 4×4)×50ns = 2800ns，加速比 S = 2800/1100 ≈ <b>2.55</b>；<br>
+效率 E = 2800/(6×1100) ≈ <b>42%</b>。
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">五～十三</span>单选题（9题，各1分）</h2>
+<div class="ans">
+5. <b>B</b> 数据冒险（引起停顿，降低流水线效率）<br>
+6. <b>A</b> 流水线处理机（时间重叠＝流水线；资源重复＝阵列处理机；资源共享＝多处理机）<br>
+7. <b>B</b> 存在反向连接的流水线（有反馈回路）<br>
+8. <b>A</b> 流水线中每个阶段的执行时间并不需要相同<br>
+9. <b>B</b> 先流入指令的写操作与后流入指令的读操作之间的写后读冲突（顺序流动只发生 RAW）<br>
+10. <b>B</b> 16+N 拍：第1、2条并行链接，启动 (1+6+1)=8 拍，第3条乘启动 (1+7+1)=9 拍，8+9+(N−1) = 16+N<br>
+11. <b>D</b> 流水线的“深度”越多越好（不正确：段数越多，装入/排空开销与寄存器延迟越大）<br>
+12. <b>C</b> 最慢的那一段的执行时间（TPmax = 1/max{Δti}）<br>
+13. <b>C</b> 3 条 nop：R1 在第5拍末写回（第3条译码/取数需≥6拍），R2 在第6拍末写回（需≥7拍），故第3条取指应推迟到第6拍，而它原本在第3拍 → 插 3 条 nop
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">十四</span>名词解释（P103，32个，32分）</h2>
+<div class="ans">
+<ol>
+<li><span class="term">流水线</span>：把一个重复的时序过程分解成若干子过程，每个子过程由专门的功能部件（段）实现，多个处理过程在时间上错开、依次通过各段，使各子过程能并行执行的技术。</li>
+<li><span class="term">动态流水线</span>：同一时间内，多功能流水线的各段可按不同方式连接，同时执行多种功能（某些段做定点乘、另一些段做浮点加）的流水线。</li>
+<li><span class="term">线性流水线</span>：各段串行连接、没有反馈回路，数据每流经一个段最多一次的流水线。</li>
+<li><span class="term">吞吐量（吞吐率）</span>：单位时间内流水线完成的任务数或输出结果的数量；各段时间相等时 TP= n/(kΔt+(n−1)Δt)，最大吞吐率 TPmax = 1/max{Δti}。</li>
+<li><span class="term">名相关</span>：两条指令使用了相同的名（寄存器名或存储单元名），但彼此之间并没有数据流动的相关，包括反相关和输出相关。</li>
+<li><span class="term">换名技术</span>：把名相关指令中使用的名换成别的名字（如用不同的物理寄存器），从而消除名相关、避免无谓停顿的技术。</li>
+<li><span class="term">定向（旁路/转发）</span>：在结果尚未写回寄存器之前，把结果从其产生的地方直接送到需要它的部件输入端，用来解决写后读冲突、避免流水线停顿。</li>
+<li><span class="term">链接技术</span>：向量流水线中，具有先写后读相关的两条指令，在不发生功能部件冲突和向量寄存器冲突时，不等前一条指令的全部元素算完，就把它边产生的结果直接送入下一条指令的功能部件，使两条指令链接起来流水执行的技术。</li>
+<li><span class="term">单功能流水线</span>：各段之间的连接固定不变、只能完成一种固定功能的流水线。</li>
+<li><span class="term">部件级流水线</span>：把处理机中运算部件的各功能段相互连接而成的流水线，使运算操作按流水方式进行，又称运算操作流水线。</li>
+<li><span class="term">非线性流水线</span>：除各段串行连接外还存在反馈回路（反向连接）的流水线，一个任务可能要多次通过某些段，存在任务调度问题。</li>
+<li><span class="term">流水线加速比</span>：完成同一批任务，不使用流水线（顺序执行）所用时间与使用流水线所用时间之比，S = Ts/Tk。</li>
+<li><span class="term">控制相关</span>：由转移（分支）指令引起的相关，需根据分支指令的执行结果才能确定其后该执行哪个分支上的指令。</li>
+<li><span class="term">结构冲突</span>：因硬件资源满足不了指令重叠执行的要求（功能部件、总线、存储器端口等争用）而发生的冲突。</li>
+<li><span class="term">写后读冲突</span>：指令 i 先写、其后指令 j 再读同一单元，而 j 在 i 写入之前就去读，读到的是旧值（RAW，真数据相关）。</li>
+<li><span class="term">分段开采</span>：当向量长度大于向量寄存器长度时，把长向量分成长度固定的段，循环分段处理，每次循环只处理一个向量段的技术。</li>
+<li><span class="term">多功能流水线</span>：各段可按不同的连接方式连接，从而在不同时间（或同一时间）实现不同功能的流水线，分静态、动态两种。</li>
+<li><span class="term">处理机级流水线</span>：又称指令流水线，把一条指令的执行过程分解为若干子过程，每个子过程在独立功能部件中执行，按流水方式处理指令。</li>
+<li><span class="term">按序流水线</span>：流水线输出端任务流出的顺序与输入端任务流入的顺序完全相同的流水线（顺序流水线）。</li>
+<li><span class="term">流水线的效率</span>：流水线设备的利用率，即 n 个任务占用的时空区与 k 个流水段总的时空区之比，E = Ts/(k·Tk) = S/k。</li>
+<li><span class="term">反相关</span>：指令 i 先读某个名，其后的指令 j 写同一个名（WAR，读后写），属名相关。</li>
+<li><span class="term">数据冲突</span>：指令在流水线中重叠执行时，因需要用到前面指令尚未产生的结果而发生的冲突（由写后读相关引起的停顿）。</li>
+<li><span class="term">读后写冲突</span>：指令 i 先读某单元，其后指令 j 写同一单元，而 j 在 i 读取之前就先写了它，使 i 读到错误的值（WAR）。</li>
+<li><span class="term">半性能向量长度 n½</span>：向量处理机的性能达到其最大（峰值）性能一半时所需的向量长度，n½ ≈ 启动时间/每个元素的处理时间，反映流水线启动开销的大小。</li>
+<li><span class="term">静态流水线</span>：同一时间内，多功能流水线的各段只能按同一种功能的连接方式工作；要切换功能，必须等前面的任务全部流出流水线之后。</li>
+<li><span class="term">处理机间流水线</span>：又称宏流水线，把多台处理机串行连接起来对同一数据流进行处理，每台处理机完成整个任务中的一部分，前一处理机的输出存入存储器作为后一处理机的输入。</li>
+<li><span class="term">乱序流水线</span>：输出端任务流出的顺序与输入端流入的顺序不同、允许后进入的任务先完成的流水线（无序/错序流水线）。</li>
+<li><span class="term">数据相关</span>：两条指令 i、j（i 在前），若 j 使用 i 产生的结果，或 j 经第三条指令与 i 数据相关，则称 j 与 i 数据相关（真数据相关），必须保持先后顺序。</li>
+<li><span class="term">输出相关</span>：指令 i 与其后的指令 j 所写的名相同（WAW），属名相关。</li>
+<li><span class="term">控制冲突</span>：流水线遇到分支指令或其他会改变 PC 值的指令时，因不能确定下一条指令的地址而引起的冲突（流水线断流）。</li>
+<li><span class="term">写后写冲突</span>：指令 i 与其后指令 j 的结果单元（寄存器或存储单元）相同，而 j 在 i 写入之前先写，导致写入顺序错误（WAW），属名相关。</li>
+<li><span class="term">向量长度临界值 nv</span>：向量流水方式的处理速度优于标量串行方式时所需的最小向量长度，即加速比正好等于 1 时的向量长度，nv ≈ 启动时间/每段处理时间。</li>
+</ol>
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">十五</span>减少流水线分支延迟的静态方法（P103 3.4，9分）</h2>
+<div class="ans">
+① <b>预测分支失败</b>：沿失败的分支继续取指令执行，好像什么都没发生；若分支真失败则预测正确，若分支成功则把分支后已取出的指令变为空操作，再按分支目标地址重新取指。<br>
+② <b>预测分支成功</b>：ID 段检测到分支指令后，一旦算出分支目标地址就从该地址取指令执行，分支失败时再作废已取指令。<br>
+③ <b>延迟分支（延迟转移）</b>：从逻辑上“延长”分支指令，把分支指令和若干延迟槽看成一个整体，不管分支成功与否都顺序执行延迟槽中的指令，用有用的指令填满延迟槽（从前调度／从目标处调度／从失败处调度三种策略）。<br>
+三种方法的共同点：在程序执行过程中处理方法不变（总是预测成功、总是预测失败或总是延迟），属静态方法。
+</div>
+</div>
+
+<div class="q">
+<h2><span class="tag">十六</span>4段流水线第3段循环一次（P104 3.10，6分）</h2>
+<div class="stem">流水线由4段组成，每当流经第3段时总要在该段循环一次，然后才能流到第4段（第3段实际用时 2Δt，是瓶颈段），各段经过一次时间均为 Δt。</div>
+<div class="ans">
+(1) 会发生<b>流水线阻塞</b>：第3段被连续两个任务争用。<br>
+&nbsp;&nbsp;&nbsp;&nbsp;第1个任务：S1 S2 S3 S3 S4；<br>
+&nbsp;&nbsp;&nbsp;&nbsp;第2个任务：S1 S2 stall S3 S3 S4；<br>
+&nbsp;&nbsp;&nbsp;&nbsp;第3个任务：S1 stall S2 stall S3 S3 S4（此后每 2Δt 才能流出一个任务，输入端会出现等待／堆积）。<br>
+(2) 最大吞吐率 TPmax = <b>1/(2Δt)</b>；<br>
+&nbsp;&nbsp;&nbsp;&nbsp;每 2Δt 输入一个任务，连续 10 个任务：Tpipeline = (1+1+2+1)Δt + 9×2Δt = <b>23Δt</b>，<br>
+&nbsp;&nbsp;&nbsp;&nbsp;实际吞吐率 TP = 10/23Δt，<br>
+&nbsp;&nbsp;&nbsp;&nbsp;效率 E = TP·(ΣΔti/k) = (10/23)×(5/4) = 50/92 ≈ <b>54.35%</b>。<br>
+(3) <b>重复设置第3段</b>（并联两个第3段部件；也可把瓶颈段细分为两个 Δt 子段）：<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Tpipeline′ = 5Δt + 9×Δt = <b>14Δt</b>，TP′ = 10/14Δt = 5/(7Δt)，<br>
+&nbsp;&nbsp;&nbsp;&nbsp;吞吐率提高倍数 = (10/14)/(10/23) = 23/14 ≈ <b>1.64 倍</b>。
+</div>
+</div>
+</body>
+</html>

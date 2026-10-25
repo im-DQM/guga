@@ -1,0 +1,14 @@
+[Unit]
+Description=Gua Todo API (serves ~/.hermes/todos.md to the hub UI)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/stack/todo_service
+ExecStart=/usr/bin/python3 /home/ubuntu/stack/todo_service/todo_api.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

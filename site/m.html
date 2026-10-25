@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0A0A0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>咕嘎一号 · 手机版</title>
+<style>
+:root{
+  --bg:#0A0A0A; --surface:#171717; --elev:#1E1E1E; --sunken:#0E0E0E;
+  --border:#2A2A2E; --border-h:#3A3A40;
+  --fg:#EDEDEF; --muted:#9A9AA2; --faint:#6B6B72;
+  --accent:#7C8CFF; --accent-h:#93A0FF; --accent-dim:#7C8CFF1F; --accent-line:#7C8CFF55;
+  --gold:#C6A15B; --sapphire:#2F6BE4; --sapphire-dim:#2F6BE41F; --sapphire-line:#2F6BE455;
+  --ok:#30D158; --warn:#FF9F0A; --err:#FF453A;
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-full:9999px;
+  --ease:cubic-bezier(.16,1,.3,1); --d1:120ms;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--fg);
+  display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;background-color:var(--bg);
+  background-image:radial-gradient(700px 420px at 50% -14%, rgba(124,140,255,.09), transparent 70%);
+  background-attachment:fixed;background-repeat:no-repeat;overscroll-behavior:none}
+
+/* ── 顶栏 ── */
+header{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
+  border-bottom:1px solid var(--border);background:rgba(23,23,23,.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:20}
+.ibtn{width:38px;height:38px;flex:0 0 auto;border:1px solid var(--border);background:transparent;color:var(--muted);
+  border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ibtn:active{color:var(--fg)}
+.ibtn.gold{color:var(--gold);border-color:#C6A15B44}
+.title{flex:1;min-width:0;text-align:center;font-weight:650;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px}
+.title .dot{width:9px;height:9px;border-radius:50%;background:linear-gradient(135deg,var(--gold-hi,#E4C57E),var(--gold));box-shadow:0 0 12px #C6A15B66}
+.title .sub{font-size:11px;color:var(--faint);font-weight:400;display:block;margin-top:1px}
+.title .tw{display:flex;flex-direction:column;align-items:center;line-height:1.2;min-width:0}
+.title .tw .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:52vw}
+
+/* ── 聊天 ── */
+main{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:14px 0 6px;display:flex;flex-direction:column;gap:16px}
+.msg{width:100%;max-width:900px;margin:0 auto;padding:0 14px;display:flex;flex-direction:column;gap:8px}
+.msg.user{align-items:flex-end}
+.msg.user .bubble{background:var(--sapphire-dim);border:1px solid var(--sapphire-line);border-radius:var(--r-lg);
+  padding:10px 14px;max-width:88%;white-space:pre-wrap;word-break:break-word;font-size:15.5px}
+.msg.assistant{align-items:flex-start}
+.msg.assistant .text{white-space:pre-wrap;word-break:break-word;width:100%;font-size:15.5px}
+.msg.assistant .text img,.msg.user .bubble img{display:block;margin:7px 0;max-width:min(100%,420px);max-height:52vh;border-radius:10px;border:1px solid var(--border);background:var(--sunken)}
+.msg.assistant .text:empty{display:none}
+.msg.assistant .text strong,.msg.user .bubble strong{color:#FFF;font-weight:700}
+.typing .t{color:var(--faint);font-size:13.5px}
+.typing .t::after{content:"…";animation:blink 1.2s steps(2,start) infinite}
+@keyframes blink{50%{opacity:.2}}
+.tools{display:flex;flex-direction:column;gap:8px;width:100%}
+.tool{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);
+  padding:8px 12px;font-size:13px}
+.tool .lb{color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:ui-monospace,Menlo,monospace;font-size:12px}
+.tool .st{font-size:11px;color:var(--faint)}
+.tool .st.completed{color:var(--gold)}
+.tool .st.running{color:var(--sapphire)}
+.note{font-size:13px;color:var(--faint)}
+.errn{background:#FF453A14;border:1px solid #FF453A55;color:#FFB4AE;border-radius:var(--r-md);padding:10px 13px;font-size:13.5px}
+.empty{margin:auto;text-align:center;color:var(--muted);padding:36px 22px}
+.empty h3{color:var(--fg);font-weight:600;font-size:17px;margin-bottom:8px}
+.empty p{font-size:13px;color:var(--faint);line-height:1.85}
+.mlink{color:var(--accent);text-decoration:underline;text-underline-offset:2px;word-break:break-all}
+.enddot{display:block;width:6px;height:6px;border-radius:50%;background:#1E4A9E;margin-top:9px}
+.opts{display:flex;flex-direction:column;gap:7px;margin-top:12px;width:100%;align-items:stretch}
+.opt{background:#6E521C2E;border:1px solid #6E521C66;color:#B8954D;border-radius:var(--r-md);padding:11px 15px;
+  font-size:14.5px;font-family:inherit;cursor:pointer;text-align:left;white-space:normal}
+.opt:active{background:#7E5F2240}
+.opt:disabled{opacity:.45}
+.syscard{margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 13px;display:flex;flex-direction:column;gap:8px}
+.syshd{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.syshd .dot2{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.sysrow{display:flex;align-items:center;gap:9px}
+.syslab{width:42px;flex:0 0 auto;font-size:12.5px;color:var(--muted)}
+.sysbar{flex:1;height:8px;border-radius:var(--r-full);background:#ffffff10;overflow:hidden}
+.sysfill{height:100%;border-radius:var(--r-full);background:var(--ok)}
+.sysfill.warn{background:var(--warn)} .sysfill.err{background:var(--err)}
+.sysval{font-size:11.5px;color:var(--faint);white-space:nowrap;font-variant-numeric:tabular-nums}
+.systop{font-size:12px;color:var(--faint);border-top:1px solid var(--border);padding-top:8px}
+.tobottom{position:absolute;right:14px;bottom:calc(100% + 10px);width:38px;height:38px;padding:0;border-radius:var(--r-full);
+  background:var(--elev);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:none;align-items:center;justify-content:center;z-index:5}
+.tobottom.show{display:flex}
+.tobottom:active{color:var(--fg);border-color:var(--border-h)}
+
+/* ── 收件箱（定时简报）卡片 ── */
+.inbox{width:100%;max-width:900px;margin:0 auto;padding:0 14px}
+.inbox .card{background:rgba(24,27,42,.96);border:1px solid var(--sapphire-line);border-radius:var(--r-md);
+  padding:13px 15px;margin-bottom:6px;max-height:46vh;overflow-y:auto}
+.inbox .hd{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.inbox .hd .dot2{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px #C6A15B88}
+.inbox .hd .pg{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.inbox .bd{font-size:14.5px;line-height:1.78;white-space:pre-wrap;word-break:break-word}
+.inbox .bd strong{color:#FFF;font-weight:700}
+.inbox .ack{margin-top:11px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--r-sm);padding:6px 13px;font-size:12.5px;font-family:inherit;cursor:pointer}
+.inbox .ack:active{color:var(--fg);border-color:var(--border-h)}
+
+/* ── 输入区 ── */
+footer{flex:0 0 auto;border-top:1px solid var(--border);background:rgba(23,23,23,.82);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);padding:9px 12px calc(9px + env(safe-area-inset-bottom));position:relative}
+.ct{max-width:900px;margin:0 auto;display:flex;gap:8px;align-items:flex-end}
+textarea{flex:1;resize:none;min-height:44px;max-height:150px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-md);color:var(--fg);padding:11px 13px;font-size:16px;font-family:inherit;outline:none}
+textarea:focus{border-color:var(--accent)}
+.btn{width:44px;height:44px;flex:0 0 auto;border:1px solid var(--border);background:var(--surface);color:var(--muted);
+  border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.btn:active{background:var(--elev);border-color:var(--border-h);color:var(--fg)}
+.btn.send{background:var(--accent);border-color:var(--accent);color:#0A0A0A}
+.btn.send:active{background:var(--accent-h)}
+.btn.send.stop{background:#7E3530;border-color:#FF453A66;color:#F3C6C2}
+.btn.send.idle{background:var(--surface);border-color:var(--border);color:var(--faint)}
+.btn.rec{background:#7E3530;border-color:#FF453A66;color:#F3C6C2;animation:pulse 1.4s var(--ease) infinite}
+.btn.drag{border-color:var(--accent);color:var(--accent)}
+/* ── 附件（回形针）── */
+.ct.composer{flex-wrap:wrap}
+.ct .att{flex:1 0 100%;display:none;flex-wrap:wrap;gap:6px;padding-bottom:2px}
+.ct .att.on{display:flex}
+.attchip{display:flex;align-items:center;gap:7px;background:var(--elev);border:1px solid var(--border);border-radius:var(--r-full);padding:3px 9px 3px 4px;font-size:12.5px;color:var(--muted);max-width:250px}
+.attchip img{width:28px;height:28px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#0A0A0A}
+.attchip .ico{width:28px;height:28px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--faint);flex:0 0 auto}
+.attchip .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
+.attchip .sz{color:var(--faint);flex:0 0 auto}
+.attchip .x{border:0;background:transparent;color:var(--faint);cursor:pointer;font-size:15px;line-height:1;padding:0 2px}
+.attchip.up{opacity:.65}
+.attchip.bad{border-color:#FF453A66;color:#FFB4AE}
+.msg.user .atts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;justify-content:flex-end}
+.msg.user .atts a.atchip{display:inline-flex;align-items:center;gap:6px;background:var(--elev);border:1px solid var(--border);border-radius:var(--r-full);padding:3px 10px;font-size:12.5px;color:var(--muted);text-decoration:none}
+.msg.user .atts a.atchip img{max-width:210px;max-height:210px;border-radius:var(--r-md);border:1px solid var(--border);display:block}
+.msg.user .atts a.atimg{border:0;background:transparent;padding:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hint{max-width:900px;margin:7px auto 0;font-size:11.5px;color:var(--faint);display:none}
+.hint.show{display:block}
+.composer.invalid textarea{border-color:var(--err)}
+
+/* ── 会话抽屉 ── */
+.scrim{position:fixed;inset:0;background:#000a;opacity:0;pointer-events:none;transition:opacity .2s var(--ease);z-index:30}
+.scrim.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:min(310px,84vw);background:var(--sunken);border-right:1px solid var(--border);
+  transform:translateX(-102%);transition:transform .24s var(--ease);z-index:31;display:flex;flex-direction:column;
+  padding-top:calc(env(safe-area-inset-top) + 10px)}
+.drawer.open{transform:none}
+.dhead{display:flex;align-items:center;gap:8px;padding:0 12px 10px;border-bottom:1px solid var(--border)}
+.dhead .tt{flex:1;font-weight:600;font-size:14.5px}
+.newbtn{background:var(--accent);color:#0A0A0A;border:none;border-radius:var(--r-sm);padding:8px 12px;font-size:13.5px;font-weight:600;font-family:inherit;cursor:pointer}
+.newbtn:active{background:var(--accent-h)}
+.sessions{flex:1;overflow-y:auto;padding:8px}
+.sess{padding:10px 11px;border-radius:var(--r-sm);border:1px solid transparent;margin-bottom:2px;display:flex;align-items:center;gap:8px}
+.sess:active{background:var(--elev)}
+.sess.active{background:var(--elev);border-color:var(--border)}
+.sess .b{flex:1;min-width:0}
+.sess .t{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sess .m{font-size:11.5px;color:var(--faint);margin-top:2px}
+.sdel{border:none;background:transparent;color:var(--faint);font-size:15px;padding:4px}
+.dfoot{padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--border);display:flex;gap:8px}
+.dfoot a,.dfoot button{flex:1;text-align:center;font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:var(--r-sm);padding:9px;background:transparent;font-family:inherit;cursor:pointer}
+.dfoot button:active{background:var(--elev);color:var(--fg)}
+
+/* ── 待办面板（抽屉底部「待办」打开；手机上看今天要做的事） ── */
+.teod{padding:10px 14px 8px;display:flex;align-items:center;gap:8px}
+.teod button{flex:1;appearance:none;font:inherit;font-size:13px;color:#9aa7ff;cursor:pointer;
+  border:1px dashed rgba(109,124,255,.45);background:rgba(109,124,255,.08);border-radius:10px;padding:9px 10px}
+.teod button.done{color:#4ec9a7;border-style:solid;border-color:rgba(78,201,167,.45);background:rgba(78,201,167,.1);cursor:default}
+.teod button:disabled{opacity:.6}
+.teod span{font-size:11.5px;color:#6f7686}
+.teod button.undo{flex:0 0 auto;width:28px;padding:7px 0;font-size:13px;line-height:1;
+  color:#8b93a7;border:1px solid rgba(255,255,255,.13);background:transparent;border-radius:9px;cursor:pointer}
+.teod button.undo:active{color:#ff9b9b;border-color:rgba(255,120,120,.45);background:rgba(255,120,120,.08)}
+/* ── 早晨打卡：整屏大按钮（2026-10-22 主人要的） ── */
+#ckBig{position:fixed;inset:0;z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:radial-gradient(circle at 50% 34%,#1a2040 0%,#0a0d17 72%);}
+#ckBig.on{display:flex}
+#ckBigBtn{width:min(76vw,330px);aspect-ratio:1;border-radius:50%;cursor:pointer;font:inherit;color:#e2e7ff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  border:2px solid rgba(109,124,255,.5);background:radial-gradient(circle at 50% 34%,rgba(109,124,255,.3),rgba(109,124,255,.05));
+  box-shadow:0 0 60px rgba(109,124,255,.22),inset 0 0 34px rgba(109,124,255,.08);transition:transform .12s}
+#ckBigBtn:active{transform:scale(.97)}
+#ckBigBtn.done{border-color:rgba(78,201,167,.65);color:#7ee0c0;
+  background:radial-gradient(circle at 50% 34%,rgba(78,201,167,.26),rgba(78,201,167,.04))}
+#ckBigBtn .big{font-size:24px;font-weight:600;letter-spacing:1px}
+#ckBigBtn small{font-size:12px;color:#98a0b6}
+#ckBigTip{font-size:12.5px;color:#7b8398}
+#ckSkip{position:absolute;bottom:calc(26px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);
+  background:none;border:none;cursor:pointer;font:inherit;font-size:12.5px;color:#656c7d;text-decoration:underline}
+/* ── 手机上直接加一条待办（2026-10-21） ── */
+.tadd{padding:10px 14px 6px;display:flex;gap:8px;align-items:center;border-top:1px solid var(--border)}
+.tadd input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  color:var(--fg);padding:10px 12px;font:inherit;font-size:14px;outline:none;transition:border-color .15s}
+.tadd input:focus{border-color:var(--accent)}
+.tadd button{flex:0 0 auto;width:42px;height:42px;border:none;border-radius:10px;background:var(--accent);
+  color:#0A0A0A;font-size:20px;font-weight:700;font-family:inherit;cursor:pointer;transition:transform .12s}
+.tadd button:active{transform:scale(.94)}
+/* ── 三档（今天/明天/长期）+ 右滑挪到明天 ── */
+.tseg{display:flex;gap:6px;padding:9px 14px 3px}
+.tseg button{flex:1;appearance:none;font:inherit;font-size:12.5px;padding:7px 0;border-radius:999px;cursor:pointer;
+  border:1px solid var(--border);background:transparent;color:#8d94a6;
+  transition:background .15s var(--ease),color .15s var(--ease),border-color .15s var(--ease)}
+.tseg button.on{background:var(--accent);border-color:var(--accent);color:#0A0A0A;font-weight:600}
+.tlist{overflow-x:hidden}
+.trow{position:relative;touch-action:pan-y}
+.trow .swi{position:absolute;left:-74px;top:0;bottom:0;width:74px;display:flex;align-items:center;justify-content:center;
+  font-size:11.5px;letter-spacing:.04em;color:#8f9cff;opacity:0;transition:opacity .15s var(--ease);pointer-events:none;white-space:nowrap}
+.trow.swiping .swi{opacity:.55}
+.trow.swiping.arm .swi{opacity:1;color:#6d7cff}
+.trow.swiping{background:linear-gradient(90deg,rgba(109,124,255,.10),transparent)}
+.trow.lift{background:linear-gradient(90deg,rgba(109,124,255,.22),rgba(109,124,255,.05));
+  box-shadow:0 8px 22px rgba(109,124,255,.20);z-index:3}
+.trow.lift .tx{color:#fff}
+.toast.ok{border-color:rgba(78,201,167,.45);color:#dff5ee}
+.thdr{font-size:11px;letter-spacing:.1em;color:#6f7686;padding:9px 2px 3px;display:flex;gap:6px;align-items:baseline}
+.thdr i{font-style:normal;opacity:.6;font-size:10px}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:32;max-height:72vh;display:flex;flex-direction:column;
+  background:var(--sunken);border-top:1px solid var(--border);border-radius:16px 16px 0 0;
+  transform:translateY(102%);transition:transform .24s var(--ease);
+  padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -20px 50px #000a}
+.sheet.open{transform:none}
+.sheet .sh{display:flex;align-items:center;gap:8px;padding:12px 14px 10px;border-bottom:1px solid var(--border)}
+.sheet .sh .tt{flex:1;font-weight:600;font-size:14.5px}
+.sheet .sh .sm{font-size:11.5px;color:var(--faint);font-variant-numeric:tabular-nums}
+.sheet .x{border:none;background:transparent;color:var(--faint);font-size:17px;padding:2px 6px;cursor:pointer}
+.tlist{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:8px 10px 14px}
+.trow{display:flex;align-items:flex-start;gap:10px;padding:10px 6px;border-radius:var(--r-sm)}
+.trow:active{background:#ffffff08}
+.trow .cb{width:20px;height:20px;flex:0 0 auto;margin-top:1px;border:1.5px solid var(--border-h);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;color:#0A0A0A;font-size:12px;line-height:1}
+.trow.done .cb{background:var(--accent);border-color:var(--accent)}
+.trow .tx{flex:1;font-size:15px;word-break:break-word}
+.trow.done .tx{color:var(--faint);text-decoration:line-through}
+.trow.done{opacity:.55}
+.trow.done .cb{background:var(--faint);border-color:var(--faint);color:#0A0A0A}
+.tempty{color:var(--faint);font-size:13.5px;text-align:center;padding:22px 10px}
+.tsub{color:var(--faint);font-size:12px;letter-spacing:.04em;padding:16px 6px 2px;margin-top:10px;border-top:1px solid var(--border)}
+/* ── 干活中：run 期间常驻（浮在输入框上方） ── */
+.ct.composer{position:relative}
+.busybar{position:absolute;left:0;right:0;bottom:100%;display:none;justify-content:center;padding:0 0 7px;pointer-events:none;z-index:32}
+.busybar.on{display:flex}
+.busybar .pill{display:inline-flex;align-items:center;gap:7px;padding:4px 12px;border-radius:999px;background:rgba(9,10,14,.88);border:1px solid var(--border);font-size:12px;color:var(--muted);box-shadow:0 6px 18px rgba(0,0,0,.36)}
+.busybar .bdot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:0 0 auto;animation:pulse 1.15s ease-in-out infinite}
+.busybar .btxt{font-variant-numeric:tabular-nums;max-width:min(78vw,420px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 干活条：常驻 + 可缩回。收起是一行，点开展开这一轮的步骤 */
+.busybar{flex-direction:column;align-items:center;gap:6px}
+.busybar .pill{pointer-events:auto;cursor:pointer;user-select:none}
+.busybar .bchev{font-size:9.5px;line-height:1;opacity:.62}
+.busybar.done .bdot{animation:none;background:var(--ok)}
+.busy-log{display:none;pointer-events:auto;width:min(420px,88vw);max-height:34vh;overflow-y:auto;overscroll-behavior:contain;
+  padding:7px 10px;border-radius:12px;background:rgba(9,10,14,.94);border:1px solid var(--border);
+  box-shadow:0 10px 30px rgba(0,0,0,.42);font-size:12px;line-height:1.5;animation:fade .16s var(--ease)}
+.busybar.expanded .busy-log{display:block}
+.bl-row{display:flex;gap:7px;align-items:baseline;padding:2.5px 0}
+.bl-row+.bl-row{border-top:1px solid rgba(255,255,255,.035)}
+.bl-t{flex:0 0 auto;color:var(--muted);font-variant-numeric:tabular-nums;font-size:10.5px;min-width:30px}
+.bl-n{flex:0 0 auto;color:var(--accent);font-size:11.5px}
+.bl-row.ok .bl-n{color:var(--ok)}
+.bl-p{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.bl-empty{color:var(--muted);font-size:11.5px}
+/* ── 审批卡片：需要主人点头的操作 ── */
+.appr{display:flex;flex-direction:column;gap:8px;background:var(--surface);border:1px solid #FF9F0A66;border-radius:var(--r-md);padding:10px 12px;font-size:13px;animation:fade .2s var(--ease)}
+.appr .ap-hd{color:var(--warn)}
+.appr .ap-cmd{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 9px;word-break:break-all;white-space:pre-wrap;max-height:120px;overflow:auto}
+.appr .ap-row{display:flex;gap:8px;flex-wrap:wrap}
+.appr .ap-btn{border-radius:var(--r-full);font-size:12.5px;padding:6px 14px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--fg);font-family:inherit}
+.appr .ap-btn.primary{background:var(--accent);border-color:var(--accent);color:#0A0A0A;font-weight:600}
+.appr .ap-btn.deny{color:#FFB4AE;border-color:#FF453A66}
+.appr .ap-btn:disabled{opacity:.45}
+.appr.done{opacity:.7}
+/* ── 轻提示：操作被拒时给一句话，别静默（删不掉的对话） ── */
+.toast{position:fixed;left:50%;bottom:78px;transform:translate(-50%,8px);background:rgba(12,13,18,.94);border:1px solid #FF9F0A66;color:var(--fg);font-size:13px;line-height:1.5;padding:9px 15px;border-radius:var(--r-full);box-shadow:0 8px 26px rgba(0,0,0,.45);opacity:0;transition:opacity .18s var(--ease),transform .18s var(--ease);z-index:70;max-width:86vw;text-align:center;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* ── 站点面板：手机上能用的入口（2026-10-13 家） ── */
+.msep{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--faint);padding:12px 14px 6px;letter-spacing:.4px;cursor:pointer}
+.msep .ln{flex:1;height:1px;background:var(--border)}
+.mrow{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #ffffff0a;cursor:pointer}
+.mrow:active{background:#ffffff08}
+.mrow .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.mrow .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mrow .t .n{display:flex;align-items:center;gap:6px;font-size:14px}
+.mrow .t .u{font-size:11px;color:var(--faint);font-family:ui-monospace,Menlo,Consolas,monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .go{color:var(--faint);font-size:17px;flex:0 0 auto}
+.mbad{font-size:10px;font-weight:600;color:#9DBBFF;border:1px solid var(--sapphire-line);background:var(--sapphire-dim);border-radius:var(--r-full);padding:0 6px;line-height:15px}
+.mbad.self{color:var(--muted);border-color:var(--border-h);background:transparent;font-weight:500}
+.mrow .cp{width:34px;height:34px;flex:0 0 auto;border:1px solid var(--border);border-radius:var(--r-sm);background:transparent;color:var(--muted);font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
+.mrow .cp:active{background:var(--elev);color:var(--fg)}
+</style>
+</head>
+<body>
+<div id="ckBig">
+  <button type="button" id="ckBigBtn">
+    <span class="big">到教室打卡</span>
+    <small>8:00 前算准时</small>
+  </button>
+  <div id="ckBigTip">点一下就好</div>
+  <button type="button" id="ckSkip">今天先不打卡</button>
+</div>
+<header>
+  <button class="ibtn" id="menu" aria-label="会话列表">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+  <div class="title">
+    <div class="tw"><span class="nm"><span class="dot" style="display:inline-block;margin-right:6px"></span><span id="agentName">咕嘎一号</span></span>
+    <span class="sub" id="subline">管家 · 随时待命</span></div>
+  </div>
+  <button class="ibtn gold" id="newBtn" aria-label="新对话">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</header>
+
+<main id="main"></main>
+
+<footer>
+  <button class="tobottom" id="toBottom" type="button" aria-label="回到最新">
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+  </button>
+  <form class="ct composer" id="form">
+    <div class="busybar" id="busyBar" aria-live="polite">
+      <div class="busy-log" id="busyLog"></div>
+      <span class="pill" id="busyPill"><span class="bdot"></span><span class="btxt" id="busyTxt">干活中 · 已 0 秒</span><span class="bchev" id="busyChev">▴</span></span>
+    </div>
+    <div class="att" id="att"></div>
+    <button class="btn" type="button" id="clip" title="加附件" aria-label="加附件">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21.4 11.05 12.3 20.2a5.5 5.5 0 0 1-7.8-7.8l9.1-9.1a3.7 3.7 0 0 1 5.2 5.2l-9.1 9.1a1.9 1.9 0 0 1-2.7-2.7l8.3-8.3"/></svg>
+    </button>
+    <input id="clipFile" type="file" multiple hidden>
+    <button class="btn" type="button" id="mic" title="语音输入" aria-label="语音输入">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5V6a3.5 3.5 0 0 0-7 0v5.5A3.5 3.5 0 0 0 12 15z"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3"/></svg>
+    </button>
+    <textarea id="input" rows="1" placeholder="跟咕嘎说点什么…"></textarea>
+    <button class="btn send idle" type="submit" id="send" aria-label="发送">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V6M6 12l6-6 6 6"/></svg>
+    </button>
+  </form>
+  <div class="hint" id="hint"></div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="dhead"><span class="tt">对话</span><button class="newbtn" id="newBtn2" type="button">新对话</button></div>
+  <div class="sessions" id="sessions"></div>
+  <div class="dfoot">
+    <button type="button" id="todoBtn">计划</button>
+    <button type="button" id="sitesBtn">站点</button>
+    <a href="/m6.html">六号</a>
+    <a href="/group.html">咕嘎群</a>
+  </div>
+</aside>
+
+<div class="sheet" id="sitesSheet" aria-label="站点">
+  <div class="sh"><span class="tt">站点 · 手机端</span><span class="sm" id="sitesCount"></span>
+    <button class="x" type="button" id="sitesClose" aria-label="关闭">✕</button></div>
+  <div class="tlist" id="sitesList"><div class="tempty">读取中…</div></div>
+</div>
+
+<div class="sheet" id="todoSheet" aria-label="今日计划">
+  <div class="sh"><span class="tt">今日计划</span><span class="sm" id="todoCount"></span>
+    <button class="x" type="button" id="todoClose" aria-label="关闭">✕</button></div>
+  <div class="tseg" id="todoSeg">
+    <button type="button" data-d="today" class="on">今天</button>
+    <button type="button" data-d="tomorrow">明天</button>
+    <button type="button" data-d="long">长期</button>
+  </div>
+  <div class="tlist" id="todoList"></div>
+  <div class="tadd">
+    <input id="todoAddInput" type="text" placeholder="加一条今天的待办…" autocomplete="off" enterkeyhint="done">
+    <button type="button" id="todoAddBtn" aria-label="添加待办">＋</button>
+  </div>
+  <div class="teod" id="ckRow">
+    <button type="button" id="ckBtn">到教室打卡 · 8:00 前</button>
+    <span id="ckInfo"></span>
+  </div>
+  <div class="teod">
+    <button type="button" id="todoEodBtn">结束一天 · 不看手机上床</button>
+    <span id="todoEodInfo"></span>
+    <button type="button" id="eodUndo" class="undo" title="撤回「结束一天」" aria-label="撤回结束一天" style="display:none">✕</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const API='/api/hermes';
+const $=s=>document.querySelector(s);
+const main=$('#main'), input=$('#input'), form=$('#form'), send=$('#send'), mic=$('#mic'),
+      hint=$('#hint'), sessionsEl=$('#sessions'), drawer=$('#drawer'), scrim=$('#scrim'),
+      toBottomBtn=$('#toBottom'), subline=$('#subline'), agentName=$('#agentName');
+const isTouch=matchMedia('(hover:none)').matches;
+
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let sessions=[], currentId=null, busy=false, abortCtrl=null, runId=null, stickBottom=true;
+let inboxShown=false;
+const atBottom=()=> (main.scrollHeight-main.scrollTop-main.clientHeight)<80;
+function scroll(smooth){ if(!stickBottom) return;
+  if(smooth && !matchMedia('(prefers-reduced-motion:reduce)').matches) main.scrollTo({top:main.scrollHeight,behavior:'smooth'});
+  else main.scrollTop=main.scrollHeight; }
+function timeAgo(ts){ if(!ts) return ''; const m=Math.floor((Date.now()-ts*1000)/60000);
+  if(m<1)return'刚刚'; if(m<60)return m+'分钟前'; const h=Math.floor(m/60); if(h<24)return h+'小时前'; return Math.floor(h/24)+'天前'; }
+
+async function jget(p){ const r=await fetch(API+p,{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+async function jpost(p,b){ const r=await fetch(API+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b||{})}); if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); }
+
+/* ── 会话 ───────────────────────────────────────────────── */
+/* ── 轻提示：删不掉时别静默 ── */
+let _toastEl=null,_toastT=0;
+function toast(msg){
+  if(!_toastEl){ _toastEl=document.createElement('div'); _toastEl.className='toast'; document.body.appendChild(_toastEl); }
+  _toastEl.textContent=msg; _toastEl.classList.add('on');
+  clearTimeout(_toastT); _toastT=setTimeout(()=>_toastEl.classList.remove('on'),5000);
+}
+function delFailText(code,extra){
+  if(code===409) return '删不掉：这段对话还在干活（有回合没结束）。等它停下来再点 ✕。';
+  if(code===404) return '这段对话已经不在了，列表刷新一下就好。';
+  if(code===401||code===403) return '删不掉：门卫没放行（HTTP '+code+'）——刷新页面重新登录。';
+  return '删不掉：管家回了 HTTP '+code+(extra?(' · '+String(extra).slice(0,90)):'');
+}
+function renderSessions(){
+  sessionsEl.innerHTML='';
+  if(!sessions.length){ sessionsEl.innerHTML='<div class="note" style="padding:10px">还没有对话</div>'; return; }
+  for(const s of sessions){
+    const el=document.createElement('div'); el.className='sess'+(s.id===currentId?' active':'');
+    el.innerHTML='<div class="b"><div class="t">'+esc(s.title||'新对话')+'</div><div class="m">'+(s.message_count||0)+' 条 · '+timeAgo(s.last_active||s.started_at)+'</div></div>';
+    el.onclick=()=>{ closeDrawer(); selectSession(s.id); };
+    const del=document.createElement('button'); del.type='button'; del.className='sdel'; del.textContent='✕';
+    del.onclick=async ev=>{ ev.stopPropagation();
+      if(!confirm('删掉这段对话？不能恢复。')) return;
+      del.disabled=true;
+      let failed=null;
+      try{
+        const r=await fetch(API+'/api/sessions/'+encodeURIComponent(s.id),{method:'DELETE'});
+        if(!r.ok){ let ex=''; try{ const j=await r.json(); ex=(j&&j.error&&(j.error.message||j.error.code))||''; }catch(_){}
+          failed=delFailText(r.status,ex); }
+      }catch(e){ failed='删不掉：连不上管家（'+e.message+'）'; }
+      if(failed){ del.disabled=false; toast(failed); return; }
+      if(s.id===currentId) currentId=null;
+      await refreshSessions();
+      if(!currentId){ if(sessions.length) await selectSession(sessions[0].id); else await newSession(); } };
+    el.appendChild(del); sessionsEl.appendChild(el);
+  }
+}
+async function refreshSessions(){
+  try{ const d=await jget('/api/sessions'); sessions=(d.data||[]).filter(s=>s&&s.id&&!s.hidden&&!String(s.id).startsWith('cron'));
+    const cur=sessions.find(x=>x.id===currentId);
+    if(cur && cur.title) subline.textContent=cur.title.slice(0,22);
+  }catch(e){}
+  renderSessions();
+}
+async function newSession(){
+  closeDrawer();
+  try{ const d=await jpost('/api/sessions',{}); const s=d.session;
+    sessions.unshift({id:s.id,title:null,message_count:0,last_active:s.started_at});
+    currentId=s.id; renderSessions(); showEmpty();
+    agentName.textContent='咕嘎一号'; subline.textContent='新对话';
+    restoreTurn(s.id);          // 新对话：把上一段的干活条收掉（正在跑的那轮不动）
+  }catch(e){}
+}
+async function selectSession(id){
+  if(id===currentId) return;
+  currentId=id; renderSessions(); loadMessages(id);
+}
+
+function clearChat(){ main.innerHTML=''; stickBottom=true; }
+function showEmpty(){
+  clearChat();
+  const e=document.createElement('div'); e.className='empty';
+  e.innerHTML='<h3>咕嘎一号随时待命</h3><p>主人的待办、提醒、服务器上的活儿，<br>直接说就行。<br><br>左下角能翻以前的对话，<br>右上角「＋」开新的。</p>';
+  main.appendChild(e);
+}
+/* ── 渲染 ───────────────────────────────────────────────── */
+const RICH_RE=/(\*\*[^*\n]+\*\*)|(https?:\/\/[^\s<>"'）)】。，、；：！？]+)/g;
+const IMG_CACHE=new Map();
+function setRichText(el,text){
+  el.textContent='';
+  let last=0,m; RICH_RE.lastIndex=0;
+  while((m=RICH_RE.exec(text))!==null){
+    if(m.index>last) el.appendChild(document.createTextNode(text.slice(last,m.index)));
+    if(m[1]){ const b=document.createElement('strong'); b.textContent=m[1].slice(2,-2); el.appendChild(b); }
+    else { const u=m[2];
+      if(/\.(png|jpe?g|gif|webp|bmp)(\?.*)?$/i.test(u)){ let im=IMG_CACHE.get(u); if(!im){ im=document.createElement('img'); im.src=u; im.alt=''; im.loading='lazy'; IMG_CACHE.set(u,im);} el.appendChild(im); }
+      else { const a=document.createElement('a'); a.href=u; a.target='_blank'; a.rel='noopener noreferrer'; a.className='mlink'; a.textContent=u; el.appendChild(a); } }
+    last=m.index+m[0].length;
+  }
+  if(last<text.length) el.appendChild(document.createTextNode(text.slice(last)));
+}
+function renderSysCard(host){
+  const card=document.createElement('div'); card.className='syscard';
+  const hd=document.createElement('div'); hd.className='syshd';
+  hd.innerHTML='<span class="dot2"></span><span>服务器资源</span>';
+  card.appendChild(hd); host.appendChild(card);
+  const show=(label,o)=>{
+    if(!o) return;
+    const row=document.createElement('div'); row.className='sysrow';
+    const lab=document.createElement('div'); lab.className='syslab'; lab.textContent=label;
+    const bar=document.createElement('div'); bar.className='sysbar';
+    const fill=document.createElement('div'); const p=Math.max(0,Math.min(100,o.pct||0));
+    fill.className='sysfill'+(p>=85?' err':p>=60?' warn':''); fill.style.width=p+'%';
+    bar.appendChild(fill);
+    const val=document.createElement('div'); val.className='sysval'; val.textContent=(o.used||'?')+' / '+(o.total||'?')+' · '+p+'%';
+    row.appendChild(lab); row.appendChild(bar); row.appendChild(val); card.appendChild(row);
+  };
+  fetch('/api/sysinfo',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+    show('磁盘',d.disk); show('内存',d.mem); show('Swap',d.swap);
+    if(d.top&&d.top.length){ const t=document.createElement('div'); t.className='systop';
+      t.textContent='最占内存：'+d.top.map(x=>x.name+' '+x.mb+'M').join(' · '); card.appendChild(t); }
+  }).catch(()=>{});
+}
+function renderRich(el,text){
+  let t=String(text==null?'':text).replace(/[\s\u00a0]+$/,'');
+  let dot=false, m=/(^|\n)[ \t]*•$/.exec(t);
+  if(m){ dot=true; t=t.slice(0,m.index).replace(/[\s\u00a0]+$/,''); }
+  let opts=[];
+  const om=/(^|\n)[ \t]*::options[ \t]*\n?([\s\S]*?)(?=\n[ \t]*::sysinfo[ \t]*(?:\n|$)|$)/.exec(t);
+  if(om){
+    opts=(om[2]||'').split('\n').map(l=>{ const mm=/^\s*(?:\d+[.、)]|[-*])\s*(.+?)\s*$/.exec(l); return mm?mm[1]:null; }).filter(Boolean);
+    t=t.slice(0,om.index)+t.slice(om.index+om[0].length).replace(/[\s\u00a0]+$/,'');
+  }
+  let sys=false;
+  const sm=/(^|\n)[ \t]*::sysinfo[ \t]*(?=\n|$)/.exec(t);
+  if(sm){ sys=true; t=t.slice(0,sm.index)+t.slice(sm.index+sm[0].length); }
+  setRichText(el,t);
+  if(opts.length){
+    const wrap=document.createElement('div'); wrap.className='opts';
+    const btns=[];
+    opts.forEach(o=>{
+      const b=document.createElement('button'); b.type='button'; b.className='opt'; b.textContent=o;
+      b.onclick=()=>{ btns.forEach(x=>x.disabled=true); if(busy) return; input.value=o; grow(); send_it(); };
+      btns.push(b); wrap.appendChild(b);
+    });
+    el.appendChild(wrap);
+  }
+  if(dot){ const d=document.createElement('span'); d.className='enddot'; el.appendChild(d); }
+  if(sys){ const host=document.createElement('div'); el.appendChild(host); renderSysCard(host); }
+}
+function addUser(text, files){ const w=document.createElement('div'); w.className='msg user';
+  const b=document.createElement('div'); b.className='bubble';
+  if(files&&files.length){
+    const box=document.createElement('div'); box.className='atts';
+    files.forEach(f=>{
+      const a=document.createElement('a'); a.href=f.url||'#'; a.target='_blank'; a.rel='noopener noreferrer';
+      if(f.kind==='image'){ a.className='atchip atimg'; const im=document.createElement('img'); im.src=f.url; im.alt=f.name||'图片'; a.appendChild(im); }
+      else{ a.className='atchip'; a.textContent='📄 '+(f.name||'文件')+(f.size_h?(' · '+f.size_h):''); }
+      box.appendChild(a);
+    });
+    b.appendChild(box);
+  }
+  if(text){ const t=document.createElement('div'); setRichText(t,text); b.appendChild(t); }
+  w.appendChild(b); main.appendChild(w); scroll(); }
+function addAssistant(){ const w=document.createElement('div'); w.className='msg assistant';
+  const tools=document.createElement('div'); tools.className='tools';
+  const t=document.createElement('div'); t.className='text streaming';
+  const ty=document.createElement('div'); ty.className='typing'; ty.innerHTML='<span class="t">思考中</span>';
+  w.appendChild(tools); w.appendChild(t); w.appendChild(ty); main.appendChild(w); scroll();
+  return {w,tools,text:t,typing:ty}; }
+function setText(node,text){ renderRich(node.text,text); if(text&&node.typing) node.typing.remove(); scroll(); }
+function note(node,text,cls){ const d=document.createElement('div'); d.className=cls||'note'; d.textContent=text; node.w.appendChild(d); scroll(); }
+function addTool(node,name,label){
+  const card=document.createElement('div'); card.className='tool';
+  card.innerHTML='<span class="lb">'+esc(name+(label?('  ·  '+label):''))+'</span><span class="st running">进行中</span>';
+  node.tools.appendChild(card); if(node.typing) node.typing.remove(); scroll(); return card; }
+function markToolDone(card){ const s=card.querySelector('.st'); if(s){ s.className='st completed'; s.textContent='完成'; } }
+/* ── 审批卡片：需要主人点头的操作（run 停在 waiting_for_approval） ── */
+const AP_LABEL={once:'允许这一次',session:'本对话都允许',always:'以后都允许',deny:'拒绝'};
+function addApproval(node,data,rid){
+  const d=data||{};
+  const card=document.createElement('div'); card.className='appr';
+  const hd=document.createElement('div'); hd.className='ap-hd';
+  hd.textContent='⚠ 这一步需要您点头'+(d.tool?('（'+d.tool+'）'):'');
+  card.appendChild(hd);
+  const cmd=String(d.command||d.preview||d.detail||'').trim();
+  if(cmd){ const pre=document.createElement('div'); pre.className='ap-cmd'; pre.textContent=cmd; card.appendChild(pre); }
+  const row=document.createElement('div'); row.className='ap-row';
+  const choices=(Array.isArray(d.choices)&&d.choices.length)?d.choices:['once','deny'];
+  const btns=[];
+  choices.forEach(ch=>{
+    const b=document.createElement('button'); b.type='button';
+    b.className='ap-btn'+(ch==='deny'?' deny':(ch==='once'?' primary':''));
+    b.textContent=AP_LABEL[ch]||ch;
+    b.onclick=async()=>{
+      btns.forEach(x=>x.disabled=true);
+      try{
+        const r=await fetch(API+'/v1/runs/'+encodeURIComponent(rid||runId||'')+'/approval',
+          {method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({choice:ch})});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        card.classList.add('done');
+        note(node, ch==='deny'?'已拒绝这一步。':'已允许这一步。');
+      }catch(e){
+        btns.forEach(x=>x.disabled=false);
+        note(node,'提交失败：'+e.message+'（可能这一步已经超时作废了）','errn');
+      }
+    };
+    btns.push(b); row.appendChild(b);
+  });
+  card.appendChild(row);
+  node.tools.appendChild(card); if(node.typing) node.typing.remove(); scroll();
+  return card;
+}
+
+async function loadMessages(id,noRestore){
+  clearChat();
+  let msgs=[];
+  try{ const d=await jget('/api/sessions/'+encodeURIComponent(id)+'/messages');
+    msgs=d.data||d.messages||(Array.isArray(d)?d:[]); }catch(e){}
+  const real=msgs.filter(m=>m&&(m.role==='user'||m.role==='assistant'));
+  if(!real.length){ /* 保留空态 */ if(!main.children.length) showEmpty(); }
+  for(const m of real){
+    let c=m.content;
+    if(Array.isArray(c)) c=c.map(p=>typeof p==='string'?p:(p&&p.text)||'').join('');
+    else if(c&&typeof c==='object') c=c.text||JSON.stringify(c);
+    if(m.role==='user') addUser(c);
+    else { const a=addAssistant(); renderRich(a.text,c||''); a.text.classList.remove('streaming'); if(a.typing) a.typing.remove(); }
+  }
+  scroll();
+  if(!noRestore) restoreTurn(id);      // 这一轮要是在跑（或刚跑完），把干活条摆出来
+}
+
+/* ── SSE ───────────────────────────────────────────────── */
+async function readSSE(body,onEvent){
+  const reader=body.getReader(); const dec=new TextDecoder(); let buf='', ev='message', id=null;
+  for(;;){
+    const {value,done}=await reader.read(); if(done) break;
+    buf+=dec.decode(value,{stream:true});
+    let i;
+    while((i=buf.indexOf('\n'))>=0){
+      let line=buf.slice(0,i); buf=buf.slice(i+1);
+      if(line.endsWith('\r')) line=line.slice(0,-1);
+      if(line===''||line.startsWith(':')) continue;
+      if(line.startsWith('event:')) ev=line.slice(6).trim();
+      else if(line.startsWith('id:')){ const v=parseInt(line.slice(3).trim(),10); if(!isNaN(v)) id=v; }
+      else if(line.startsWith('data:')){ const s=line.slice(5).trim(); let j=null; try{j=JSON.parse(s);}catch(_){}
+        if(j) onEvent(id,ev,j); }
+    }
+  }
+}
+/* 干活条：run 全程常驻、可缩回；进度按会话存浏览器本地，离开再回来接着显示 / 自动接回 */
+const ACT_KEY='gugaTurnAct.v1';
+let busyIv=null, actRec=null, actSid=null, actExp=false, actSavedAt=0;
+function busyFmt(s){ return s<60 ? s+' 秒' : Math.floor(s/60)+' 分 '+(s%60)+' 秒'; }
+function actClock(s){ s=Math.max(0,Math.floor(s)); return s<60 ? (s+'s') : (Math.floor(s/60)+':'+String(s%60).padStart(2,'0')); }
+function actAll(){ try{ const m=JSON.parse(localStorage.getItem(ACT_KEY)||'{}'); return (m&&typeof m==='object'&&!Array.isArray(m))?m:{}; }catch(e){ return {}; } }
+function actStore(m){ try{ localStorage.setItem(ACT_KEY,JSON.stringify(m)); }catch(e){} }
+function actPut(){ if(!actSid||!actRec) return;
+  const m=actAll(); m[actSid]=actRec;
+  const cut=Date.now()-2*86400000;
+  for(const k in m){ if(m[k]&&(m[k].at||0)<cut) delete m[k]; }
+  actStore(m); }
+function actGet(sid){ const r=actAll()[sid]; return (r&&r.t0)?r:null; }
+function actDel(sid){ const m=actAll(); if(m[sid]){ delete m[sid]; actStore(m); } }
+function actTxt(){
+  const r=actRec; if(!r) return '';
+  const dur=(r.end||Date.now())-r.t0;
+  if(r.state==='running') return '干活中 · 已 '+busyFmt(Math.floor(dur/1000))+(r.last?(' · '+r.last):'');
+  const w={done:'已完成',fail:'出错了',stop:'已停止',ended:'已结束'}[r.state]||'已结束';
+  return w+' · 用时 '+busyFmt(Math.max(1,Math.round(dur/1000)))+((r.steps&&r.steps.length)?(' · 干了 '+r.steps.length+' 步'):'');
+}
+function actRows(){
+  const box=$('#busyLog'); if(!box) return; box.textContent='';
+  const r=actRec, steps=((r&&r.steps)||[]).slice(-60);
+  if(!steps.length){ const e=document.createElement('div'); e.className='bl-empty';
+    e.textContent=(r&&r.state==='running')?'刚开始，还没有步骤':'这一轮没有可显示的步骤';
+    box.appendChild(e); return; }
+  for(const s of steps){
+    const row=document.createElement('div'); row.className='bl-row'+(s.d?' ok':'');
+    const t=document.createElement('span'); t.className='bl-t'; t.textContent=actClock((s.ts-r.t0)/1000);
+    const n=document.createElement('span'); n.className='bl-n'; n.textContent=(s.n||'工具')+(s.d?' ✓':'');
+    row.appendChild(t); row.appendChild(n);
+    if(s.p){ const p=document.createElement('span'); p.className='bl-p'; p.textContent=s.p; row.appendChild(p); }
+    box.appendChild(row);
+  }
+  box.scrollTop=box.scrollHeight;
+}
+function actRender(){
+  const bar=$('#busyBar'); if(!bar) return;
+  if(!actRec){ bar.classList.remove('on','expanded','done'); return; }
+  bar.classList.add('on');
+  bar.classList.toggle('expanded',actExp);
+  bar.classList.toggle('done',actRec.state!=='running');
+  const t=$('#busyTxt'); if(t) t.textContent=actTxt();
+  const c=$('#busyChev'); if(c) c.textContent=actExp?'▾':'▴';
+  if(actExp) actRows();
+}
+function actTimer(){
+  if(busyIv){ clearInterval(busyIv); busyIv=null; }
+  if(actRec&&actRec.state==='running') busyIv=setInterval(actRender,1000);
+}
+function actStart(sid){
+  actSid=sid||currentId||null; actExp=false; actSavedAt=Date.now();
+  actRec={runId:null,t0:Date.now(),end:null,state:'running',last:'正在准备',steps:[],at:Date.now()};
+  actPut(); actRender(); actTimer();
+}
+function actBind(rid){ if(!actRec||!rid) return; actRec.runId=rid; actRec.at=Date.now(); actPut(); }
+function actTouch(txt){ if(!actRec||actRec.state!=='running'||!txt) return;
+  actRec.last=txt;
+  if(Date.now()-actSavedAt>1500){ actSavedAt=Date.now(); actRec.at=Date.now(); actPut(); } }
+function actStep(name,preview){ if(!actRec) return;
+  actRec.steps=actRec.steps||[];
+  actRec.steps.push({n:String(name||'工具'),p:String(preview||'').slice(0,180),ts:Date.now(),d:false});
+  if(actRec.steps.length>60) actRec.steps=actRec.steps.slice(-60);
+  actRec.last='正在 '+(name||'干活'); actRec.at=Date.now(); actPut(); actRender(); }
+function actStepDone(){ if(!actRec||!actRec.steps||!actRec.steps.length) return;
+  actRec.steps[actRec.steps.length-1].d=true; actRec.at=Date.now(); actPut(); if(actExp) actRender(); }
+function actFinish(state){ if(!actRec) return;
+  actRec.state=state||'ended'; actRec.end=Date.now(); actRec.at=Date.now();
+  actExp=false; actPut(); actRender(); actTimer(); }
+function busyUI(b){ busy=b; send.innerHTML=b?IC_STOP:IC_SEND; send.classList.toggle('stop',b);
+  send.classList.toggle('idle',!b&&!input.value.trim()); }
+function setBusy(b,st){
+  if(b) actStart(currentId);
+  else if(actRec&&actRec.state==='running') actFinish((st&&st.stopped)?'stop':'ended');
+  busyUI(b); actRender(); actTimer();
+}
+if($('#busyPill')) $('#busyPill').addEventListener('click',()=>{ if(!actRec) return; actExp=!actExp; actRender(); });
+
+/* 离开再回来：这一轮接着显示（还在跑就接回事件流，跑完了就收成一行） */
+async function restoreTurn(sid,noDeep){
+  if(!sid) return;
+  if(actRec&&actRec.state==='running'&&actSid&&actSid!==sid) return;   // 别打断这一页正在跑的那轮
+  if(actSid&&actSid!==sid){ actSid=null; actRec=null; actRender(); actTimer(); }
+  let rec=actGet(sid);
+  if(rec&&(Date.now()-rec.t0)>12*3600000){ actDel(sid); rec=null; }    // 半天前的就不提了
+  if(!rec){ actSid=null; actRec=null; actRender(); actTimer(); return; }
+  actSid=sid; actRec=rec; actExp=false; actRender(); actTimer();
+  if(rec.state!=='running') return;
+  if(!rec.runId){ actFinish('ended'); return; }
+  let stt='';
+  try{
+    const rs=await fetch(API+'/v1/runs/'+encodeURIComponent(rec.runId),{cache:'no-store'});
+    if(rs.ok){ const d=await rs.json(); stt=String(d.status||''); }
+    else if(rs.status===404) stt='gone';
+  }catch(e){ return; }                                                 // 连不上就先这样，下次回来再判
+  if(stt==='running'||stt==='started'||stt==='in_progress'||stt==='pending'||stt==='waiting_for_approval'){
+    busyUI(true);
+    runId=rec.runId; abortCtrl=new AbortController();
+    actRec.steps=[]; actRec.last='正在接上…'; actRec.at=Date.now(); actPut(); actRender();
+    const node=addAssistant();
+    const st={acc:'',lastTool:null,retryEl:null,done:false,stopped:false};
+    try{ await streamRun(rec.runId,node,st); }                          // 服务器会把这一轮从头回放一遍
+    catch(e){ if(e.name!=='AbortError') note(node,'接回这一轮时出错了（'+e.message+'）。','errn'); }
+    finally{
+      if(node.text) node.text.classList.remove('streaming');
+      if(node.typing) node.typing.remove();
+      if(!st.acc&&!node.tools.children.length) note(node,'（没有输出）');
+      busyUI(false); abortCtrl=null; runId=null;
+      if(actRec&&actRec.state==='running') actFinish(st.stopped?'stop':'ended');
+      refreshSessions();
+    }
+  } else {
+    actRec.state = stt==='failed' ? 'fail' : (stt==='interrupted' ? 'stop' : (stt?'done':'ended'));
+    actRec.end=actRec.end||Date.now(); actRec.at=Date.now();
+    if(actRec.steps&&actRec.steps.length) actRec.steps[actRec.steps.length-1].d=true;
+    actPut();
+    if(!noDeep) await loadMessages(sid,true);                           // 答案可能是他离开时刚写完的，重载一次补上
+    actRec=actGet(sid)||actRec; actExp=false; actRender(); actTimer();
+  }
+}
+const IC_SEND='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V6M6 12l6-6 6 6"/></svg>';
+const IC_STOP='<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true" focusable="false"><rect x="7" y="7" width="10" height="10" rx="2.5"/></svg>';
+send.innerHTML=IC_SEND;
+
+function handleRunEvent(name,j,node,st){
+  if(name==='message.delta'){ st.acc+=(j.delta||''); setText(node,st.acc); actTouch('正在写回复'); }
+  else if(name==='tool.started'){ st.lastTool=addTool(node,j.tool||'tool',j.preview||''); if(node.typing){ const t=node.typing.querySelector('.t'); if(t) t.textContent='执行中'; } actStep(j.tool||'tool', j.preview||''); }
+  else if(name==='tool.completed'){ if(st.lastTool) markToolDone(st.lastTool); actStepDone(); }
+  else if(name==='message.interim'){ if(j.text) note(node,j.text); }
+  else if(name==='run.completed'){ st.done=true; if(typeof j.output==='string'&&j.output) setText(node,j.output); actFinish('done'); }
+  else if(name==='run.failed'){ st.done=true; note(node,'出错了：'+(j.error||j.message||'未知'),'errn'); actFinish('fail'); }
+  else if(name==='run.interrupted'){ st.done=true; note(node,'这一轮被中断了。要我接着做，说一声「继续」。'); actFinish('stop'); }
+  else if(name==='approval.request'){ addApproval(node, j, runId); actTouch('等你点头'); }
+  else if(name==='error'){ st.done=true; note(node,'出错了：'+(j.message||j.error||'未知'),'errn'); actFinish('fail'); }
+}
+async function startRun(text){
+  const r=await fetch(API+'/v1/runs',{method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({input:text,session_id:currentId})});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const d=await r.json(); return d.run_id||d.id||null;
+}
+async function streamRun(rid,node,st){
+  let lastSeq=-1, tries=0;
+  for(;;){
+    try{
+      const url=API+'/v1/runs/'+encodeURIComponent(rid)+'/events'+(lastSeq>=0?('?last_seq='+lastSeq):'');
+      const res=await fetch(url,{headers:{'accept':'text/event-stream'},cache:'no-store',
+        signal:abortCtrl?abortCtrl.signal:undefined});
+      if(!res.ok||!res.body) throw new Error('HTTP '+res.status);
+      if(st.retryEl){ st.retryEl.remove(); st.retryEl=null; }
+      await readSSE(res.body,(sid,ev,j)=>{
+        const name=j.event||ev; const sq=(typeof j.seq==='number')?j.seq:sid;
+        if(typeof sq==='number') lastSeq=Math.max(lastSeq,sq);
+        handleRunEvent(name,j,node,st);
+      });
+      if(st.done) return;
+    }catch(err){ if(err.name==='AbortError') throw err; }
+    if(st.done) return;
+    tries++;
+    if(tries>40){ note(node,'重连很多次都没成功，先停在这里了。','errn'); return; }
+    if(!st.retryEl){ st.retryEl=document.createElement('div'); st.retryEl.className='note'; node.w.appendChild(st.retryEl); }
+    st.retryEl.textContent='连接中断，2 秒后自动重连…（第 '+tries+' 次）';
+    scroll();
+    await new Promise(r=>setTimeout(r,2000));
+  }
+}
+async function send_it(){
+  const text=input.value.trim(); if(busy) return;
+  const ready=atts.filter(a=>a.path);
+  if(!text && !ready.length){ flashInvalid(); return; }
+  stickBottom=true;
+  if(!currentId){ await newSession(); if(!currentId) return; }
+  const payload=[ready.map(a=>'【附件】'+a.path+'（'+a.name+'，'+(a.size_h||'')+'）').join('\n'), text].filter(Boolean).join('\n');
+  input.value=''; grow(); syncIdle();
+  atts=[]; attBar.textContent=''; syncAttBar();
+  const emp=main.querySelector('.empty'); if(emp) emp.remove();
+  addUser(text, ready);
+  const node=addAssistant();
+  setBusy(true); runId=null; abortCtrl=new AbortController();
+  const st={acc:'',lastTool:null,retryEl:null,done:false,stopped:false};
+  try{
+    runId=await startRun(payload);
+    if(!runId) throw new Error('no run_id');
+    actBind(runId);                          // 记下 run id，离开再回来能接回这一轮
+    await streamRun(runId,node,st);
+  }catch(err){
+    if(err.name==='AbortError'){ st.stopped=true; if(node.typing)node.typing.remove(); note(node,'已停止'); }
+    else { if(node.typing)node.typing.remove(); note(node,'连接出错了（'+err.message+'）。','errn'); }
+  }finally{
+    if(node.text) node.text.classList.remove('streaming');
+    if(node.typing) node.typing.remove();
+    if(!st.acc && !node.tools.children.length && !st.stopped) note(node,'（没有输出）');
+    setBusy(false, st); abortCtrl=null; runId=null;
+    refreshSessions();
+  }
+}
+async function stop(){
+  try{ if(runId) await jpost('/v1/runs/'+encodeURIComponent(runId)+'/stop',{}); }catch(e){}
+  try{ if(abortCtrl) abortCtrl.abort(); }catch(e){}
+}
+
+/* ── 输入框 ─────────────────────────────────────────────── */
+function grow(){ input.style.height='auto'; input.style.height=Math.min(input.scrollHeight,150)+'px'; }
+/* ── 附件（回形针 / 粘贴）── */
+let atts=[];
+const attBar=$('#att');
+function humanSize(n){ if(n<1024) return n+'B'; if(n<1048576) return (n/1024).toFixed(0)+'K'; if(n<1073741824) return (n/1048576).toFixed(1)+'M'; return (n/1073741824).toFixed(2)+'G'; }
+function extTag(n){ const m=/\.([A-Za-z0-9]{1,6})$/.exec(n||''); return m?m[1].toUpperCase():'FILE'; }
+function syncAttBar(){ attBar.classList.toggle('on', attBar.children.length>0); }
+function paintChip(el,a,state){
+  el.className='attchip'+(state==='up'?' up':'')+(state==='bad'?' bad':'');
+  el.textContent='';
+  if(a.url&&a.kind==='image'){ const im=document.createElement('img'); im.src=a.url; im.alt=''; el.appendChild(im); }
+  else{ const ic=document.createElement('span'); ic.className='ico'; ic.textContent=state==='up'?'…':extTag(a.name); el.appendChild(ic); }
+  const nm=document.createElement('span'); nm.className='nm'; nm.textContent=a.name||'文件'; nm.title=a.name||''; el.appendChild(nm);
+  const sz=document.createElement('span'); sz.className='sz'; sz.textContent=state==='up'?'上传中':(state==='bad'?(a.err||'失败'):(a.size_h||'')); el.appendChild(sz);
+  if(state!=='up'){ const x=document.createElement('button'); x.type='button'; x.className='x'; x.textContent='×'; x.title='移除';
+    x.addEventListener('click',()=>{ el.remove(); atts=atts.filter(o=>o.chip!==el); syncAttBar(); syncIdle(); });
+    el.appendChild(x); }
+}
+async function addFiles(list){
+  const files=Array.from(list||[]).filter(f=>f&&typeof f.size==='number');
+  if(!files.length) return;
+  for(const f of files){
+    const ph={name:f.name||'文件', size_h:humanSize(f.size)};
+    const el=document.createElement('div'); attBar.appendChild(el); syncAttBar();
+    if(f.size > 64*1024*1024){ ph.err='太大（上限 64 MB）'; paintChip(el,ph,'bad'); continue; }
+    paintChip(el,ph,'up'); ph.chip=el;
+    try{
+      const r=await fetch('/api/inbox/upload',{method:'POST',cache:'no-store',
+        headers:{'Content-Type':f.type||'application/octet-stream','X-File-Name':encodeURIComponent(f.name||'file')},
+        body:f});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok||!d.ok) throw new Error(d.error||('HTTP '+r.status));
+      Object.assign(ph,d); atts.push(ph); paintChip(el,ph,'ok');
+    }catch(err){ ph.err=err.message||'上传失败'; paintChip(el,ph,'bad'); }
+  }
+  syncAttBar(); syncIdle();
+}
+(function(){
+  const clip=$('#clip'), clipFile=$('#clipFile');
+  if(!clip) return;
+  clip.addEventListener('click',()=>clipFile.click());
+  clipFile.addEventListener('change',()=>{ addFiles(clipFile.files); clipFile.value=''; });
+  input.addEventListener('paste',e=>{ const fl=e.clipboardData&&e.clipboardData.files; if(fl&&fl.length){ e.preventDefault(); addFiles(fl); } });
+  ['dragenter','dragover'].forEach(ev=>form.addEventListener(ev,e=>{ if(e.dataTransfer&&Array.from(e.dataTransfer.types||[]).includes('Files')){ e.preventDefault(); clip.classList.add('drag'); } }));
+  ['dragleave','drop'].forEach(ev=>form.addEventListener(ev,e=>{ if(ev==='dragleave'&&form.contains(e.relatedTarget)) return; clip.classList.remove('drag'); }));
+  form.addEventListener('drop',e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length){ e.preventDefault(); addFiles(e.dataTransfer.files); } });
+})();
+function syncIdle(){ send.classList.toggle('idle',!busy&&!(input.value.trim()||atts.some(a=>a.path))); }
+function flashInvalid(){ const c=form; c.classList.remove('invalid'); void c.offsetWidth; c.classList.add('invalid');
+  setTimeout(()=>c.classList.remove('invalid'),500); }
+input.addEventListener('input',()=>{ grow(); syncIdle(); });
+input.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey&&!isTouch){ e.preventDefault(); if(!busy) send_it(); } });
+form.addEventListener('submit',e=>{ e.preventDefault(); if(busy) stop(); else send_it(); });
+
+main.addEventListener('scroll',()=>{ const b=atBottom(); stickBottom=b; toBottomBtn.classList.toggle('show',!b); },{passive:true});
+toBottomBtn.addEventListener('click',()=>{ stickBottom=true; toBottomBtn.classList.remove('show'); scroll(true); });
+
+/* ── 抽屉 ───────────────────────────────────────────────── */
+function openDrawer(){ drawer.classList.add('open'); scrim.classList.add('show'); refreshSessions(); }
+function closeDrawer(){ drawer.classList.remove('open'); scrim.classList.remove('show'); }
+$('#menu').addEventListener('click',()=>{ drawer.classList.contains('open')?closeDrawer():openDrawer(); });
+$('#newBtn').addEventListener('click',newSession);
+$('#newBtn2').addEventListener('click',newSession);
+scrim.addEventListener('click',closeDrawer);
+
+/* ── 待办面板（抽屉底部「待办」：今天 / 明天 / 长期，右侧滑=挪到明天） ── */
+const todoSheet=$('#todoSheet'), todoList=$('#todoList'), todoCount=$('#todoCount');
+let todoDate='today', todoSwipeBusy=false, badgesAcking=false;
+const TODO_BLOCKS=['上午','下午','晚上','其他'];
+function todoBlock(text,due){
+  const t=String(text||'');
+  if(/吃药/.test(t)) return '晚上';
+  if(/蛋白粉|肌酸|早餐|上课|项目|求职动作|简历|内推|算法题|刷题/.test(t)) return '上午';
+  if(/八股|口述|健身|散步|拉伸|面试|复盘|投递/.test(t)) return '下午';
+  const hm=due?String(due).slice(11,16):'';
+  if(hm && hm>='18:00') return '晚上';
+  return '其他';
+}
+function paintEod(eod){
+  const b=$('#todoEodBtn'), i=$('#todoEodInfo');
+  const u=$('#eodUndo');
+  if(u) u.style.display = (eod&&eod.time) ? '' : 'none';
+  if(!b) return;
+  if(eod&&eod.time){ b.classList.add('done'); b.textContent='今天已结束一天 · '+eod.time; i.textContent='已记录'; }
+  else { b.classList.remove('done'); b.textContent='结束一天 · 不看手机上床'; i.textContent=''; }
+}
+let ckToday='', ckHoldUntil=0, ckDeadline='';
+function hideCkBig(){ const b=$('#ckBig'); if(b) b.classList.remove('on'); }
+function paintCheckin(ck){
+  if(ck&&ck.deadline) ckDeadline=ck.deadline;
+  const noCk = !(ck&&ck.deadline);   /* 周六整休：这天不用打卡 */
+  const row=$('#ckRow'), b=$('#ckBtn'), i=$('#ckInfo');
+  if(row&&b){
+    row.style.display = (todoDate!=='today'||noCk) ? 'none' : '';
+    if(ck&&ck.time){
+      b.classList.add('done');
+      b.textContent='已到教室 · '+ck.time+(ck.late?'（迟到）':'');
+      i.textContent='';
+    } else {
+      b.classList.remove('done');
+      b.textContent='到教室打卡 · '+((ck&&ck.deadline)||'8:00')+' 前';
+      i.textContent='';
+    }
+  }
+  const big=$('#ckBig');
+  if(!big || Date.now()<ckHoldUntil) return;
+  const punched=!!(ck&&ck.time);
+  const skipped=!!(ckToday && localStorage.getItem('ck_skip_'+ckToday));
+  if(todoDate!=='today' || noCk || punched || skipped) hideCkBig(); else big.classList.add('on');
+}
+function resetCkBigBtn(){
+  const tip=$('#ckBigTip'); if(tip) tip.style.display='';
+  const b=$('#ckBigBtn'); if(!b) return;
+  b.classList.remove('done'); b.disabled=false;
+  b.innerHTML='<span class="big">到教室打卡</span><small>'+(ckDeadline||'8:00')+' 前算准时</small>';
+}
+async function punchCheckin(src){
+  const big=$('#ckBigBtn');
+  if(big){ big.disabled=true; big.innerHTML='<span class="big">记着…</span>'; }
+  try{
+    const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:'checkin',date:'today',src})});
+    const j=await r.json(); const ck=j&&j.checkin;
+    ckHoldUntil=Date.now()+1400;
+    paintCheckin(ck);
+    if(ck&&ck.time){
+      const tip=$('#ckBigTip'); if(tip) tip.style.display='none';
+      if(big){ big.classList.add('done'); big.innerHTML='<span class="big">'+ck.time+' 到了</span><small>'+(ck.late?'迟到，但记上了':'准时')+'</small>'; }
+      say(ck.late? ('打上了 '+ck.time+'，迟到了，但记上了') : ('准时打卡 '+ck.time+'，到教室了'));
+      setTimeout(()=>{ hideCkBig(); resetCkBigBtn(); },1350);
+    } else { resetCkBigBtn(); }
+  }catch(e){ say('打卡失败：'+e.message); resetCkBigBtn(); }
+}
+function todoBuzz(ms){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(_){} }
+function todoMove(it){
+  const name=String(it.text||'').replace(/\s*⏰.*$/,'').trim();
+  const label=(todoDate==='long')?'已加到明天':'已挪到明天';
+  fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({action:'tomorrow',n:it.n,date:todoDate})})
+    .then(r=>r.ok?r.json():null)
+    .then(j=>{ todoSwipeBusy=false;
+      if(j) renderTodos(j); else loadTodos();
+      toast('\u2713 '+label+' · '+name);
+      try{ const t=document.querySelector('.toast'); if(t) t.classList.add('ok'); }catch(_){} })
+    .catch(()=>{ todoSwipeBusy=false; loadTodos(); });
+}
+function attachSwipe(row,it,onTap){
+  const THRESH=70, MAX=150;
+  const tag=document.createElement('div'); tag.className='swi'; tag.textContent='明天 \u2192';
+  row.appendChild(tag);
+  let sx=0, sy=0, dx=0, active=false, decided=false;
+  const reset=()=>{ row.classList.remove('arm','swiping');
+    row.style.transition='transform .24s cubic-bezier(.22,.61,.36,1)'; row.style.transform=''; };
+  row.addEventListener('pointerdown', e=>{
+    active=true; decided=false; dx=0; sx=e.clientX; sy=e.clientY;
+    row.classList.add('swiping');
+  });
+  row.addEventListener('pointermove', e=>{
+    if(!active) return;
+    const mx=e.clientX-sx, my=e.clientY-sy;
+    if(!decided){
+      if(Math.abs(mx)<6 && Math.abs(my)<6) return;
+      if(Math.abs(my)>Math.abs(mx)){ active=false; reset(); return; }
+      decided=true;
+      try{ row.setPointerCapture(e.pointerId); }catch(_){}
+    }
+    if(mx<=0){ dx=0; row.style.transform=''; return; }
+    dx=Math.min(mx,MAX);
+    row.style.transition='none';
+    row.style.transform='translateX('+dx+'px)';
+    row.classList.toggle('arm', dx>=THRESH);
+  });
+  row.addEventListener('pointerup', ()=>{
+    if(!active) return;
+    active=false;
+    row.classList.remove('swiping');
+    if(dx < THRESH){
+      reset();
+      if(decided && dx>=8 && onTap){          // 手指抖了一下也算点击，别吞掉
+        row.dataset.swiped='1';
+        setTimeout(()=>{ row.dataset.swiped=''; },400);
+        onTap();
+      }
+      return;
+    }
+    const start=Math.max(dx,THRESH);
+    row.classList.remove('arm'); row.classList.add('lift');
+    row.style.pointerEvents='none';
+    todoBuzz(10); todoSwipeBusy=true;
+    try{ row.animate([{transform:'translateX('+start+'px) scale(1)'},
+                      {transform:'translateX('+start+'px) scale(1.02)'}],
+                     {duration:170,easing:'cubic-bezier(.2,.8,.3,1)',fill:'forwards'}); }
+    catch(_){ row.style.transform='translateX('+start+'px) scale(1.02)'; }
+    setTimeout(()=>{
+      const w=row.offsetWidth||todoList.clientWidth||320;
+      let fired=false;
+      const done=()=>{ if(fired) return; fired=true; todoMove(it); };
+      try{
+        const a=row.animate([{transform:'translateX('+start+'px) scale(1.02)',opacity:1},
+                             {transform:'translateX('+(w+70)+'px) scale(1.02)',opacity:0}],
+                            {duration:300,easing:'cubic-bezier(.22,.61,.36,1)',fill:'forwards'});
+        a.onfinish=done;
+      }catch(_){}
+      setTimeout(done,460);
+    },230);
+  });
+  row.addEventListener('pointercancel', ()=>{ active=false; reset(); });
+}
+function todoRow(it,date){
+  const row=document.createElement('div'); row.className='trow'+(it.done?' done':'');
+  const cb=document.createElement('div'); cb.className='cb'; cb.textContent=it.done?'✓':'';
+  const tx=document.createElement('div'); tx.className='tx'; tx.textContent=it.text||'';
+  row.appendChild(cb); row.appendChild(tx);
+  const toggle=async ()=>{
+    try{
+      const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({action: it.done?'undone':'done', n:it.n, date:date})});
+      if(r.ok) renderTodos(await r.json()); else loadTodos();
+    }catch(e){}
+  };
+  row.onclick=()=>{ if(row.dataset.swiped==='1'){ row.dataset.swiped=''; return; } toggle(); };
+  todoList.appendChild(row);
+  if(!it.done) attachSwipe(row,it,toggle);
+}
+function checkBadges(d){
+  const list=((d&&d.ranks&&d.ranks.badges)||[]).filter(b=>b.is_new && b.level>0);
+  if(!list.length || badgesAcking) return;
+  badgesAcking=true;
+  const names=list.slice(0,3).map(b=>b.name+'\u00b7'+b.level_name).join('\u3001')+(list.length>3?' 等':'');
+  toast('\u2605 解锁徽章'+(list.length>1?(' '+list.length+' 枚：'):'：')+names);
+  try{ const t=document.querySelector('.toast'); if(t) t.classList.add('ok'); }catch(_){}
+  fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({action:'badges_seen',items:list.map(b=>({id:b.id,level:b.level}))})})
+    .catch(()=>{}).finally(()=>{ setTimeout(()=>{ badgesAcking=false; },1000); });
+}
+function renderTodos(d){
+  const items=d.items||[], c=d.counts||{};
+  paintEod(d&&d.eod);
+  if(d&&d.today) ckToday=d.today;
+  paintCheckin(d&&d.checkin);
+  checkBadges(d);
+  const open=items.filter(i=>!i.done), done=items.filter(i=>i.done);
+  todoCount.textContent = items.length? ((c.done||0)+'/'+items.length) : '';
+  todoList.innerHTML='';
+  if(!items.length){
+    const what = todoDate==='long' ? '长期清单是空的<br>滑一下或者加一条都行' :
+                 todoDate==='tomorrow' ? '明天还没有计划<br>下面加一条就行' :
+                 '今天还没有计划<br>下面加一条就行';
+    todoList.innerHTML='<div class="tempty">'+what+'</div>';
+    return;
+  }
+  for(const b of TODO_BLOCKS){
+    const g=open.filter(it=>todoBlock(it.text,it.due)===b);
+    if(!g.length) continue;
+    if(todoDate!=='long'){                             // 长期清单不分组
+      const hd=document.createElement('div'); hd.className='thdr'; hd.textContent=b;
+      const cnt=document.createElement('i'); cnt.textContent=g.length; hd.appendChild(cnt);
+      todoList.appendChild(hd);
+    }
+    for(const it of g) todoRow(it, d.date);
+  }
+  if(open.length && done.length){
+    const hd=document.createElement('div'); hd.className='tsub'; hd.textContent='已完成 · '+done.length+' 条';
+    todoList.appendChild(hd);
+  }
+  for(const it of done) todoRow(it, d.date);
+}
+async function loadTodos(){
+  try{
+    const u = '/api/todos' + (todoDate==='today' ? '' : '?date='+todoDate);
+    const r = await fetch(u,{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    renderTodos(await r.json());
+  }
+  catch(e){ todoList.innerHTML='<div class="tempty">读不到计划（'+e.message+'）</div>'; }
+}
+function setTodoDate(d){
+  todoDate=d;
+  document.querySelectorAll('#todoSeg button').forEach(b=>b.classList.toggle('on', b.dataset.d===d));
+  const el=$('#todoAddInput');
+  if(el) el.placeholder = d==='long' ? '加一条长期的…' : (d==='tomorrow' ? '加一条明天的…' : '加一条今天的…');
+  const ttl=document.querySelector('#todoSheet .sh .tt');
+  if(ttl) ttl.textContent = d==='long' ? '长期清单' : (d==='tomorrow' ? '明天计划' : '今日计划');
+  const eodWrap=$('#todoEodBtn') && $('#todoEodBtn').parentElement;
+  if(eodWrap) eodWrap.style.display = (d==='today') ? '' : 'none';   // 结束一天只在今天档
+  loadTodos();
+}
+document.querySelectorAll('#todoSeg button').forEach(b=>{
+  b.addEventListener('click', ()=>setTodoDate(b.dataset.d));
+});
+function openTodos(){ closeDrawer(); todoSheet.classList.add('open'); loadTodos(); }
+function closeTodos(){ todoSheet.classList.remove('open'); }
+/* 手机上加一条（加到当前这一档） */
+async function addTodoFromSheet(){
+  const el=$('#todoAddInput'); if(!el) return;
+  const text=(el.value||'').trim();
+  if(!text){ el.focus(); return; }
+  el.value='';
+  try{
+    const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:'add',text,date:todoDate})});
+    if(r.ok){ renderTodos(await r.json()); todoList.scrollTop=todoList.scrollHeight; }
+    else loadTodos();
+  }catch(e){ loadTodos(); }
+}
+if($('#todoAddBtn')) $('#todoAddBtn').addEventListener('click', addTodoFromSheet);
+if($('#todoAddInput')) $('#todoAddInput').addEventListener('keydown', e=>{
+  if(e.key==='Enter'){ e.preventDefault(); addTodoFromSheet(); }
+});
+$('#todoBtn').addEventListener('click',openTodos);
+$('#todoClose').addEventListener('click',closeTodos);
+const eodBtn2=$('#todoEodBtn');
+if(eodBtn2) eodBtn2.addEventListener('click',async ()=>{
+  eodBtn2.disabled=true;
+  try{
+    const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:'eod',date:'today'})});
+    const j=await r.json();
+    paintEod(j&&j.eod);
+    if(j&&j.eod&&j.eod.time) say(j.eod.already? ('今天已经记过了：'+j.eod.time) : ('已记录：'+j.eod.time+' 结束一天'));
+  }catch(e){ say('记录失败：'+e.message); }
+  eodBtn2.disabled=false;
+});
+
+if($('#eodUndo')) $('#eodUndo').addEventListener('click',async ()=>{
+  if(!confirm('撤回今天的「结束一天」？')) return;
+  try{
+    const r=await fetch('/api/todos',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({action:'eod_undo',date:'today'})});
+    const j=await r.json();
+    paintEod(j&&j.eod);
+    say('已撤回今天的「结束一天」');
+  }catch(e){ say('撤回失败：'+e.message); }
+});
+const ckBtn2=$('#ckBtn');
+if(ckBtn2) ckBtn2.addEventListener('click', ()=>punchCheckin('mobile'));
+if($('#ckBigBtn')) $('#ckBigBtn').addEventListener('click', ()=>punchCheckin('mobile'));
+if($('#ckSkip')) $('#ckSkip').addEventListener('click', ()=>{
+  if(ckToday){ try{ localStorage.setItem('ck_skip_'+ckToday, ckToday); }catch(_){} }
+  hideCkBig();
+});
+(async function ckBoot(){
+  if(!$('#ckBig')) return;
+  try{
+    const d=await fetch('/api/todos?date=today',{cache:'no-store'}).then(r=>r.json());
+    if(d&&d.today) ckToday=d.today;
+    paintCheckin(d&&d.checkin);
+  }catch(e){}
+})();
+
+/* ── 站点面板（抽屉底部「站点」→ 手机上能用的入口） ─────────── */
+const RAPI='/api/remote';
+const sitesSheet=$('#sitesSheet'), sitesList=$('#sitesList'), sitesCount=$('#sitesCount');
+function openURLNewTab(u){
+  const a=document.createElement('a'); a.href=u; a.target='_blank'; a.rel='noopener noreferrer';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+/* 一键复制网址：https/localhost 走 Clipboard API，http 下退回 execCommand；结果用 say() 提示 */
+function copyURL(u){
+  const full=(u && u.charAt(0)==='/') ? location.origin+u : (u||'');
+  const ok=()=>say('已复制 '+(full.length>42?(full.slice(0,42)+'…'):full));
+  const fallback=()=>{
+    try{
+      const ta=document.createElement('textarea'); ta.value=full; ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;left:-9999px;top:0;opacity:0';
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0,ta.value.length);
+      const done=document.execCommand('copy'); ta.remove();
+      done?ok():say('复制失败：长按那一行手动选中吧');
+    }catch(e){ say('复制失败：'+e.message); }
+  };
+  if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(full).then(ok).catch(fallback);
+  else fallback();
+}
+function siteRowEl(s, mob){
+  const r=document.createElement('div'); r.className='mrow';
+  const dt=document.createElement('span'); dt.className='dot'; dt.style.background=s.color||'#7C8CFF';
+  const t=document.createElement('span'); t.className='t';
+  const n=document.createElement('span'); n.className='n'; n.textContent=s.name||'(未命名)';
+  const url = (mob && s.murl) ? s.murl : s.url;
+  if(mob){
+    const self = s.murl===s.url;
+    const b=document.createElement('span'); b.className='mbad'+(self?' self':''); b.textContent=self?'自':'M';
+    b.title=self?'手机上直接打开':'打开手机版';
+    n.appendChild(b);
+  }
+  const u=document.createElement('span'); u.className='u'; u.textContent=url;
+  t.append(n,u);
+  const cp=document.createElement('button'); cp.type='button'; cp.className='cp'; cp.textContent='⧉';
+  cp.title='复制网址'; cp.setAttribute('aria-label','复制网址');
+  cp.onclick=e=>{ e.stopPropagation(); copyURL(url); };
+  const go=document.createElement('span'); go.className='go'; go.textContent='›';
+  r.append(dt,t,cp,go);
+  r.onclick=()=>openURLNewTab(url);
+  return r;
+}
+let sitesPCShown=false;
+function renderSites(d){
+  const all=d.sites||[];
+  const mob=all.filter(s=>s.murl), pc=all.filter(s=>!s.murl);
+  sitesCount.textContent = mob.length ? (mob.length+' 个') : '';
+  sitesList.innerHTML='';
+  if(!mob.length){
+    const e=document.createElement('div'); e.className='tempty';
+    e.innerHTML='还没有手机端入口<br>在桌面「站点」tab 给它填个手机版地址就出现了';
+    sitesList.appendChild(e);
+  }
+  mob.forEach(s=>sitesList.appendChild(siteRowEl(s,true)));
+  if(pc.length){
+    const box=document.createElement('div'); box.style.display=sitesPCShown?'block':'none';
+    const h=document.createElement('div'); h.className='msep';
+    h.innerHTML='<span>Only PC · '+pc.length+'</span><span class="ln"></span><span>'+(sitesPCShown?'收起':'展开')+'</span>';
+    h.onclick=()=>{ sitesPCShown=!sitesPCShown; h.lastElementChild.textContent=sitesPCShown?'收起':'展开';
+                    box.style.display=sitesPCShown?'block':'none'; };
+    pc.forEach(s=>box.appendChild(siteRowEl(s,false)));
+    sitesList.append(h,box);
+  }
+}
+async function loadSites(){
+  try{
+    const r=await fetch(RAPI+'/sites',{cache:'no-store'}); if(!r.ok) throw new Error('HTTP '+r.status);
+    renderSites(await r.json());
+  }catch(e){ sitesList.innerHTML='<div class="tempty">读不到站点清单（'+esc(e.message)+'）</div>'; }
+}
+function openSites(){ closeDrawer(); sitesSheet.classList.add('open'); loadSites(); }
+function closeSites(){ sitesSheet.classList.remove('open'); }
+$('#sitesBtn').addEventListener('click',openSites);
+$('#sitesClose').addEventListener('click',closeSites);
+
+/* ── 语音输入 ───────────────────────────────────────────── */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function say(msg){ hint.textContent=msg; hint.classList.add('show'); clearTimeout(say._t);
+  say._t=setTimeout(()=>hint.classList.remove('show'),4500); }
+let rec=null, recOn=false;
+if(!SR){
+  mic.style.opacity='.35';
+  mic.onclick=()=>say('这台设备的浏览器不支持语音输入（手机 Chrome / Safari 支持）。');
+}else if(location.protocol!=='https:' && !['localhost','127.0.0.1'].includes(location.hostname)){
+  mic.onclick=()=>say('语音输入要走 https（用公网域名打开就行）。');
+}else{
+  const paintMic=on=>{ mic.classList.toggle('rec',!!on); };
+  let base='', finalTxt='', interimTxt='', timer=0, quick=0;
+
+  const paint=()=>{ input.value=base+finalTxt+interimTxt; grow(); syncIdle(); };
+
+  function recHalt(msg){                        // 收尾：停引擎、灭红点、给一句话
+    recOn=false; clearTimeout(timer);
+    const r=rec; rec=null;
+    if(r){ r.onend=null; r.onerror=null; r.onresult=null; try{ r.stop(); }catch(e){} }
+    paintMic(false);
+    if(msg) say(msg);
+  }
+
+  function recRound(){                          // 一轮识别（安卓 Chrome 不支持 continuous，就是「一句一轮」）
+    if(!recOn) return;
+    const r=new SR(); rec=r;
+    r.lang='zh-CN'; r.interimResults=true; r.continuous=true; r.maxAlternatives=1;
+    const t0=Date.now();
+    r.onresult=ev=>{ quick=0; interimTxt='';
+      for(let i=ev.resultIndex;i<ev.results.length;i++){ const x=ev.results[i];
+        if(x.isFinal) finalTxt+=(x[0]&&x[0].transcript)||''; else interimTxt+=(x[0]&&x[0].transcript)||''; }
+      paint(); };
+    r.onerror=e=>{
+      if(e.error==='not-allowed'||e.error==='service-not-allowed'){
+        recHalt('麦克风没被允许：浏览器弹窗点「允许」，或在系统设置里给这个浏览器开麦克风。'); return; }
+      if(e.error==='audio-capture'){ recHalt('手机麦克风被别的应用占着，关掉它再点一次。'); return; }
+      // no-speech / aborted / network：不报错，交给 onend 接着听
+    };
+    r.onend=()=>{
+      if(!recOn||r!==rec) return;
+      quick = (Date.now()-t0<600) ? quick+1 : 0;   // 秒结束＝引擎没起来，别死循环
+      if(quick>=4){ recHalt('麦克风起不来：点一下再试，或检查系统的麦克风权限。'); return; }
+      clearTimeout(timer);                          // 延时续听：安卓上同步 start() 会立刻抛错
+      timer=setTimeout(()=>{ if(recOn) recRound(); },400);
+    };
+    try{ r.start(); paintMic(true); }
+    catch(e){
+      rec=null; quick++;
+      if(quick>=4){ recHalt('起不来麦克风：'+e.message); return; }
+      clearTimeout(timer); timer=setTimeout(()=>{ if(recOn) recRound(); },500);
+    }
+  }
+
+  mic.onclick=()=>{
+    if(recOn){ recHalt('语音输入已结束，确认一下再发。'); return; }
+    recOn=true; quick=0; finalTxt=''; interimTxt='';
+    base=input.value?input.value.replace(/\s+$/,'')+' ':'';
+    recRound();
+    say('在听…说完再点一下麦克风结束（安卓上每说完一句会响一下、自动接着听）。');
+  };
+}
+
+/* ── 定时简报（打开界面时领取未读） ───────────────────────── */
+let inboxBox=null, inboxQ=[], inboxAcked=new Set();
+async function refreshInbox(){
+  try{
+    const r=await fetch('/api/inbox',{cache:'no-store'}); if(!r.ok) return;
+    applyInbox((await r.json()).items||[]);
+  }catch(e){}
+}
+function applyInbox(items){
+  const present=new Set((items||[]).map(i=>i.id));
+  for(const id of [...inboxAcked]) if(!present.has(id)) inboxAcked.delete(id);
+  inboxQ=(items||[]).filter(it=>!inboxAcked.has(it.id));
+  paintInbox();
+}
+function paintInbox(){
+  const n=inboxQ.length;
+  if(!n){ if(inboxBox){ inboxBox.remove(); inboxBox=null; } inboxShown=false; return; }
+  if(!inboxBox){
+    inboxBox=document.createElement('div'); inboxBox.className='inbox';
+    main.insertBefore(inboxBox, main.firstChild);
+    inboxShown=true;
+  }
+  const it=inboxQ[0];
+  inboxBox.innerHTML='';
+  const c=document.createElement('div'); c.className='card';
+  const hd=document.createElement('div'); hd.className='hd';
+  hd.innerHTML='<span class="dot2"></span><span>'+esc(it.job)+' · '+esc(it.time)+'</span>'
+             +'<span class="pg">'+(n>1?('1 / '+n):'')+'</span>';
+  const bd=document.createElement('div'); bd.className='bd'; renderRich(bd,it.text);
+  const ack=document.createElement('button'); ack.type='button'; ack.className='ack';
+  ack.textContent=(n>1?'知道了，看下一条':'知道了');
+  ack.onclick=async ()=>{ const id=it.id; inboxQ.shift(); paintInbox(); await ackInbox([id]); };
+  c.appendChild(hd); c.appendChild(bd); c.appendChild(ack);
+  inboxBox.appendChild(c);
+}
+async function ackInbox(ids){
+  (ids||[]).forEach(i=>inboxAcked.add(i));
+  try{
+    const r=await fetch('/api/inbox',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({ids})});
+    if(r.ok) applyInbox((await r.json()).items||[]);
+  }catch(e){}
+}
+
+/* ── 启动 ───────────────────────────────────────────────── */
+/* iOS 键盘弹起时 100dvh 不缩水 —— 跟着 visualViewport 调高度，输入框才不会被顶住 */
+if(window.visualViewport){
+  const vv=window.visualViewport, fit=()=>{ document.body.style.height=vv.height+'px'; };
+  vv.addEventListener('resize',fit); vv.addEventListener('scroll',fit); fit();
+}
+
+(async function start(){
+  grow(); syncIdle();
+  await refreshSessions();
+  if(sessions.length){ await selectSession(sessions[0].id); }
+  else await newSession();
+  refreshInbox();
+})();
+setInterval(()=>{ if(!document.hidden) renderSessions(); },60000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ renderSessions(); refreshInbox(); } });
+})();
+</script>
+</body>
+</html>

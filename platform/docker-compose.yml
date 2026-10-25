@@ -1,0 +1,31 @@
+services:
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./hub:/srv:ro
+
+  gitea:
+    image: gitea/gitea:1
+    container_name: gitea
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__server__DOMAIN=localhost
+      - GITEA__server__ROOT_URL=http://localhost:3000/
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__SSH_DISABLED=true
+      - GITEA__service__DISABLE_REGISTRATION=true
+      - GITEA__database__DB_TYPE=sqlite3
+      - GITEA__security__INSTALL_LOCK=true
+      - GITEA__openid__ENABLE_OPENID_SIGNIN=false
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./gitea-data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro

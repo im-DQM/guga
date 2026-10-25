@@ -1,0 +1,14 @@
+[Unit]
+Description=Guga Jiaxin API (server-side storage for the 我的夹心 single-file page)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/stack/jiaxin_service
+ExecStart=/usr/bin/python3 /home/ubuntu/stack/jiaxin_service/jiaxin_api.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

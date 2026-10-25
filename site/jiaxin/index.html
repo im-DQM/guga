@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)https://ws-967fb31fbeb6019f.lightvela.tech/ -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#FBF6EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#221E1B" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="我的夹心">
+<meta name="format-detection" content="telephone=no">
+<title>我的夹心</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Serif+SC:wght@500;700;900&display=swap');
+*{box-sizing:border-box}
+:root{
+  --bg:#FBF6EF; --bg2:#F6EDE2; --paper:#FFFDF9; --paper2:#FDF8F2;
+  --ink:#3D342C; --ink2:#6E6357; --ink3:#8F8271;
+  --line:rgba(61,52,44,.10); --line2:rgba(61,52,44,.20);
+  --rose:#C95C7F; --rose2:#9C3F60; --rose-soft:#F9E8ED; --rose-line:#EFCCDA;
+  --tape:rgba(201,92,127,.28);
+  --bad:#B3443C; --bad-soft:#FBEBE9; --bad-line:#EFBDB7;
+  --warn:#8A5A12; --warn-soft:#FAEEDA; --warn-line:#EFD5A8;
+  --ok:#2F6B4F; --ok-soft:#E6F2EB; --ok-line:#C2E1D0;
+  --r:14px; --rs:10px; --rl:20px;
+  --shadow:0 1px 2px rgba(61,52,44,.04), 0 6px 18px rgba(61,52,44,.06);
+  --shadow-lift:0 2px 4px rgba(61,52,44,.06), 0 12px 32px rgba(61,52,44,.10);
+  --font-hand:"LXGW WenKai TC","Kaiti SC","STKaiti",serif;
+  --font-serif:"Noto Serif SC","Songti SC",serif;
+}
+html,body{margin:0;padding:0}
+body{background:
+  radial-gradient(1200px 500px at 85% -100px, rgba(201,92,127,.07), transparent 60%),
+  radial-gradient(900px 400px at -100px 30%, rgba(196,150,90,.06), transparent 60%),
+  var(--bg);
+  color:var(--ink);
+  font-family:var(--font-hand),"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 90px}
+.hidden{display:none!important}
+::selection{background:var(--rose-soft)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--rose-line);border-radius:8px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:var(--rose)}
+
+/* ---------- 顶部：手账封面感 ---------- */
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:10px}
+.brand h1{font-family:var(--font-serif);font-size:34px;font-weight:900;margin:0;letter-spacing:2px;
+  display:flex;align-items:center;gap:12px;color:var(--ink)}
+.brand h1 .heart{width:13px;height:13px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  background:linear-gradient(135deg,var(--rose),#E08CA8);flex:none;box-shadow:0 0 0 4px var(--rose-soft)}
+.brand h1::before{content:none}
+.tag{font-size:13px;color:var(--ink2);margin:8px 0 0;font-style:italic}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 分隔胶带 */
+.tape-divider{position:relative;height:26px;margin:14px 0 22px;display:flex;align-items:center;justify-content:center}
+.tape-divider::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line2)}
+.tape-divider span{position:relative;background:var(--rose-soft);color:var(--rose2);border:1px solid var(--rose-line);font-size:12px;font-weight:700;
+  padding:3px 18px;transform:rotate(-1.2deg);letter-spacing:2px;border-radius:2px;
+  box-shadow:0 1px 3px rgba(61,52,44,.08)}
+.tape-divider span::before,.tape-divider span::after{content:"";position:absolute;top:0;bottom:0;width:6px;
+  background:linear-gradient(rgba(255,255,255,.35),transparent);border-left:1px dashed rgba(255,255,255,.5)}
+
+.btn{appearance:none;border:1px solid var(--line2);background:var(--paper);color:var(--ink);
+  padding:7px 15px;border-radius:999px;font-size:13px;font-family:inherit;cursor:pointer;transition:.18s;white-space:nowrap}
+.btn:hover{border-color:var(--rose);color:var(--rose2);transform:translateY(-1px);box-shadow:var(--shadow)}
+.btn.primary{background:linear-gradient(135deg,var(--rose),#D97794);border-color:var(--rose);color:#fff;
+  box-shadow:0 3px 10px rgba(201,92,127,.25)}
+.btn.primary:hover{background:linear-gradient(135deg,var(--rose2),var(--rose));border-color:var(--rose2);color:#fff;transform:translateY(-1px)}
+.btn.ghost{background:transparent;border-color:var(--line)}
+.btn.sm{padding:4px 11px;font-size:12px}
+.btn.danger:hover{border-color:var(--bad);color:var(--bad)}
+.btn:active{transform:translateY(0)}
+
+/* ---------- 计数器：拍立得卡片 ---------- */
+.counters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:8px}
+.counter{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 18px 14px;box-shadow:var(--shadow);transition:.25s;overflow:hidden;border-left:3px solid var(--line2)}
+.counter:hover{transform:translateY(-3px);box-shadow:var(--shadow-lift)}
+.counter .k{font-size:12px;color:var(--ink3);margin-top:6px;letter-spacing:1px}
+.counter .v{font-family:var(--font-serif);font-size:32px;font-weight:900;margin-top:2px;letter-spacing:.5px;line-height:1.2;color:var(--ink)}
+.counter .v small{font-size:13px;font-weight:400;color:var(--ink3);margin-left:3px;font-family:var(--font-hand)}
+.counter.rose{background:linear-gradient(160deg,var(--rose-soft),var(--paper));border-color:var(--rose-line);border-left-color:var(--rose)}
+.counter.rose .v{color:var(--rose2)}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px;
+  margin:18px 0 22px;width:fit-content;max-width:100%;overflow-x:auto;box-shadow:var(--shadow);position:sticky;top:10px;z-index:30;
+  backdrop-filter:blur(8px)}
+.tab{border:0;background:transparent;font-family:inherit;font-size:14px;color:var(--ink2);
+  padding:8px 22px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:.18s}
+.tab:hover{color:var(--ink)}
+.tab.active{background:linear-gradient(135deg,var(--rose),#D97794);color:#fff;box-shadow:0 2px 8px rgba(201,92,127,.3)}
+.view{animation:fadein .3s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- 卡片：纸片 + 微胶带角 ---------- */
+.card{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--rl);
+  padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow);transition:box-shadow .2s}
+.card:hover{box-shadow:var(--shadow-lift)}
+.card h2{font-family:var(--font-serif);font-size:15px;font-weight:700;margin:0;display:flex;align-items:center;gap:8px}
+.card h2::before{content:"";width:4px;height:15px;border-radius:2px;background:linear-gradient(var(--rose),#E08CA8)}
+.card h2 .cnt{font-size:12px;font-weight:400;color:var(--ink3);font-family:var(--font-hand)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.card.warned{background:var(--bad-soft);border-color:var(--bad-line)}
+.card.warned h2{color:var(--bad)}
+.card.warned h2::before{background:var(--bad)}
+.card.warned .empty{color:#A6635C}
+
+.field{display:block;margin-bottom:12px}
+.field>span{display:block;font-size:12px;color:var(--ink3);margin-bottom:4px;letter-spacing:.5px}
+input,select,textarea{width:100%;font-family:inherit;font-size:14px;color:var(--ink);
+  background:var(--bg);border:1px solid var(--line2);border-radius:var(--rs);padding:8px 10px;outline:none;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);background:#fff;box-shadow:0 0 0 3px var(--rose-soft)}
+textarea{resize:vertical;line-height:1.8}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);cursor:pointer}
+.chk input{width:auto;margin:0}
+
+.searchbar{display:flex;gap:8px;margin-bottom:14px}
+.derived{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px;font-size:13px;color:var(--ink2)}
+
+.ichips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ichip{display:inline-flex;align-items:center;gap:7px;font-size:13px;background:var(--bg);
+  border:1px solid var(--line2);border-radius:999px;padding:3px 6px 3px 8px;transition:.15s}
+.ichip:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.ichip .dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--rose);background:var(--rose);
+  padding:0;flex:none;cursor:pointer}
+.ichip.avoid{background:var(--bad-soft);border-color:var(--bad-line);color:var(--bad)}
+.ichip.avoid .dot{border-color:var(--bad);background:transparent}
+.ichip .txt{cursor:pointer;border-bottom:1px dashed transparent;max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ichip .txt:hover{border-bottom-color:currentColor}
+.ichip .x{border:0;background:transparent;color:var(--ink3);font-size:15px;line-height:1;
+  cursor:pointer;padding:0 2px;font-family:inherit}
+.ichip .x:hover{color:var(--bad)}
+.ichip input{border:0;background:transparent;padding:0;font-size:13px;color:inherit;width:auto}
+
+.chipline{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;font-size:13px;background:var(--bg);border:1px solid var(--line2);
+  border-radius:999px;padding:4px 11px;cursor:pointer;font-family:inherit;color:var(--ink2);transition:.15s}
+.chip:hover{border-color:var(--rose);transform:translateY(-1px)}
+.chip.on{background:var(--rose-soft);border-color:var(--rose);color:var(--rose2);font-weight:600}
+.chip.add{border-style:dashed;background:transparent;color:var(--ink3)}
+
+.addrow{display:flex;gap:8px;margin-top:12px}
+.addrow input{flex:1}
+
+.empty{color:var(--ink3);font-size:13px;padding:8px 0;margin:0;font-style:italic}
+
+.badge{display:inline-flex;align-items:center;font-size:12px;border-radius:999px;padding:2px 9px;
+  background:var(--bg);border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
+.badge.rose{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose2)}
+.badge.warn{background:var(--warn-soft);border-color:var(--warn-line);color:var(--warn)}
+.badge.bad{background:var(--bad-soft);border-color:var(--bad-line);color:var(--bad)}
+.badge.ok{background:var(--ok-soft);border-color:var(--ok-line);color:var(--ok)}
+.badge.pretty{background:#FFF0F5;border-color:var(--rose-line);color:var(--rose-strong,#D8557C)}
+.badge.dim{background:transparent;border-color:var(--line,#E5E0DB);color:#8A837D}
+
+.toolrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.hint{font-size:13px;color:var(--ink3)}
+.filters .grid3{margin-bottom:12px}
+.filters .note{font-size:12px;color:var(--ink3);margin:10px 0 0}
+.filters .sub{font-size:12px;color:var(--ink3);margin:0 0 6px}
+
+/* ---------- 约会记录：票据风 ---------- */
+.place{display:flex;gap:14px;background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);transition:.2s;position:relative;overflow:hidden}
+.place::after{content:"";position:absolute;right:-6px;top:-14px;width:44px;height:44px;border-radius:50%;
+  background:var(--bg2);opacity:0;transition:.2s}
+.place:hover{transform:translateY(-2px);box-shadow:var(--shadow-lift)}
+.place:hover::after{opacity:.6}
+.place-main{flex:1;min-width:0}
+.place-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pname{font-size:15px;font-weight:700;font-family:var(--font-serif)}
+.place-meta{font-size:13px;color:var(--ink2);margin-top:3px}
+.place-note{font-size:13px;color:var(--ink2);margin-top:7px;white-space:pre-wrap}
+.place-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.place-actions{display:flex;flex-direction:column;gap:6px;flex:none;justify-content:center}
+.stars{color:var(--rose);font-size:13px;letter-spacing:1px}
+.place.been .pname{color:var(--ink2)}
+.place.good{border-color:var(--ok-line);background:linear-gradient(150deg,var(--ok-soft),var(--paper) 70%)}
+.place.soso{background:#FBF7EF}
+.place.bad{border-color:var(--bad-line);background:linear-gradient(150deg,var(--bad-soft),var(--paper) 70%)}
+.place.lit{border-color:var(--rose-line)}
+.place:not(.good):not(.soso):not(.bad).lit{background:#FFFAFA}
+.btn.lit{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose2)}
+.btn.lit:hover{border-color:var(--rose);color:var(--rose2)}
+.star{font-size:12px;letter-spacing:0}
+
+/* ---------- 选中展示 ---------- */
+.picked{background:linear-gradient(135deg,var(--rose-soft),#FDF3F6);border:1px solid var(--rose-line);
+  border-radius:var(--r);padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.picked .lead{font-size:13px;color:var(--rose2);margin:0}
+.picked .big{font-family:var(--font-serif);font-size:22px;font-weight:900;color:var(--rose2);margin:4px 0 2px}
+.picked .sub{font-size:13px;color:var(--ink2);margin:0}
+.picked .tip{font-size:12px;color:var(--ink3);margin:10px 0 0}
+.picked.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.picked.pair .lead{margin-bottom:2px}
+
+/* ---------- 日记：手账条目 ---------- */
+.diary{display:flex;gap:16px;padding:18px 4px;border-top:1px solid var(--line);position:relative;transition:.15s}
+.diary:hover{background:linear-gradient(90deg,transparent,var(--paper2) 30%,var(--paper2) 70%,transparent)}
+.d-date{width:82px;flex:none;text-align:center;position:relative}
+.d-date b{display:block;font-family:var(--font-serif);font-size:17px;font-weight:900;line-height:1.4;color:var(--rose2)}
+.d-date span{font-size:12px;color:var(--ink3)}
+.d-date::after{content:"";display:block;width:22px;height:3px;border-radius:2px;background:var(--tape);margin:6px auto 0;transform:rotate(-2deg)}
+.d-body{flex:1;min-width:0}
+.d-badges{display:flex;gap:5px;flex-wrap:wrap}
+.d-body h3{font-family:var(--font-serif);font-size:15px;margin:9px 0 5px;font-weight:700;word-break:break-word}
+.d-body h3:first-child{margin-top:0}
+.d-text{font-size:14px;color:var(--ink2);white-space:pre-wrap;margin:0;word-break:break-word;line-height:1.85}
+.d-actions{display:flex;gap:8px;margin-top:9px;opacity:0;transition:.2s}
+.diary:hover .d-actions{opacity:1}
+.month-hd{font-family:var(--font-serif);font-size:13px;color:var(--ink3);margin:26px 0 0;padding-bottom:6px;
+  border-bottom:1px dashed var(--line2);letter-spacing:1px}
+.month-hd:first-child{margin-top:4px}
+
+.toast{position:fixed;left:50%;bottom:36px;transform:translate(-50%,16px);background:var(--ink);color:#FFF7F3;
+  font-size:13px;padding:10px 20px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;
+  max-width:88vw;text-align:center;z-index:50;box-shadow:var(--shadow-lift);font-family:var(--font-hand)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+.foot{font-size:12px;color:var(--ink3);text-align:center;margin-top:30px;line-height:1.9}
+.foot::before{content:"❀ ❀ ❀";display:block;font-size:10px;color:var(--rose-line);margin-bottom:8px;letter-spacing:6px}
+
+@media(max-width:620px){
+  html{font-size:15px}
+  .wrap{padding:16px 12px 96px}
+  body{font-size:14.5px;line-height:1.65}
+  .counters{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:6px}
+  .counter{padding:12px 10px 10px;border-radius:var(--rs)}
+  .counter .v{font-size:22px}
+  .counter .k{font-size:10.5px;letter-spacing:.5px}
+  .brand h1{font-size:24px;letter-spacing:1px}
+  .tag{font-size:12px}
+  .top{flex-direction:column;align-items:stretch;gap:10px}
+  .tools{justify-content:center}
+  .btn{padding:9px 16px;font-size:13.5px}
+  .btn.sm{padding:9px 14px;font-size:13px;min-height:38px}
+  /* 底部固定标签栏（更像手机 App） */
+  .tabs{position:fixed;left:0;right:0;bottom:0;top:auto;height:auto;z-index:50;width:100%;
+    margin:0;padding:6px 10px calc(6px + env(safe-area-inset-bottom));
+    background:color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:0;border-top:1px solid var(--line2);border-radius:0;box-shadow:0 -4px 16px rgba(61,52,44,.06);
+    display:flex;gap:6px;overflow:visible}
+  .tab{flex:1;padding:10px 4px;text-align:center;font-size:14px;border-radius:12px;border-color:transparent;background:transparent}
+  .tab.active{background:var(--rose-soft);border-color:var(--rose-line);color:var(--rose2)}
+  .place{flex-direction:column;gap:10px;padding:14px}
+  .place-actions{flex-direction:row;flex-wrap:wrap}
+  .diary{flex-direction:column;gap:8px;padding:13px 14px}
+  .d-date{width:auto;display:flex;gap:8px;align-items:baseline;text-align:left}
+  .d-date::after{display:none}
+  .d-actions{opacity:1}
+  /* 表单元素触控友好 */
+  input,select,textarea{font-size:16px}   /* 16px 避免 iOS 聚焦自动放大 */
+  .card{padding:14px}
+  .theme-toggle{right:12px;bottom:76px;width:40px;height:40px}
+  .foot{font-size:11.5px;padding-bottom:6px}
+}
+@media(max-width:360px){
+  .counters{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .counter .v{font-size:19px}
+  .brand h1{font-size:21px}
+}
+@media(hover:none){
+  .d-actions{opacity:1}
+  .btn.sm{padding:9px 14px}
+  /* 触屏上去掉 hover 位移，改为按压反馈 */
+  .btn:hover,.counter:hover,.place:hover{transform:none}
+  .btn:active{transform:scale(.96)}
+  .place:active,.diary:active{background:var(--paper2)}
+  .tab:active{transform:scale(.94)}
+}
+/* ---------- 暗色模式 ---------- */
+html.dark{
+  --bg:#221E1B; --bg2:#2B2622; --paper:#2D2823; --paper2:#332D28;
+  --ink:#EAE2D8; --ink2:#B8AC9E; --ink3:#8A7E70;
+  --line:rgba(234,226,216,.10); --line2:rgba(234,226,216,.20);
+  --rose:#D97794; --rose2:#E896AD; --rose-soft:#3E2E31; --rose-line:#5A3F45;
+  --tape:rgba(217,119,148,.25);
+  --bad:#D07068; --bad-soft:#3D2C2A; --bad-line:#5E3C38;
+  --warn:#C99A4E; --warn-soft:#3C3222; --warn-line:#5C4B2C;
+  --ok:#6FAE8D; --ok-soft:#2C3A31; --ok-line:#3E5748;
+  --shadow:0 1px 2px rgba(0,0,0,.25), 0 6px 18px rgba(0,0,0,.3);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.3), 0 12px 32px rgba(0,0,0,.4);
+}
+html.dark body{background:
+  radial-gradient(1200px 500px at 85% -100px, rgba(217,119,148,.06), transparent 60%),
+  radial-gradient(900px 400px at -100px 30%, rgba(196,150,90,.04), transparent 60%),
+  var(--bg)}
+html.dark input,html.dark select,html.dark textarea{background:var(--bg2)}
+html.dark input:focus,html.dark select:focus,html.dark textarea:focus{background:var(--paper2)}
+html.dark .counter.rose{background:linear-gradient(160deg,var(--rose-soft),var(--paper))}
+html.dark .place.good{background:linear-gradient(150deg,var(--ok-soft),var(--paper) 70%)}
+html.dark .place.soso{background:var(--paper2)}
+html.dark .place.bad{background:linear-gradient(150deg,var(--bad-soft),var(--paper) 70%)}
+html.dark .place:not(.good):not(.soso):not(.bad).lit{background:var(--paper2)}
+html.dark .picked{background:linear-gradient(135deg,var(--rose-soft),var(--paper))}
+html.dark .diary:hover{background:linear-gradient(90deg,transparent,var(--paper2) 30%,var(--paper2) 70%,transparent)}
+html.dark .place::after{background:var(--bg)}
+
+/* 主题按钮 */
+.theme-toggle{position:fixed;right:18px;bottom:18px;z-index:40;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line2);background:var(--paper);cursor:pointer;font-size:18px;line-height:1;
+  box-shadow:var(--shadow-lift);transition:.2s;display:flex;align-items:center;justify-content:center}
+.theme-toggle:hover{transform:translateY(-2px) rotate(12deg);border-color:var(--rose)}
+
+/* ---------- 动态效果加强 ---------- */
+/* 标题爱心心跳 */
+@keyframes heartbeat{0%,100%{transform:rotate(-45deg) scale(1)}12%{transform:rotate(-45deg) scale(1.25)}24%{transform:rotate(-45deg) scale(.95)}36%{transform:rotate(-45deg) scale(1.15)}48%{transform:rotate(-45deg) scale(1)}}
+.brand h1 .heart{animation:heartbeat 2.4s ease-in-out infinite;transform-origin:center}
+
+/* 卡片进场：错峰上浮 */
+@keyframes pop-in{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.view .card,.view .place,.view .picked{animation:pop-in .45s cubic-bezier(.22,1,.36,1) backwards}
+.view .card:nth-child(1),.view .place:nth-child(1){animation-delay:.02s}
+.view .card:nth-child(2),.view .place:nth-child(2){animation-delay:.08s}
+.view .card:nth-child(3),.view .place:nth-child(3){animation-delay:.14s}
+.view .card:nth-child(4),.view .place:nth-child(4){animation-delay:.2s}
+.view .card:nth-child(5),.view .place:nth-child(5){animation-delay:.26s}
+.view .card:nth-child(n+6),.view .place:nth-child(n+6){animation-delay:.3s}
+
+/* 计数器数字弹跳进场 */
+@keyframes num-bounce{0%{opacity:0;transform:translateY(16px) scale(.7)}60%{transform:translateY(-4px) scale(1.06)}100%{opacity:1;transform:none}}
+.counter .v{animation:num-bounce .55s cubic-bezier(.22,1,.36,1) backwards}
+.counter:nth-child(2) .v{animation-delay:.1s}
+.counter:nth-child(3) .v{animation-delay:.2s}
+.counter.rose:hover .v{transform:scale(1.05);transition:.2s}
+
+/* chips 弹性进场 + 弹跳 hover */
+@keyframes chip-pop{from{opacity:0;transform:scale(.6)}70%{transform:scale(1.08)}to{opacity:1;transform:scale(1)}}
+.ichip,.chip{animation:chip-pop .35s cubic-bezier(.34,1.56,.64,1) backwards}
+.ichip:nth-child(1){animation-delay:.03s}.ichip:nth-child(2){animation-delay:.06s}
+.ichip:nth-child(3){animation-delay:.09s}.ichip:nth-child(4){animation-delay:.12s}
+.ichip:nth-child(5){animation-delay:.15s}.ichip:nth-child(n+6){animation-delay:.18s}
+.ichip:hover{transform:translateY(-2px) rotate(-1deg)}
+
+/* 按钮按压涟漪感 */
+@keyframes btn-press{0%{transform:scale(1)}50%{transform:scale(.94)}100%{transform:scale(1)}}
+.btn:active{animation:btn-press .18s ease}
+.btn.primary{position:relative;overflow:hidden}
+
+/* tabs 切换滑块弹跳 */
+.tab.active{animation:chip-pop .3s cubic-bezier(.34,1.56,.64,1)}
+
+/* 日记条目逐条浮现 */
+.diary{animation:pop-in .4s ease backwards}
+.diary:nth-child(2){animation-delay:.05s}.diary:nth-child(3){animation-delay:.1s}
+.diary:nth-child(n+4){animation-delay:.15s}
+
+/* 樱花飘落层 */
+#petalLayer{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.petal{position:absolute;top:-24px;color:var(--rose);opacity:0;will-change:transform;user-select:none}
+@keyframes petal-fall{
+  0%{opacity:0;transform:translate(0,-24px) rotate(0)}
+  8%{opacity:.75}
+  100%{opacity:0;transform:translate(var(--dx,40px),105vh) rotate(340deg)}
+}
+.petal{animation:petal-fall var(--dur,11s) linear var(--delay,0s) infinite}
+
+/* 日记 hover 时标题小花轻摆 */
+.diary:hover .d-date b{display:inline-block;animation:btn-press .4s ease}
+
+/* 同步状态小圆点：绿=已同步 / 橙=保存中 / 红=离线 */
+.sync-dot{width:9px;height:9px;border-radius:50%;display:inline-block;align-self:center;
+  background:transparent;margin-left:2px;transition:background .25s}
+
+/* 尊重系统减少动效偏好 */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* ---------- 移动端覆盖（放最后以确保优先级） ---------- */
+@media(max-width:620px){
+  .theme-toggle{right:12px;bottom:76px;width:40px;height:40px;font-size:17px}
+  .btn.primary{box-shadow:0 2px 8px rgba(201,92,127,.22)}
+  .toast{bottom:80px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <h1><span class="heart" aria-hidden="true"></span>我的夹心</h1>
+      <p class="tag">关于她的每一件小事，都值得被好好记着。</p>
+    </div>
+    <div class="tools">
+      <span id="syncDot" class="sync-dot" title="正在同步"></span>
+      <button class="btn ghost" id="btnExport">导出备份</button>
+      <button class="btn ghost" id="btnImport">导入备份</button>
+      <input type="file" id="fileImport" accept=".json,application/json" hidden="">
+    </div>
+  </header>
+
+  <div class="tape-divider" aria-hidden="true"><span>WRAP IT WITH LOVE · 2026</span></div>
+
+  <section class="counters" id="counters"><div class="counter rose"><div class="k">在一起</div><div class="v">15<small>天</small></div></div><div class="counter"><div class="k">距她生日</div><div class="v">64<small>天</small></div></div><div class="counter"><div class="k">见面</div><div class="v">5<small>次</small></div></div></section>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-tab="profile">她的档案</button>
+    <button class="tab" data-tab="date">约会</button>
+    <button class="tab" data-tab="diary">故事日记</button>
+  </nav>
+
+  <main>
+    <section class="view" id="view-profile"><div class="card" id="pMeta"><div class="card-hd"><h2>基本</h2></div><div class="grid3"><label class="field"><span>怎么叫她</span><input data-meta="herName" value="夹心 / 大宝" placeholder="她"></label><label class="field"><span>生日</span><input type="date" data-meta="herBirthday" value="2005-12-14"></label><label class="field"><span>相识日</span><input type="date" data-meta="firstMeet" value="2026-09-06"></label></div><div class="derived" id="pDerived"><span class="badge rose">射手</span><span class="badge rose">20 岁</span><span class="badge rose">距生日 64 天</span><span class="badge rose">在一起第 15 天</span></div><label class="field" style="margin-bottom:0"><span>随便记点（怎么认识的、她说过的话）</span><textarea data-meta="herNote" rows="2" placeholder="空着也没关系，想起来再补。">成都信息工程大学（CUIT），测绘专业，扛杆杆大王，打羽毛球
+电话号码18384870621
+</textarea></label></div><div class="searchbar"><input id="pSearch" placeholder="搜一下：香菜 / 奶茶 / 生日"><button class="btn ghost" id="pSearchClear">清空</button></div><div id="pGroups"><div class="card"><div class="card-hd"><h2>口味 <span class="cnt">2 条</span></h2></div><div class="ichips"><span class="ichip" data-id="ig9v8r8ygk"><button class="dot" data-act="tone" data-g="taste" data-id="ig9v8r8ygk" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="taste" data-id="ig9v8r8ygk" title="点一下改内容">不喝果茶</span><button class="x" data-act="del" data-g="taste" data-id="ig9v8r8ygk" title="删掉">×</button></span><span class="ichip" data-id="filin88afc"><button class="dot" data-act="tone" data-g="taste" data-id="filin88afc" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="taste" data-id="filin88afc" title="点一下改内容">喜欢奶茶，不吃珍珠</span><button class="x" data-act="del" data-g="taste" data-id="filin88afc" title="删掉">×</button></span></div><div class="addrow"><input data-new-item="taste" placeholder="加一条，回车就好"></div></div><div class="card"><div class="card-hd"><h2>偏好 <span class="cnt">2 条</span></h2></div><div class="ichips"><span class="ichip" data-id="ds6gbncfcz"><button class="dot" data-act="tone" data-g="prefer" data-id="ds6gbncfcz" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="prefer" data-id="ds6gbncfcz" title="点一下改内容">司震南</span><button class="x" data-act="del" data-g="prefer" data-id="ds6gbncfcz" title="删掉">×</button></span><span class="ichip" data-id="3p7m6tl7oj"><button class="dot" data-act="tone" data-g="prefer" data-id="3p7m6tl7oj" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="prefer" data-id="3p7m6tl7oj" title="点一下改内容">雷淞然</span><button class="x" data-act="del" data-g="prefer" data-id="3p7m6tl7oj" title="删掉">×</button></span></div><div class="addrow"><input data-new-item="prefer" placeholder="加一条，回车就好"></div></div><div class="card warned"><div class="card-hd"><h2>雷区 <span class="cnt">1 条</span></h2></div><div class="ichips"><span class="ichip avoid" data-id="u48nklrivz"><button class="dot" data-act="tone" data-g="avoid" data-id="u48nklrivz" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="avoid" data-id="u48nklrivz" title="点一下改内容">不把话说清楚</span><button class="x" data-act="del" data-g="avoid" data-id="u48nklrivz" title="删掉">×</button></span></div><div class="addrow"><input data-new-item="avoid" placeholder="加一条，回车就好"></div></div><div class="card"><div class="card-hd"><h2>种草清单 <span class="cnt">1 条</span></h2></div><div class="ichips"><span class="ichip" data-id="qsjpefoqd0"><button class="dot" data-act="tone" data-g="wish" data-id="qsjpefoqd0" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="wish" data-id="qsjpefoqd0" title="点一下改内容">茶油板鸭</span><button class="x" data-act="del" data-g="wish" data-id="qsjpefoqd0" title="删掉">×</button></span></div><div class="addrow"><input data-new-item="wish" placeholder="加一条，回车就好"></div></div><div class="card"><div class="card-hd"><h2>其他 <span class="cnt">2 条</span></h2></div><div class="ichips"><span class="ichip" data-id="45zws1vw36"><button class="dot" data-act="tone" data-g="misc" data-id="45zws1vw36" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="misc" data-id="45zws1vw36" title="点一下改内容">唱歌很好听</span><button class="x" data-act="del" data-g="misc" data-id="45zws1vw36" title="删掉">×</button></span><span class="ichip" data-id="r3kujb22b5"><button class="dot" data-act="tone" data-g="misc" data-id="r3kujb22b5" title="点一下切换：喜欢 / 避开"></button><span class="txt" data-act="edit" data-g="misc" data-id="r3kujb22b5" title="点一下改内容">黑色裙子很美丽</span><button class="x" data-act="del" data-g="misc" data-id="r3kujb22b5" title="删掉">×</button></span></div><div class="addrow"><input data-new-item="misc" placeholder="加一条，回车就好"></div></div></div><div class="card" id="pDates"><div class="card-hd"><h2>重要日期 <span class="cnt">3 个</span></h2><button class="btn sm" data-act="add-date">加一个日子</button></div><article class="diary"><div class="d-date"><b>09-26</b><span>周六</span></div><div class="d-body"><div class="d-badges"><span class="badge dim">只算一次</span><span class="badge dim">已过 15 天</span></div><h3>第一次见面</h3><div class="d-actions"><button class="btn sm ghost" data-act="edit-date" data-id="ga8cgp7lpb">改一下</button><button class="btn sm ghost danger" data-act="del-date" data-id="ga8cgp7lpb">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>09-29</b><span>周二</span></div><div class="d-body"><div class="d-badges"><span class="badge">每年都算</span><span class="badge rose">还有 353 天</span></div><h3>在一起</h3><div class="d-actions"><button class="btn sm ghost" data-act="edit-date" data-id="r6uj3olgls">改一下</button><button class="btn sm ghost danger" data-act="del-date" data-id="r6uj3olgls">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>09-30</b><span>周三</span></div><div class="d-body"><div class="d-badges"><span class="badge dim">只算一次</span><span class="badge dim">已过 11 天</span></div><h3>初吻</h3><div class="d-actions"><button class="btn sm ghost" data-act="edit-date" data-id="kd0nbgfq55">改一下</button><button class="btn sm ghost danger" data-act="del-date" data-id="kd0nbgfq55">删掉</button></div></div></article><p class="hint" style="margin:12px 0 0">这里的日子会自动出现在故事日记的节日标记里。</p></div><div class="card" id="pGifts"><div class="card-hd"><h2>礼物 <span class="cnt">2 个</span></h2><button class="btn sm" data-act="add-gift">加一个礼物</button></div><article class="diary"><div class="d-date"><b>想法</b><span>无</span></div><div class="d-body"><h3>极光6/7（羽毛球拍）</h3><p class="d-text">他说觉得好看，本来想买来着，想着自己的还能用就没买</p><div class="d-actions"><button class="btn sm lit" data-act="gift-status" data-v="idea" data-id="6cgffh36m0">想法</button> <button class="btn sm ghost" data-act="gift-status" data-v="bought" data-id="6cgffh36m0">已买</button> <button class="btn sm ghost" data-act="gift-status" data-v="given" data-id="6cgffh36m0">已送</button><button class="btn sm ghost" data-act="edit-gift" data-id="6cgffh36m0">改一下</button><button class="btn sm ghost danger" data-act="del-gift" data-id="6cgffh36m0">删掉</button></div></div></article><article class="diary"><div class="d-date"><b style="color:var(--ok)">已买</b><span>没有场合</span></div><div class="d-body"><h3>水果夹干噎酸奶</h3><p class="d-text">我觉得挺好吃</p><div class="d-actions"><button class="btn sm ghost" data-act="gift-status" data-v="idea" data-id="lnqzkych1s">想法</button> <button class="btn sm lit" data-act="gift-status" data-v="bought" data-id="lnqzkych1s">已买</button> <button class="btn sm ghost" data-act="gift-status" data-v="given" data-id="lnqzkych1s">已送</button><button class="btn sm ghost" data-act="edit-gift" data-id="lnqzkych1s">改一下</button><button class="btn sm ghost danger" data-act="del-gift" data-id="lnqzkych1s">删掉</button></div></div></article><p class="hint" style="margin:12px 0 0">进度点一下就推进：想法 → 已买 → 已送。到日子前记得看一眼。</p></div></section>
+    <section class="view hidden" id="view-date"><div class="toolrow"><button class="btn primary" data-act="new-place">记一次约会</button><span class="hint" id="pHint">去过 3 个地方</span></div><div class="card hidden" id="pFormWrap"></div><div class="card filters" id="pFilters"></div><div id="pList"></div></section>
+    <section class="view hidden" id="view-diary"><div class="toolrow"><button class="btn primary" data-act="new-diary">写今天</button><span class="hint" id="dHint">上一篇是第 5 次（2026-10-11）</span></div><div class="card hidden" id="dFormWrap"></div><div id="dList"><p class="month-hd">2026 年 10 月</p><article class="diary"><div class="d-date"><b>10-11</b><span>周日</span></div><div class="d-body"><div class="d-badges"><span class="badge">第 5 次见面</span></div><h3>vtk</h3><p class="d-text">今天本来约好一起去植物园玩，结果夹心的成吗志愿者培训太久，后来就只能去ktv了。夹心穿那个黑色的裙子是真的好看，这次又又又喜欢上了。感觉虽然每谈多久，但是她的存在似乎已经完全变成我生活的一部分，仿佛本该如此，早就如此。和她在一起不需要想太多，每次和泰呆在一起都没什么压力，只有纯粹的爽芜湖湖。偶对了，她唱歌好好听，有点专业，而且是我认识的第一个能唱出来虹之间的，这次真是女神了。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="27r5ai861p">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="27r5ai861p">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>10-07</b><span>周三</span></div><div class="d-body"><div class="d-badges"><span class="badge">第 4 次见面</span></div><h3>接她回学校</h3><p class="d-text">国庆假期结束，我接她回学校，给他带了一束小王子主题花束，我觉得挺好看。她给我拼了一个提莫大拇指的拼豆，挂到我包上了。真是小别胜新欢，回来我们一起去吃了她学校旁边的鸡公煲，不知道是饿了还是咋，我感觉那个是真的好吃，狂炫三碗大米饭。接着我们去学校里溜达，他和之前不一样，之前他在网上总是莫名其妙生气，在一起之后，他竟然从来没生气过了，不知道是那时候患得患失还是现在懂事了。我们之间更亲密了，之前觉得这辈子都不会做出来的肉麻的事情，现在自然而然就做出来了。她真的很吸引我，不论是精神上的温柔相拥还是身体上的深情热吻，我有了沉溺的人，有了牵挂，有了盼头，原来这就是恋爱的感觉嘛。喜欢你大宝。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="s2hurdeubm">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="s2hurdeubm">删掉</button></div></div></article><p class="month-hd">2026 年 9 月</p><article class="diary"><div class="d-date"><b>09-30</b><span>周三</span></div><div class="d-body"><div class="d-badges"><span class="badge rose">初吻</span><span class="badge">第 3 次见面</span><span class="badge">初吻</span></div><h3>初吻</h3><p class="d-text">看电影，初吻，这段关系中，我其实一直没有多想多少，但是从现在开始，我觉得我该想一些该想的东西了。她是我的初恋也是初吻，我必须对他负责，我要想办法维护我们的感情，想办法构建更好的我们，想办法规划我们的未来。真就像德华所说的，这谈恋爱，就是从这个冲动开始的，然后再从此之后，相互磨合扶持，要拿起这段关系中属于自己的责任，要给她一个交代。我觉得以我的性格，我应该能做到，我对她也十分信任。看看我们究竟可以走到哪里吧。
+对了，今天还收到了她的情书，虽然我们认识的时间可能没有很长，我以前也是觉得谈恋爱要慢慢来，可是真的是，没经历过就永远不会知道，我们是真的很在乎彼此也真的很契合，双向奔赴的感觉绝无仅有，也许时间是没法衡量感情的浓度的吧。
+题外话，情侣去电影院是真的可以升温。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="42v1f6wtnc">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="42v1f6wtnc">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>09-29</b><span>周二</span></div><div class="d-body"><div class="d-badges"><span class="badge rose">在一起</span><span class="badge">第 2 次见面</span></div><h3>在一起</h3><p class="d-text">在摩天轮上向她表白，虽然这只是单纯要一个身份，我们彼此也已经互相肯定了，但是今天还是特别紧张，早上中午加一起就吃了半碗饭。摩天轮上的15分钟好快，本来准备好的一串话，当时脑子空空不知道说什么。最后她还是答应我了嘿嘿，感觉确实有点恍惚。原来真正的感情不是骤起骤落的情绪，而是温柔的安抚和拥抱。那一瞬间，突然特别安心。我牵着她的手，幸福仿佛具象化了，如果时间能能静止在这一刻，该多么美好。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="pj9lpladjp">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="pj9lpladjp">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>09-26</b><span>周六</span></div><div class="d-body"><div class="d-badges"><span class="badge rose">第一次见面</span><span class="badge">第 1 次见面</span></div><h3>第一次见面</h3><p class="d-text">今天我们第一次见面，她眼睛好漂亮，身上好香。她竟然送给我紫金爪刀和超凡标的拼豆，真实有心，我还空手来的。我们先去吃了陶德砂锅，说实话刚开始没啥话讲，有点尴尬，原先还是坐的那种面对面的两个人的位置，说话都听不见，后面换到挨着坐去了。真就像德华说的一样，以前那种理性的分析和权衡根本就是没用，真见面了就会有冲动，想贴贴，这种冲动是抑制不住的，是不可控的，这才是感情种不可缺少的一环，也许这也是感情没法被量化的原因吧。吃饭过后，我们去她的学校溜溜，坐车的时候我还靠了它的肩膀，嘿嘿。 在学校溜溜的时候，我们虽然一直在聊，但是聊的啥我都记不住了，只记得住当时月亮被云遮住，长椅上，他靠着我，我靠着他， 只觉得先这样一起呆着，就很快乐。原来喜欢一个人的感觉，是这样的。。。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="b6mzy9lfbu">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="b6mzy9lfbu">删掉</button></div></div></article><article class="diary"><div class="d-date"><b>09-25</b><span>周五</span></div><div class="d-body"><div class="d-badges"><span class="badge">第一次打视频</span></div><p class="d-text">今天我专门做一个网站，打算记录和她的点滴。我们打算这周六见面，期待，希望我能给她留下好的印象。今天我们第一次视频，她的眼睛好大，但是说话有点毛躁，可能是紧张的原因吧，我也不知道。后面挂了电话还因为去写文档而忘了关心她。今天这是走远了还是走近了。
+欧对了，今天我把mini-llama的cpu推理阶段完工并跑通了，明天空一天，我要给她录一首歌，还要记得练习一下夹头发。</p><div class="d-actions"><button class="btn sm ghost" data-act="edit-diary" data-id="zui1u1tq80">改一下</button><button class="btn sm ghost danger" data-act="del-diary" data-id="zui1u1tq80">删掉</button></div></div></article></div></section>
+  </main>
+
+  <p class="foot">数据存在服务器上（data.json），换设备打开就是同一份，改动会自动保存。<br>本地也留一份缓存，断网时照样能记，联网后自动补上。不放心的话，随时点「导出备份」。</p>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="petalLayer" aria-hidden="true"></div>
+<button class="theme-toggle" id="themeToggle" title="切换亮/暗" aria-label="切换亮色/暗色主题">☾</button>
+
+<script>
+/* ==================================================================
+   我的夹心 · 单文件版
+   数据层：一个 state 对象 + localStorage，导出 / 导入 JSON
+   ================================================================== */
+
+const KEY = 'woDeJiaXin.v1';
+/* 「约会选择 → 约会」这次改版会真的删掉未去过的记录，删之前把整包原文存这儿，
+   出问题还能捞回来。只写一次，之后不再动。 */
+const BACKUP_KEY = 'woDeJiaXin.v1.preV2';
+/* 服务器端存储：整包 state 存在服务器上的 data.json 里，网页每次改动都自动推上去。
+   本地 localStorage 退居「离线缓存」——断网也能记，联网后自动补。 */
+const API = '/api/jiaxin/data';
+const SYNC_KEY = 'woDeJiaXin.sync.v1';   // {rev, dirty}：服务器版本号 / 是否有没推上去的改动
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad2 = n => String(n).padStart(2, '0');
+
+const DEFAULT_DATA = () => ({
+  "meta": {
+    "herName": "夹心 / 大宝",
+    "herBirthday": "2005-12-14",
+    "firstMeet": "2026-09-06",
+    "herNote": "成都信息工程大学（CUIT），测绘专业，扛杆杆大王，打羽毛球\n电话号码18384870621\n"
+  },
+  "groups": [
+    {
+      "id": "taste",
+      "title": "口味",
+      "tone": "like",
+      "items": [
+        {
+          "id": "ig9v8r8ygk",
+          "text": "不喝果茶",
+          "tone": "like"
+        },
+        {
+          "id": "filin88afc",
+          "text": "喜欢奶茶，不吃珍珠",
+          "tone": "like"
+        }
+      ]
+    },
+    {
+      "id": "prefer",
+      "title": "偏好",
+      "tone": "like",
+      "items": [
+        {
+          "id": "ds6gbncfcz",
+          "text": "司震南",
+          "tone": "like"
+        },
+        {
+          "id": "3p7m6tl7oj",
+          "text": "雷淞然",
+          "tone": "like"
+        }
+      ]
+    },
+    {
+      "id": "avoid",
+      "title": "雷区",
+      "tone": "avoid",
+      "items": [
+        {
+          "id": "u48nklrivz",
+          "text": "不把话说清楚",
+          "tone": "avoid"
+        }
+      ]
+    },
+    {
+      "id": "wish",
+      "title": "种草清单",
+      "tone": "like",
+      "items": [
+        {
+          "id": "qsjpefoqd0",
+          "text": "茶油板鸭",
+          "tone": "like"
+        }
+      ]
+    },
+    {
+      "id": "misc",
+      "title": "其他",
+      "tone": "like",
+      "items": [
+        {
+          "id": "45zws1vw36",
+          "text": "唱歌很好听",
+          "tone": "like"
+        },
+        {
+          "id": "r3kujb22b5",
+          "text": "黑色裙子很美丽",
+          "tone": "like"
+        }
+      ]
+    }
+  ],
+  "dates": [
+    {
+      "id": "ga8cgp7lpb",
+      "name": "第一次见面",
+      "date": "2026-09-26",
+      "repeat": "once"
+    },
+    {
+      "id": "r6uj3olgls",
+      "name": "在一起",
+      "date": "2026-09-29",
+      "repeat": "yearly"
+    },
+    {
+      "id": "kd0nbgfq55",
+      "name": "初吻",
+      "date": "2026-09-30",
+      "repeat": "once"
+    }
+  ],
+  "gifts": [
+    {
+      "id": "6cgffh36m0",
+      "name": "极光6/7（羽毛球拍）",
+      "status": "idea",
+      "occ": "无",
+      "note": "他说觉得好看，本来想买来着，想着自己的还能用就没买",
+      "createdAt": 1790439778296
+    },
+    {
+      "id": "lnqzkych1s",
+      "name": "水果夹干噎酸奶",
+      "status": "bought",
+      "occ": "",
+      "note": "我觉得挺好吃",
+      "createdAt": 1790448189905
+    }
+  ],
+  "places": [
+    {
+      "id": "izqndac3u7",
+      "name": "陶德砂锅",
+      "kind": "food",
+      "verdict": "good",
+      "tags": [
+        "有包厢",
+        "热闹",
+        "服务好"
+      ],
+      "date": "",
+      "feature": "人均来源区间：¥60–63（人均字段存的是中位数，供筛选）\n营业：蜀汉路店 11:00–22:00；春熙路店 10:30–22:00\n招牌：青豆肥肠（咸鲜）、蒜蓉虾仁（咸鲜）、鲫鱼水饺汤（咸鲜）、手工菌香包（咸鲜）、红糖糍粑（甜）\n氛围：「只是就餐人数太多，环境有点嘈杂」\n评分：综合 4.2 分（大众点评 / 携程）\n口味/环境/服务三项分项分仅春熙路店可查（且经今日头条转引）；携程蜀汉路店综合 4.2。",
+      "note": "",
+      "createdAt": 1790246945455
+    },
+    {
+      "id": "3u31zzh5bj",
+      "name": "电影院",
+      "kind": "fun",
+      "verdict": "good",
+      "tags": [
+        "安静",
+        "氛围感",
+        "封闭"
+      ],
+      "date": "2026-09-30",
+      "feature": "电影院真是约会圣地，封闭安静，氛围和情绪自然推进，关系自然更进一步",
+      "note": "看奥德赛，竟然包场，献出初吻",
+      "createdAt": 1791487857007
+    },
+    {
+      "id": "rych5jm1nc",
+      "name": "成都信息工程大学",
+      "kind": "fun",
+      "verdict": "good",
+      "tags": [
+        "安静",
+        "氛围感"
+      ],
+      "date": "2026-10-07",
+      "feature": "校园散步清闲又自在，不约束，最后还可以找地方干一些好玩的事情，就是一直溜达有点累",
+      "note": "校园溜达，牵手散步，找个没人的地方干一些好玩的事情",
+      "createdAt": 1791488225496
+    }
+  ],
+  "diary": [
+    {
+      "id": "zui1u1tq80",
+      "date": "2026-09-25",
+      "title": "",
+      "body": "今天我专门做一个网站，打算记录和她的点滴。我们打算这周六见面，期待，希望我能给她留下好的印象。今天我们第一次视频，她的眼睛好大，但是说话有点毛躁，可能是紧张的原因吧，我也不知道。后面挂了电话还因为去写文档而忘了关心她。今天这是走远了还是走近了。\n欧对了，今天我把mini-llama的cpu推理阶段完工并跑通了，明天空一天，我要给她录一首歌，还要记得练习一下夹头发。",
+      "meetNo": 0,
+      "extra": [
+        "第一次打视频"
+      ],
+      "createdAt": 1790276740992
+    },
+    {
+      "id": "b6mzy9lfbu",
+      "date": "2026-09-26",
+      "title": "第一次见面",
+      "body": "今天我们第一次见面，她眼睛好漂亮，身上好香。她竟然送给我紫金爪刀和超凡标的拼豆，真实有心，我还空手来的。我们先去吃了陶德砂锅，说实话刚开始没啥话讲，有点尴尬，原先还是坐的那种面对面的两个人的位置，说话都听不见，后面换到挨着坐去了。真就像德华说的一样，以前那种理性的分析和权衡根本就是没用，真见面了就会有冲动，想贴贴，这种冲动是抑制不住的，是不可控的，这才是感情种不可缺少的一环，也许这也是感情没法被量化的原因吧。吃饭过后，我们去她的学校溜溜，坐车的时候我还靠了它的肩膀，嘿嘿。 在学校溜溜的时候，我们虽然一直在聊，但是聊的啥我都记不住了，只记得住当时月亮被云遮住，长椅上，他靠着我，我靠着他， 只觉得先这样一起呆着，就很快乐。原来喜欢一个人的感觉，是这样的。。。",
+      "meetNo": 1,
+      "extra": [],
+      "createdAt": 1790447954394
+    },
+    {
+      "id": "pj9lpladjp",
+      "date": "2026-09-29",
+      "title": "在一起",
+      "body": "在摩天轮上向她表白，虽然这只是单纯要一个身份，我们彼此也已经互相肯定了，但是今天还是特别紧张，早上中午加一起就吃了半碗饭。摩天轮上的15分钟好快，本来准备好的一串话，当时脑子空空不知道说什么。最后她还是答应我了嘿嘿，感觉确实有点恍惚。原来真正的感情不是骤起骤落的情绪，而是温柔的安抚和拥抱。那一瞬间，突然特别安心。我牵着她的手，幸福仿佛具象化了，如果时间能能静止在这一刻，该多么美好。",
+      "meetNo": 2,
+      "extra": [],
+      "createdAt": 1790702320597
+    },
+    {
+      "id": "42v1f6wtnc",
+      "date": "2026-09-30",
+      "title": "初吻",
+      "body": "看电影，初吻，这段关系中，我其实一直没有多想多少，但是从现在开始，我觉得我该想一些该想的东西了。她是我的初恋也是初吻，我必须对他负责，我要想办法维护我们的感情，想办法构建更好的我们，想办法规划我们的未来。真就像德华所说的，这谈恋爱，就是从这个冲动开始的，然后再从此之后，相互磨合扶持，要拿起这段关系中属于自己的责任，要给她一个交代。我觉得以我的性格，我应该能做到，我对她也十分信任。看看我们究竟可以走到哪里吧。\n对了，今天还收到了她的情书，虽然我们认识的时间可能没有很长，我以前也是觉得谈恋爱要慢慢来，可是真的是，没经历过就永远不会知道，我们是真的很在乎彼此也真的很契合，双向奔赴的感觉绝无仅有，也许时间是没法衡量感情的浓度的吧。\n题外话，情侣去电影院是真的可以升温。",
+      "meetNo": 3,
+      "extra": [
+        "初吻"
+      ],
+      "createdAt": 1790792854104
+    },
+    {
+      "id": "s2hurdeubm",
+      "date": "2026-10-07",
+      "title": "接她回学校",
+      "body": "国庆假期结束，我接她回学校，给他带了一束小王子主题花束，我觉得挺好看。她给我拼了一个提莫大拇指的拼豆，挂到我包上了。真是小别胜新欢，回来我们一起去吃了她学校旁边的鸡公煲，不知道是饿了还是咋，我感觉那个是真的好吃，狂炫三碗大米饭。接着我们去学校里溜达，他和之前不一样，之前他在网上总是莫名其妙生气，在一起之后，他竟然从来没生气过了，不知道是那时候患得患失还是现在懂事了。我们之间更亲密了，之前觉得这辈子都不会做出来的肉麻的事情，现在自然而然就做出来了。她真的很吸引我，不论是精神上的温柔相拥还是身体上的深情热吻，我有了沉溺的人，有了牵挂，有了盼头，原来这就是恋爱的感觉嘛。喜欢你大宝。",
+      "meetNo": 4,
+      "extra": [],
+      "createdAt": 1791487609474
+    },
+    {
+      "date": "2026-10-11",
+      "title": "vtk",
+      "body": "今天本来约好一起去植物园玩，结果夹心的成吗志愿者培训太久，后来就只能去ktv了。夹心穿那个黑色的裙子是真的好看，这次又又又喜欢上了。感觉虽然每谈多久，但是她的存在似乎已经完全变成我生活的一部分，仿佛本该如此，早就如此。和她在一起不需要想太多，每次和泰呆在一起都没什么压力，只有纯粹的爽芜湖湖。偶对了，她唱歌好好听，有点专业，而且是我认识的第一个能唱出来虹之间的，这次真是女神了。",
+      "meetNo": 5,
+      "extra": [],
+      "id": "27r5ai861p",
+      "createdAt": 1791732755293
+    }
+  ],
+  "placeV": 2,
+  "ui": {
+    "tab": "profile"
+  }
+});
+
+function migrate(raw) {
+  const d = DEFAULT_DATA();
+  const out = Object.assign(d, raw || {});
+  out.meta = Object.assign(d.meta, (raw && raw.meta) || {});
+  if (!Array.isArray(out.groups) || !out.groups.length) out.groups = d.groups;
+  out.groups = out.groups.map(g => ({
+    id: g.id || uid(),
+    title: g.title || '未命名',
+    tone: g.tone === 'avoid' ? 'avoid' : 'like',
+    items: Array.isArray(g.items) ? g.items.filter(Boolean).map(i => ({
+      id: i.id || uid(),
+      text: String(i.text == null ? '' : i.text),
+      tone: i.tone === 'avoid' ? 'avoid' : 'like'
+    })) : []
+  }));
+  out.dates = Array.isArray(out.dates) ? out.dates.filter(Boolean).map(x => ({
+    id: x.id || uid(), name: String(x.name || ''), date: String(x.date || ''),
+    repeat: x.repeat === 'once' ? 'once' : 'yearly'
+  })) : [];
+  out.gifts = Array.isArray(out.gifts) ? out.gifts.filter(Boolean).map(x => ({
+    id: x.id || uid(), name: String(x.name || ''),
+    status: ['idea', 'bought', 'given'].indexOf(x.status) > -1 ? x.status : 'idea',
+    occ: String(x.occ || ''), note: String(x.note || ''),
+    createdAt: x.createdAt || Date.now()
+  })) : [];
+  /* places：v1「候选池」→ v2「约会」。
+     v1 里混着一大批还没去过的店，还有一堆只为「决定去哪」服务的研究字段
+     （档位 / 交通 / 分店 / 怎么去 / 要预约 / 商圈 / 人均 / 推荐度）。
+     v2 只记去过的地方，所以这次迁移会**真的丢掉所有未去过的记录**，
+     并把旧 note 的正文搬进 feature（旧 note 记的是必点菜、避雷这类「特点」）。
+     闸门是 raw.placeV：只有老数据才跑清理，跑完写成 2。否则第二次加载
+     会把新记录也当成「没去过」清光——那是灾难。动数据前先整包快照。 */
+  const legacyPlaces = !raw || raw.placeV !== 2;
+  if (legacyPlaces && raw) {
+    try { localStorage.setItem(BACKUP_KEY, JSON.stringify(raw)); } catch (e) {}
+  }
+  out.places = Array.isArray(out.places) ? out.places.filter(Boolean)
+    .filter(p => (legacyPlaces ? (!!p.lit || p.status === 'been') : true))
+    .map(p => ({
+      id: p.id || uid(), name: String(p.name || ''),
+      kind: p.kind === 'fun' ? 'fun' : 'food',
+      /* 旧版 status（want/been/nope）里的 nope 还能翻译成「难吃」；
+         been 的「去过」语义现在由这一栏本身承担，不再单设字段。 */
+      verdict: ['good', 'soso', 'bad'].indexOf(p.verdict) > -1 ? p.verdict : (p.status === 'nope' ? 'bad' : ''),
+      tags: Array.isArray(p.tags) ? p.tags.filter(Boolean).map(String) : [],
+      date: String(p.date || ''),
+      feature: String(legacyPlaces ? (p.note || '') : (p.feature || '')),
+      note: String(legacyPlaces ? '' : (p.note || '')),
+      createdAt: p.createdAt || Date.now()
+    })) : [];
+  out.placeV = 2;
+  out.diary = Array.isArray(out.diary) ? out.diary.filter(Boolean).map(e => ({
+    id: e.id || uid(), date: String(e.date || ''), title: String(e.title || ''),
+    body: String(e.body || ''),
+    meetNo: (e.meetNo === 0 || e.meetNo) ? Number(e.meetNo) : null,
+    extra: Array.isArray(e.extra) ? e.extra.filter(Boolean).map(String) : [],
+    createdAt: e.createdAt || Date.now()
+  })) : [];
+  out.ui = Object.assign({ tab: 'profile' }, raw && raw.ui);
+  /* 导入机制已整体摘除，这两个版本号字段一并清掉——旧数据里可能还留着，
+     不清的话每次保存都会带回去，越积越脏。 */
+  delete out.cdmVersion;
+  delete out.seedVersion;
+  return out;
+}
+
+let state;
+let storageOK = true;
+
+/* ---------- 数据层：服务器为准 + 本地缓存 ----------
+   数据存在服务器上的 data.json（经 /api/jiaxin/data 读写）；本地 localStorage 退居
+   「离线缓存」：改动先落本地（断网也不丢），再防抖推服务器；启动时以服务器为准对齐。 */
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    /* 没有本地存档时，把焊进文件里的种子数据按 v2 迁移一遍——
+       不能传 null，否则会被当成 v1 老数据，把 places 里没有 lit/been 标记的记录清空。 */
+    if (!raw) return migrate(DEFAULT_DATA());
+    return migrate(JSON.parse(raw));
+  } catch (e) {
+    storageOK = false;
+    return migrate(DEFAULT_DATA());
+  }
+}
+
+/* 同步元信息：记住服务器版本号 rev，以及本地是否有还没推上去的改动 dirty。 */
+function syncMeta() {
+  try { return JSON.parse(localStorage.getItem(SYNC_KEY)) || {}; } catch (e) { return {}; }
+}
+function setSyncMeta(o) {
+  try { localStorage.setItem(SYNC_KEY, JSON.stringify(o)); } catch (e) {}
+}
+
+let lastServerRev = 0;      // 最后一次见到的服务器版本号
+let dirty = false;          // 本地有改动、还没成功推到服务器
+let syncing = false;        // 正在推送
+let queued = false;         // 推送途中又有新改动，推完再补一次
+let putTimer = null;
+let retryTimer = null;
+
+/* 小圆点：绿=已同步 / 橙=保存中 / 红=离线 */
+function setSyncDot(s) {
+  const el = $('#syncDot'); if (!el) return;
+  const map = {
+    ok: ['已同步到服务器', '#30D158'],
+    pending: ['保存中…', '#FF9F0A'],
+    offline: ['离线：改动先存本地，联网自动补', '#FF453A'],
+    idle: ['', 'transparent']
+  };
+  const m = map[s] || map.idle;
+  el.style.background = m[1];
+  el.title = m[0];
+}
+
+/* 每次改动：立即写本地缓存（离线不丢），再防抖 800ms 推服务器。
+   签名不变，二十多处 save() 调用点无需改动。 */
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch (e) {
+    storageOK = false;
+    toast('本地缓存写不进去了（服务器那份还在）。');
+  }
+  dirty = true;
+  setSyncMeta({ rev: lastServerRev, dirty: true });
+  setSyncDot('pending');
+  clearTimeout(putTimer);
+  putTimer = setTimeout(() => { if (dirty) pushNow(); }, 800);
+}
+
+/* 只落本地、不推服务器、也不标 dirty。
+   给 switchTab 用：切 tab 只是个视图动作（ui.tab），不该算「改了数据」——
+   否则每次开页面都会把整包推上去，还可能把服务器盖掉。 */
+function saveLocalOnly() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch (e) { storageOK = false; }
+}
+
+/* 把整包 state 推到服务器。 */
+async function pushNow() {
+  clearTimeout(putTimer); putTimer = null;
+  if (syncing) { queued = true; return; }
+  syncing = true;
+  let ok = false;
+  try {
+    const r = await fetch(API, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rev: lastServerRev, data: state })
+    });
+    if (!r.ok) throw new Error('http ' + r.status);
+    const j = await r.json();
+    lastServerRev = j.rev;
+    dirty = false;
+    setSyncMeta({ rev: j.rev, dirty: false });
+    setSyncDot('ok');
+    ok = true;
+    if (j.conflict) toast('别的设备刚改过，这次以你这里的为准了。');
+  } catch (e) {
+    setSyncDot('offline');
+    scheduleRetry();
+  } finally {
+    syncing = false;
+    /* 推送途中又改了：只有在这次成功、且确实又有新改动时才补推，避免死循环。 */
+    if (queued) { queued = false; if (ok && dirty) pushNow(); }
+  }
+}
+
+function scheduleRetry() {
+  clearTimeout(retryTimer);
+  retryTimer = setTimeout(() => { if (dirty) pushNow(); }, 5000);
+}
+
+/* 启动时对齐服务器：服务器有数据且本地没有未同步改动 → 服务器赢；
+   服务器为空 → 把本地推上去播种；断网 → 用本地继续。 */
+async function syncFromServer() {
+  const m = syncMeta();
+  lastServerRev = m.rev || 0;
+  dirty = !!m.dirty;
+  setSyncDot('pending');
+  try {
+    const r = await fetch(API, { cache: 'no-store' });
+    if (!r.ok) throw new Error('http ' + r.status);
+    const j = await r.json();
+    if (j.rev === 0 || !j.data) {                 // 服务器还没有数据：把本地推上去播种
+      await pushNow();
+      return;
+    }
+    if (dirty) {                                  // 本地有没推上去的改动：以本地为准
+      await pushNow();
+      return;
+    }
+    /* 比较时忽略 ui（只是「上次停在哪个 tab」这种视图状态，不该触发覆盖/提示）。 */
+    const bare = o => { const c = Object.assign({}, o); delete c.ui; return JSON.stringify(c); };
+    const localTab = (state.ui && state.ui.tab) || 'profile';
+    const incoming = migrate(j.data);
+    lastServerRev = j.rev;
+    if (bare(incoming) !== bare(state)) {         // 服务器赢
+      state = incoming;
+      state.ui = Object.assign({}, state.ui, { tab: localTab });   // 但把自己停的 tab 留下来
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      setSyncMeta({ rev: j.rev, dirty: false });
+      remountAll();
+      toast('已同步服务器上的最新数据。');
+    }
+    setSyncDot('ok');
+  } catch (e) {
+    setSyncDot('offline');
+    /* 本地存储也不可用时才需要提醒——只连不上服务器的话，本地照样能记。 */
+    if (!storageOK) toast('本地和服务器都存不上，先点「导出备份」。');
+  }
+}
+
+/* 用当前 state 重画所有视图（服务器数据覆盖本地后调用）。
+   mount* 都是整体重建 innerHTML，重复调用不会叠加监听。 */
+function remountAll() {
+  mountProfile();
+  mountPlaces();
+  mountDiary();
+  renderPlaceHint();
+  switchTab(state.ui && state.ui.tab ? state.ui.tab : 'profile');
+  renderDiaryHint();
+  renderDiaryList();
+}
+
+/* 关页面 / 切后台时，把还没推上去的改动补一刀。
+   sendBeacon 只能发 POST，后端 do_POST 与 do_PUT 同源，一样能收。 */
+function flushBeacon() {
+  if (!dirty) return;
+  const body = JSON.stringify({ rev: lastServerRev, data: state });
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(API, new Blob([body], { type: 'application/json' }));
+    } else {
+      fetch(API, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: body, keepalive: true
+      });
+    }
+  } catch (e) {}
+}
+window.addEventListener('pagehide', flushBeacon);
+window.addEventListener('online', () => { if (dirty) pushNow(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushBeacon();
+});
+
+/* ---------- 日期工具 ---------- */
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+function parseDate(s) {
+  const p = String(s || '').split('-').map(Number);
+  if (p.length < 3 || !p[0] || !p[1] || !p[2]) return null;
+  const d = new Date(p[0], p[1] - 1, p[2]);
+  return isNaN(d.getTime()) ? null : d;
+}
+function dayDiff(a, b) {
+  const A = parseDate(a), B = parseDate(b);
+  if (!A || !B) return null;
+  return Math.round((B - A) / 86400000);
+}
+function weekCn(s) {
+  const d = parseDate(s);
+  return d ? '周' + '日一二三四五六'[d.getDay()] : '';
+}
+function zodiacOf(bd) {
+  const p = String(bd || '').split('-').map(Number);
+  if (p.length < 3 || !p[1] || !p[2]) return '';
+  const t = [[19, '摩羯', '水瓶'], [18, '水瓶', '双鱼'], [20, '双鱼', '白羊'], [19, '白羊', '金牛'],
+             [20, '金牛', '双子'], [21, '双子', '巨蟹'], [22, '巨蟹', '狮子'], [22, '狮子', '处女'],
+             [22, '处女', '天秤'], [23, '天秤', '天蝎'], [22, '天蝎', '射手'], [21, '射手', '摩羯']];
+  const row = t[p[1] - 1];
+  if (!row) return '';
+  return p[2] <= row[0] ? row[1] : row[2];
+}
+function ageOf(bd, today) {
+  const p = String(bd || '').split('-').map(Number);
+  if (p.length < 3 || !p[0]) return null;
+  const y = Number(String(today).slice(0, 4));
+  return String(today).slice(5) >= String(bd).slice(5) ? y - p[0] : y - p[0] - 1;
+}
+function daysToBirthday(bd, today) {
+  const p = String(bd || '').split('-').map(Number);
+  if (p.length < 3 || !p[1] || !p[2]) return null;
+  const t = parseDate(today);
+  if (!t) return null;
+  let target = new Date(t.getFullYear(), p[1] - 1, p[2]);
+  if (target < t) target = new Date(t.getFullYear() + 1, p[1] - 1, p[2]);
+  return Math.round((target - t) / 86400000);
+}
+function nextAnniv(dateStr, today) {
+  const p = String(dateStr || '').split('-').map(Number);
+  if (p.length < 3 || !p[1] || !p[2]) return null;
+  const t = parseDate(today);
+  if (!t) return null;
+  let target = new Date(t.getFullYear(), p[1] - 1, p[2]);
+  if (target < t) target = new Date(t.getFullYear() + 1, p[1] - 1, p[2]);
+  return Math.round((target - t) / 86400000);
+}
+
+/* ---------- 节日识别（公历 + 你们的自定义日子） ---------- */
+const SOLAR_FEST = {
+  '01-01': '元旦', '02-14': '情人节', '03-08': '妇女节', '05-01': '劳动节', '05-04': '青年节',
+  '05-20': '520', '05-21': '521', '06-01': '儿童节', '10-01': '国庆节',
+  '12-24': '平安夜', '12-25': '圣诞节', '12-31': '跨年'
+};
+function festivalsOn(dateStr) {
+  const out = [];
+  if (!dateStr) return out;
+  const md = dateStr.slice(5);
+  if (SOLAR_FEST[md]) out.push({ name: SOLAR_FEST[md], tone: 'rose' });
+  const m = state.meta;
+  if (m.herBirthday && md === String(m.herBirthday).slice(5)) out.push({ name: '她生日', tone: 'warn' });
+  if (m.firstMeet) {
+    if (dateStr === m.firstMeet) out.push({ name: '相识那天', tone: 'rose' });
+    else if (md === String(m.firstMeet).slice(5)) {
+      const n = Number(dateStr.slice(0, 4)) - Number(String(m.firstMeet).slice(0, 4));
+      if (n > 0) out.push({ name: '相识 ' + n + ' 周年', tone: 'rose' });
+    }
+  }
+  state.dates.forEach(d => {
+    if (!d.date || !d.name) return;
+    const hit = d.repeat === 'yearly' ? (md === String(d.date).slice(5)) : (dateStr === d.date);
+    if (hit) out.push({ name: d.name, tone: 'rose' });
+  });
+  const seen = {};
+  return out.filter(f => (seen[f.name] ? false : (seen[f.name] = 1)));
+}
+
+/* ---------- 界面小工具 ---------- */
+let toastTimer = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+function maxMeetNo() {
+  let m = 0;
+  state.diary.forEach(e => { if (e.meetNo && e.meetNo > m) m = e.meetNo; });
+  return m;
+}
+
+/* 「在一起」从哪天算起：优先 自定义日子 里名字带「在一起」的那条，其次 meta.togetherDate */
+function togetherSince() {
+  const m = state.meta || {};
+  if (m.togetherDate) return m.togetherDate;
+  const d = (state.dates || []).find(x => x && x.date && String(x.name).indexOf('在一起') > -1);
+  return d ? d.date : '';
+}
+
+function renderCounters() {
+  /* 见面为 0 时给一句轻提示，别的照旧 */
+  const t = todayStr();
+  const ts = togetherSince();
+  const td = ts ? dayDiff(ts, t) : null;
+  const db = daysToBirthday(state.meta.herBirthday, t);
+  const meets = maxMeetNo();
+  $('#counters').innerHTML =
+    '<div class="counter rose"><div class="k">在一起</div><div class="v">' +
+      (td === null ? '—' : (td + 1)) + '<small>天</small></div></div>' +
+    '<div class="counter"><div class="k">距她生日</div><div class="v">' +
+      (db === null ? '—' : db) + '<small>天</small></div></div>' +
+    '<div class="counter"><div class="k">见面</div><div class="v">' +
+      meets + '<small>次</small></div></div>';
+}
+
+/* ================= 模块一 · 她的档案 ================= */
+
+function mountProfile() {
+  $('#view-profile').innerHTML =
+    '<div class="card" id="pMeta"></div>' +
+    '<div class="searchbar">' +
+      '<input id="pSearch" placeholder="搜一下：香菜 / 奶茶 / 生日">' +
+      '<button class="btn ghost" id="pSearchClear">清空</button>' +
+    '</div>' +
+    '<div id="pGroups"></div>' +
+    '<div class="card" id="pDates"></div>' +
+    '<div class="card" id="pGifts"></div>';
+
+  const meta = $('#pMeta');
+  meta.addEventListener('input', onMetaInput);
+  meta.addEventListener('change', onMetaInput);
+
+  const groups = $('#pGroups');
+  groups.addEventListener('click', onGroupClick);
+  groups.addEventListener('keydown', onGroupKey);
+
+  const dates = $('#pDates');
+  dates.addEventListener('click', onDatesClick);
+  dates.addEventListener('change', onDatesChange);
+
+  const gifts = $('#pGifts');
+  gifts.addEventListener('click', onGiftsClick);
+  gifts.addEventListener('change', onGiftsChange);
+
+  const onSearch = () => { renderProfileGroups(); renderGifts(); };
+  $('#pSearch').addEventListener('input', onSearch);
+  $('#pSearchClear').addEventListener('click', () => {
+    $('#pSearch').value = '';
+    onSearch();
+    $('#pSearch').focus();
+  });
+}
+
+function renderProfileFull() {
+  renderProfileMeta();
+  renderProfileGroups();
+  renderProfileDates();
+  renderGifts();
+}
+
+function renderProfileMeta() {
+  const m = state.meta;
+  $('#pMeta').innerHTML =
+    '<div class="card-hd"><h2>基本</h2></div>' +
+    '<div class="grid3">' +
+      '<label class="field"><span>怎么叫她</span><input data-meta="herName" value="' + esc(m.herName) + '" placeholder="她"></label>' +
+      '<label class="field"><span>生日</span><input type="date" data-meta="herBirthday" value="' + esc(m.herBirthday) + '"></label>' +
+      '<label class="field"><span>相识日</span><input type="date" data-meta="firstMeet" value="' + esc(m.firstMeet) + '"></label>' +
+    '</div>' +
+    '<div class="derived" id="pDerived"></div>' +
+    '<label class="field" style="margin-bottom:0"><span>随便记点（怎么认识的、她说过的话）</span>' +
+      '<textarea data-meta="herNote" rows="2" placeholder="空着也没关系，想起来再补。">' + esc(m.herNote) + '</textarea></label>';
+  renderDerived();
+}
+
+function renderDerived() {
+  const el = $('#pDerived');
+  if (!el) return;
+  const t = todayStr(), m = state.meta, out = [];
+  const z = zodiacOf(m.herBirthday);
+  if (z) out.push(z);
+  const a = ageOf(m.herBirthday, t);
+  if (a !== null) out.push(a + ' 岁');
+  const db = daysToBirthday(m.herBirthday, t);
+  if (db !== null) out.push(db === 0 ? '今天就是她生日' : '距生日 ' + db + ' 天');
+  const ds = m.firstMeet ? dayDiff(m.firstMeet, t) : null;
+  const ts = togetherSince(), tds = ts ? dayDiff(ts, t) : null;
+  if (tds !== null) out.push('在一起第 ' + (tds + 1) + ' 天');
+  else if (ds !== null) out.push('相识第 ' + (ds + 1) + ' 天');
+  el.innerHTML = out.map(x => '<span class="badge rose">' + esc(x) + '</span>').join('');
+}
+
+function onMetaInput(e) {
+  const el = e.target.closest('[data-meta]');
+  if (!el) return;
+  state.meta[el.dataset.meta] = el.value;
+  save();
+  renderCounters();
+  renderDerived();
+}
+
+function ichipHTML(g, i) {
+  return '<span class="ichip' + (i.tone === 'avoid' ? ' avoid' : '') + '" data-id="' + i.id + '">' +
+    '<button class="dot" data-act="tone" data-g="' + g.id + '" data-id="' + i.id + '" title="点一下切换：喜欢 / 避开"></button>' +
+    '<span class="txt" data-act="edit" data-g="' + g.id + '" data-id="' + i.id + '" title="点一下改内容">' + esc(i.text) + '</span>' +
+    '<button class="x" data-act="del" data-g="' + g.id + '" data-id="' + i.id + '" title="删掉">×</button>' +
+  '</span>';
+}
+
+function renderProfileGroups() {
+  const host = $('#pGroups');
+  if (!host) return;
+  const q = ($('#pSearch') ? $('#pSearch').value : '').trim().toLowerCase();
+  host.innerHTML = state.groups.map(g => {
+    const isAvoid = g.tone === 'avoid';
+    const shown = q ? g.items.filter(i => i.text.toLowerCase().indexOf(q) > -1) : g.items;
+    let inner;
+    if (!g.items.length) {
+      inner = '<p class="empty">' + (isAvoid
+        ? '这一栏空着挺好。但愿你也用不上。'
+        : '这一栏还是空的。……你倒是填点啊。') + '</p>';
+    } else if (!shown.length) {
+      inner = '<p class="empty">没查到。是不是你自己没记过？</p>';
+    } else {
+      inner = '<div class="ichips">' + shown.map(i => ichipHTML(g, i)).join('') + '</div>';
+    }
+    return '<div class="card' + (isAvoid ? ' warned' : '') + '">' +
+      '<div class="card-hd"><h2>' + esc(g.title) + ' <span class="cnt">' + g.items.length + ' 条</span></h2></div>' +
+      inner +
+      '<div class="addrow"><input data-new-item="' + g.id + '" placeholder="加一条，回车就好"></div>' +
+    '</div>';
+  }).join('');
+}
+
+function onGroupClick(e) {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const g = state.groups.filter(x => x.id === b.dataset.g)[0];
+  if (!g) return;
+  const it = g.items.filter(x => x.id === b.dataset.id)[0];
+  if (b.dataset.act === 'tone' && it) {
+    it.tone = it.tone === 'avoid' ? 'like' : 'avoid';
+    save(); renderProfileGroups();
+  } else if (b.dataset.act === 'del' && it) {
+    g.items = g.items.filter(x => x.id !== it.id);
+    save(); renderProfileGroups(); toast('删掉了。回忆本来就不在纸上。');
+  } else if (b.dataset.act === 'edit' && it) {
+    inlineEditChip(b, g, it);
+  }
+}
+
+function inlineEditChip(span, g, it) {
+  const inp = document.createElement('input');
+  inp.value = it.text;
+  inp.style.width = Math.max(72, it.text.length * 14 + 24) + 'px';
+  span.replaceWith(inp);
+  inp.focus();
+  inp.select();
+  let done = false;
+  const finish = ok => {
+    if (done) return;
+    done = true;
+    if (ok) {
+      const v = inp.value.trim();
+      if (v) it.text = v;
+      else g.items = g.items.filter(x => x.id !== it.id);
+      save();
+    }
+    renderProfileGroups();
+  };
+  inp.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); finish(true); }
+    else if (ev.key === 'Escape') { finish(false); }
+  });
+  inp.addEventListener('blur', () => finish(true));
+}
+
+function onGroupKey(e) {
+  if (e.key !== 'Enter') return;
+  const el = e.target.closest('[data-new-item]');
+  if (!el) return;
+  e.preventDefault();
+  const gid = el.dataset.newItem;
+  const g = state.groups.filter(x => x.id === gid)[0];
+  if (!g) return;
+  const v = el.value.trim();
+  if (!v) return;
+  if (!g.items.some(i => i.text === v)) {
+    g.items.push({ id: uid(), text: v, tone: g.tone });
+    save();
+  } else {
+    toast('这条已经记下了，一直在。');
+  }
+  el.value = '';
+  renderProfileGroups();
+  const f = $('[data-new-item="' + gid + '"]');
+  if (f) f.focus();
+}
+
+let dateEditId = null;
+let pendingDelDate = null;
+
+/* 重要日期的下一次发生日（每年 = 今年或明年的同月日；once = 原日期） */
+function nextDateOf(d, t) {
+  if (!d.date) return null;
+  if (d.repeat === 'once') return d.date;
+  const md = String(d.date).slice(5);
+  if (md.length !== 5) return null;
+  const y = Number(t.slice(0, 4));
+  let cand = y + '-' + md;
+  if (dayDiff(t, cand) < 0) cand = (y + 1) + '-' + md;
+  return cand;
+}
+
+function dateCountdownBadge(d, t) {
+  const next = nextDateOf(d, t);
+  if (!next) return '';
+  const n = dayDiff(t, next);
+  if (n === null) return ''; /* 02-29 这类非法组合，如实不给倒计时 */
+  if (n === 0) return '<span class="badge rose">就是今天</span>';
+  if (n > 0) return '<span class="badge rose">还有 ' + n + ' 天</span>';
+  return '<span class="badge dim">已过 ' + (-n) + ' 天</span>';
+}
+
+function dateEditRow(d) {
+  return '<div class="grid3" style="margin-bottom:10px">' +
+    '<label class="field" style="margin:0"><span>叫什么</span>' +
+      '<input data-df="name" data-id="' + d.id + '" value="' + esc(d.name) + '" placeholder="比如 在一起的日子"></label>' +
+    '<label class="field" style="margin:0"><span>日期</span>' +
+      '<input type="date" data-df="date" data-id="' + d.id + '" value="' + esc(d.date) + '"></label>' +
+    '<div style="display:flex;gap:8px;align-items:flex-end">' +
+      '<label class="field" style="flex:1;margin:0"><span>重复</span>' +
+        '<select data-df="repeat" data-id="' + d.id + '">' +
+          '<option value="yearly"' + (d.repeat === 'yearly' ? ' selected' : '') + '>每年都算</option>' +
+          '<option value="once"' + (d.repeat === 'once' ? ' selected' : '') + '>只算这一次</option>' +
+        '</select></label>' +
+      '<button class="btn sm ghost" data-act="close-date" data-id="' + d.id + '" style="margin-bottom:2px">收起</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function dateStoryHTML(d, t) {
+  const cd = dateCountdownBadge(d, t);
+  return '<article class="diary">' +
+    '<div class="d-date"><b>' + (d.date ? esc(d.date.slice(5)) : '—') + '</b><span>' + (d.date ? esc(weekCn(d.date)) : '没填日子') + '</span></div>' +
+    '<div class="d-body">' +
+      '<div class="d-badges">' +
+        '<span class="badge' + (d.repeat === 'yearly' ? '' : ' dim') + '">' + (d.repeat === 'yearly' ? '每年都算' : '只算一次') + '</span>' +
+        cd +
+      '</div>' +
+      '<h3>' + (d.name ? esc(d.name) : '<span class="dim">（还没起名）</span>') + '</h3>' +
+      '<div class="d-actions">' +
+        '<button class="btn sm ghost" data-act="edit-date" data-id="' + d.id + '">改一下</button>' +
+        '<button class="btn sm ghost danger" data-act="del-date" data-id="' + d.id + '">' +
+          (pendingDelDate === d.id ? '确定删？' : '删掉') + '</button>' +
+      '</div>' +
+    '</div>' +
+  '</article>';
+}
+
+function renderProfileDates() {
+  const host = $('#pDates');
+  if (!host) return;
+  const t = todayStr();
+  const rows = state.dates.map(d =>
+    dateEditId === d.id ? dateEditRow(d) : dateStoryHTML(d, t)).join('');
+
+  host.innerHTML =
+    '<div class="card-hd"><h2>重要日期 <span class="cnt">' + state.dates.length + ' 个</span></h2>' +
+      '<button class="btn sm" data-act="add-date">加一个日子</button></div>' +
+    (state.dates.length
+      ? rows
+      : '<p class="empty">还没有别的日子。生日和相识日上面已经记下了，这里放你们自己的。</p>') +
+    '<p class="hint" style="margin:12px 0 0">这里的日子会自动出现在故事日记的节日标记里。</p>';
+}
+
+function onDatesClick(e) {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  if (b.dataset.act === 'add-date') {
+    const d = { id: uid(), name: '', date: '', repeat: 'yearly' };
+    state.dates.push(d);
+    dateEditId = d.id; pendingDelDate = null;
+    save(); renderProfileDates();
+    const f = $('#pDates input[data-df="name"]');
+    if (f) f.focus();
+  } else if (b.dataset.act === 'edit-date') {
+    dateEditId = b.dataset.id; pendingDelDate = null;
+    renderProfileDates();
+    const f = $('#pDates input[data-df="name"]');
+    if (f) f.focus();
+  } else if (b.dataset.act === 'close-date') {
+    dateEditId = null;
+    renderProfileDates();
+  } else if (b.dataset.act === 'del-date') {
+    const id = b.dataset.id;
+    if (pendingDelDate !== id) { pendingDelDate = id; renderProfileDates(); toast('再点一次就删掉了。'); return; }
+    state.dates = state.dates.filter(x => x.id !== id);
+    if (dateEditId === id) dateEditId = null;
+    pendingDelDate = null;
+    save(); renderProfileDates(); toast('删掉了。回忆本来就不在纸上。');
+  }
+}
+
+function onDatesChange(e) {
+  const el = e.target.closest('[data-df]');
+  if (!el) return;
+  const d = state.dates.filter(x => x.id === el.dataset.id)[0];
+  if (!d) return;
+  d[el.dataset.df] = el.value;
+  save();
+}
+
+/* ---------- 礼物（可能送她的东西；种草清单是「她想要的」，这边是「你准备送的」） ---------- */
+
+const GIFT_STATUS = { idea: '想法', bought: '已买', given: '已送' };
+
+let giftEditId = null;
+let pendingDelGift = null;
+
+function giftStatusBtns(g) {
+  return ['idea', 'bought', 'given'].map(k =>
+    '<button class="btn sm ' + (g.status === k ? 'lit' : 'ghost') + '" data-act="gift-status" data-v="' + k + '" data-id="' + g.id + '">' + GIFT_STATUS[k] + '</button>'
+  ).join(' ');
+}
+
+function giftEditRow(g) {
+  return '<div class="gift-row" data-id="' + g.id + '" style="margin-bottom:12px">' +
+    '<div class="grid3" style="margin-bottom:8px">' +
+      '<label class="field" style="margin:0"><span>是什么</span>' +
+        '<input data-gf="name" data-id="' + g.id + '" value="' + esc(g.name) + '" placeholder="比如 她多看了两眼的那个"></label>' +
+      '<label class="field" style="margin:0"><span>为了哪个日子</span>' +
+        '<input data-gf="occ" data-id="' + g.id + '" value="' + esc(g.occ) + '" placeholder="生日 / 纪念日 / 没有场合也行"></label>' +
+      '<div style="display:flex;gap:8px;align-items:flex-end">' +
+        '<button class="btn sm ghost" data-act="close-gift" data-id="' + g.id + '" style="margin-bottom:2px">收起</button>' +
+      '</div>' +
+    '</div>' +
+    '<label class="field" style="margin:0"><span>备注（为什么觉得她会喜欢 / 哪里买 / 价位）</span>' +
+      '<input data-gf="note" data-id="' + g.id + '" value="' + esc(g.note) + '" placeholder="她随口提过的话也记进来，用的时候好找"></label>' +
+  '</div>';
+}
+
+function giftStoryHTML(g) {
+  const col = g.status === 'bought' ? ' style="color:var(--ok)"' : (g.status === 'given' ? ' style="color:var(--rose2)"' : '');
+  return '<article class="diary">' +
+    '<div class="d-date"><b' + col + '>' + GIFT_STATUS[g.status] + '</b><span>' + (g.occ ? esc(g.occ) : '没有场合') + '</span></div>' +
+    '<div class="d-body">' +
+      '<h3>' + (g.name ? esc(g.name) : '<span class="dim">（还没起名）</span>') + '</h3>' +
+      (g.note ? '<p class="d-text">' + esc(g.note) + '</p>' : '') +
+      '<div class="d-actions">' + giftStatusBtns(g) +
+        '<button class="btn sm ghost" data-act="edit-gift" data-id="' + g.id + '">改一下</button>' +
+        '<button class="btn sm ghost danger" data-act="del-gift" data-id="' + g.id + '">' +
+          (pendingDelGift === g.id ? '确定删？' : '删掉') + '</button>' +
+      '</div>' +
+    '</div>' +
+  '</article>';
+}
+
+function renderGifts() {
+  const host = $('#pGifts');
+  if (!host) return;
+  const q = ($('#pSearch') ? $('#pSearch').value : '').trim().toLowerCase();
+  const hit = g => (g.name + ' ' + g.occ + ' ' + g.note).toLowerCase().indexOf(q) > -1;
+  const list = q ? state.gifts.filter(hit) : state.gifts;
+  const editing = giftEditId ? state.gifts.filter(g => g.id === giftEditId)[0] : null;
+  const rows = [];
+  if (editing) rows.push(giftEditRow(editing));
+  list.forEach(g => { if (g.id !== giftEditId) rows.push(giftStoryHTML(g)); });
+  let inner;
+  if (!state.gifts.length) {
+    inner = '<p class="empty">还没想好送什么。……慢慢想，别拖到前一天晚上。</p>';
+  } else if (q && !list.length && !editing) {
+    inner = '<p class="empty">没查到。是不是你自己没记过？</p>';
+  } else {
+    inner = rows.join('');
+  }
+  host.innerHTML =
+    '<div class="card-hd"><h2>礼物 <span class="cnt">' + state.gifts.length + ' 个</span></h2>' +
+      '<button class="btn sm" data-act="add-gift">加一个礼物</button></div>' +
+    inner +
+    '<p class="hint" style="margin:12px 0 0">进度点一下就推进：想法 → 已买 → 已送。到日子前记得看一眼。</p>';
+}
+
+function onGiftsClick(e) {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  if (b.dataset.act === 'add-gift') {
+    const g = { id: uid(), name: '', status: 'idea', occ: '', note: '', createdAt: Date.now() };
+    state.gifts.push(g);
+    giftEditId = g.id; pendingDelGift = null;
+    save(); renderGifts();
+    const f = $('#pGifts input[data-gf="name"]');
+    if (f) f.focus();
+  } else if (b.dataset.act === 'edit-gift') {
+    giftEditId = b.dataset.id; pendingDelGift = null;
+    renderGifts();
+    const f = $('#pGifts input[data-gf="name"]');
+    if (f) f.focus();
+  } else if (b.dataset.act === 'close-gift') {
+    giftEditId = null;
+    renderGifts();
+  } else if (b.dataset.act === 'gift-status') {
+    const g = state.gifts.filter(x => x.id === b.dataset.id)[0];
+    if (!g) return;
+    g.status = b.dataset.v;
+    save(); renderGifts();
+    if (g.status === 'bought') toast('买好了。这份心意，先悄悄收着。');
+    else if (g.status === 'given') toast('送出去了。她喜欢，就什么都值了。');
+  } else if (b.dataset.act === 'del-gift') {
+    const id = b.dataset.id;
+    if (pendingDelGift !== id) { pendingDelGift = id; renderGifts(); toast('再点一次就删掉了。'); return; }
+    state.gifts = state.gifts.filter(x => x.id !== id);
+    if (giftEditId === id) giftEditId = null;
+    pendingDelGift = null;
+    save(); renderGifts(); toast('删掉了。回忆本来就不在纸上。');
+  }
+}
+
+function onGiftsChange(e) {
+  const el = e.target.closest('[data-gf]');
+  if (!el) return;
+  const g = state.gifts.filter(x => x.id === el.dataset.id)[0];
+  if (!g) return;
+  g[el.dataset.gf] = el.value;
+  save();
+}
+/* ================= 模块二 · 约会 ================= */
+
+/* 等级：底层存的值仍然是 good / soso / bad，只有展示的措辞按「吃 / 玩」分开。
+   这样旧数据零迁移成本，筛选栏用中性词（好评 / 一般 / 差评）也不会跟卡片打架。 */
+const GRADE_LABEL = {
+  food: { good: '好吃', soso: '一般', bad: '难吃' },
+  fun: { good: '好玩', soso: '一般', bad: '不好玩' }
+};
+const GRADE_NEUTRAL = { good: '好评', soso: '一般', bad: '差评' };
+const VERDICT_META = {
+  good: { cls: 'good' }, soso: { cls: 'soso' }, bad: { cls: 'bad' }, none: { cls: 'dim' }
+};
+function gradeLabel(kind, v) {
+  if (!v) return '还没说好不好';
+  return (GRADE_LABEL[kind === 'fun' ? 'fun' : 'food'][v]) || v;
+}
+/* 场景标签没有预置清单：筛选栏和表单里出现的标签，一律来自
+   「已有记录身上真实挂着的 + 正在编辑草稿里的」。空就是空，不放占位。 */
+
+let placeDraft = null;
+let pendingDel = null;
+
+function mountPlaces() {
+  $('#view-date').innerHTML =
+    '<div class="toolrow">' +
+      '<button class="btn primary" data-act="new-place">记一次约会</button>' +
+      '<span class="hint" id="pHint"></span>' +
+    '</div>' +
+    '<div class="card hidden" id="pFormWrap"></div>' +
+    '<div class="card filters" id="pFilters"></div>' +
+    '<div id="pList"></div>';
+
+  const v = $('#view-date');
+  v.addEventListener('click', onPlaceClick);
+  v.addEventListener('change', onPlaceChange);
+  v.addEventListener('input', onPlaceChange);
+  v.addEventListener('keydown', onPlaceKey);
+}
+
+function tagUniverse() {
+  const set = [];
+  const add = arr => (arr || []).forEach(t => { if (set.indexOf(t) < 0) set.push(t); });
+  state.places.forEach(p => add(p.tags));
+  if (placeDraft) add(placeDraft.tags);
+  return set;
+}
+
+function filterState() {
+  const g = id => ($('#' + id) ? $('#' + id).value : 'all');
+  return {
+    kind: g('fKind'), verdict: g('fGrade'), sort: g('fSort'),
+    rawQ: ($('#fQ') ? $('#fQ').value : ''),
+    q: ($('#fQ') ? $('#fQ').value : '').trim().toLowerCase(),
+    tags: $$('#fTags .chip.on').map(c => c.dataset.tag)
+  };
+}
+
+function renderPlaceFilters(preserve) {
+  const prev = preserve ? filterState() : null;
+  const tags = tagUniverse();
+  $('#pFilters').innerHTML =
+    '<div class="card-hd"><h2>筛一下</h2>' +
+      '<button class="btn sm ghost" data-act="reset-filter">清空条件</button></div>' +
+    '<div class="grid3">' +
+      '<label class="field" style="margin:0"><span>来干嘛</span><select id="fKind">' +
+        '<option value="all">都行</option><option value="food">吃饭</option><option value="fun">玩</option></select></label>' +
+      '<label class="field" style="margin:0"><span>等级</span><select id="fGrade">' +
+        '<option value="all">全部</option><option value="good">好评</option>' +
+        '<option value="soso">一般</option><option value="bad">差评</option>' +
+        '<option value="none">还没评</option></select></label>' +
+      '<label class="field" style="margin:0"><span>排序</span><select id="fSort">' +
+        '<option value="dateDesc">最近去的在前</option><option value="dateAsc">最早去的在前</option>' +
+        '<option value="new">最近记的在前</option></select></label>' +
+    '</div>' +
+    '<label class="field"><span>关键词</span><input id="fQ" placeholder="名字 / 标签 / 评价 / 备注里搜"></label>' +
+    '<p class="sub">标签</p>' +
+    '<div class="chipline" id="fTags">' +
+      (tags.length
+        ? tags.map(t => '<button class="chip" data-act="ftag" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('')
+        : '<span class="note">还没有任何标签——记一条约会时自己加，加过的会出现在这里。</span>') +
+    '</div>' +
+    '<p class="note">这里放着你们一起去过的地方。好吃好玩的都记着一点——以后想再出去，翻一翻就有答案；哪天想不起当时的滋味，这里也还留着。<br>没填日期的排在最后。</p>';
+
+  if (prev) {
+    if ($('#fKind')) $('#fKind').value = prev.kind;
+    if ($('#fGrade')) $('#fGrade').value = prev.verdict;
+    if ($('#fSort')) $('#fSort').value = prev.sort;
+    if ($('#fQ')) $('#fQ').value = prev.rawQ;
+    $$('#fTags .chip').forEach(c => { if (prev.tags.indexOf(c.dataset.tag) > -1) c.classList.add('on'); });
+  }
+}
+
+/* 没填「去的日期」的记录永远垫底——不拿添加时间冒充去的日期。 */
+function byDate(dir) {
+  return (a, b) => {
+    const x = a.date || '', y = b.date || '';
+    if (!x && !y) return (b.createdAt || 0) - (a.createdAt || 0);
+    if (!x) return 1;
+    if (!y) return -1;
+    const c = x.localeCompare(y);
+    return c === 0 ? ((b.createdAt || 0) - (a.createdAt || 0)) : dir * c;
+  };
+}
+
+function filterPlaces(f, forceKind) {
+  const kind = forceKind || f.kind;
+  let arr = state.places.filter(p => kind === 'all' || p.kind === kind);
+  if (f.verdict === 'none') arr = arr.filter(p => !p.verdict);
+  else if (f.verdict && f.verdict !== 'all') arr = arr.filter(p => p.verdict === f.verdict);
+  if (f.tags && f.tags.length) arr = arr.filter(p => f.tags.every(t => (p.tags || []).indexOf(t) > -1));
+  if (f.q) {
+    arr = arr.filter(p => (p.name + ' ' + p.feature + ' ' + p.note + ' ' + (p.tags || []).join(' ') + ' ' + gradeLabel(p.kind, p.verdict))
+      .toLowerCase().indexOf(f.q) > -1);
+  }
+  if (f.sort === 'dateAsc') arr.sort(byDate(1));
+  else if (f.sort === 'new') arr.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  else arr.sort(byDate(-1));
+  return arr;
+}
+
+/* 这里数的是「记录条数」，也就是去过的地方数——不是见面次数。
+   见面次数归日记那边统计，两边不混着算。 */
+function renderPlaceHint() {
+  const el = $('#pHint');
+  if (!el) return;
+  const n = state.places.length;
+  el.textContent = n ? ('去过 ' + n + ' 个地方') : '';
+}
+
+function placeCardHTML(p) {
+  const vm = VERDICT_META[p.verdict || 'none'];
+  const dateTxt = p.date ? (p.date + ' ' + weekCn(p.date)) : '';
+  return '<div class="place ' + (p.verdict || '') + '">' +
+    '<div class="place-main">' +
+      '<div class="place-hd">' +
+        '<span class="pname">' + esc(p.name || '（没写名字）') + '</span>' +
+        '<span class="badge">' + (p.kind === 'food' ? '吃饭' : '玩') + '</span>' +
+        '<span class="badge ' + vm.cls + '">' + gradeLabel(p.kind, p.verdict) + '</span>' +
+      '</div>' +
+      '<div class="place-meta">' + (dateTxt ? esc(dateTxt) : '没记日期') + '</div>' +
+      ((p.tags && p.tags.length)
+        ? '<div class="place-tags">' + p.tags.map(t => '<span class="badge">' + esc(t) + '</span>').join('') + '</div>' : '') +
+      (p.feature ? '<div class="place-note feature">' + esc(p.feature) + '</div>' : '') +
+      (p.note ? '<div class="place-note">' + esc(p.note) + '</div>' : '') +
+    '</div>' +
+    '<div class="place-actions">' +
+      ['good', 'soso', 'bad'].map(k =>
+        '<button class="btn sm ' + (p.verdict === k ? 'lit' : 'ghost') + '" data-act="set-verdict" data-v="' + k + '" data-id="' + p.id + '"' +
+        ' title="' + (p.verdict === k ? '再点一次取消' : '标成「' + gradeLabel(p.kind, k) + '」') + '">' + gradeLabel(p.kind, k) + '</button>'
+      ).join('') +
+      '<button class="btn sm ghost" data-act="edit-place" data-id="' + p.id + '">改一下</button>' +
+      '<button class="btn sm ghost danger" data-act="del-place" data-id="' + p.id + '">' +
+        (pendingDel === p.id ? '确定删？' : '删除') + '</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderPlaceList() {
+  const host = $('#pList');
+  if (!host) return;
+  renderPlaceHint();
+  const arr = filterPlaces(filterState());
+  if (!arr.length) {
+    host.innerHTML = '<p class="empty">' + (state.places.length
+      ? '这个条件下一条都没有。条件是不是定太死了？'
+      : '还没记过约会。去过一个地方就记一条吧。') + '</p>';
+    return;
+  }
+  host.innerHTML = arr.map(placeCardHTML).join('');
+}
+
+function collectPlaceForm() {
+  const p = placeDraft;
+  if (!p) return;
+  const g = id => $('#' + id);
+  if (g('pfName')) p.name = g('pfName').value;
+  if (g('pfDate')) p.date = g('pfDate').value;
+  if (g('pfVerdict')) p.verdict = g('pfVerdict').value;
+  if (g('pfFeature')) p.feature = g('pfFeature').value;
+  if (g('pfNote')) p.note = g('pfNote').value;
+}
+
+function renderPlaceForm() {
+  const wrap = $('#pFormWrap');
+  const p = placeDraft;
+  if (!p) { wrap.classList.add('hidden'); wrap.innerHTML = ''; return; }
+  wrap.classList.remove('hidden');
+  const allTags = tagUniverse();
+  const sel = p.tags || [];
+  const gl = k => gradeLabel(p.kind, k);
+  wrap.innerHTML =
+    '<div class="card-hd"><h2>' + (p.id ? '改这条约会' : '记一次约会') + '</h2>' +
+      '<button class="btn sm ghost" data-act="cancel-place">收起</button></div>' +
+    '<div class="grid2">' +
+      '<label class="field"><span>去哪儿 / 哪个地方</span><input id="pfName" value="' + esc(p.name) + '" placeholder="店名 / 项目名"></label>' +
+      '<label class="field"><span>来干嘛</span><select id="pfKind">' +
+        '<option value="food"' + (p.kind === 'food' ? ' selected' : '') + '>吃饭</option>' +
+        '<option value="fun"' + (p.kind === 'fun' ? ' selected' : '') + '>玩</option></select></label>' +
+      '<label class="field"><span>去的日期</span><input id="pfDate" type="date" value="' + esc(p.date) + '"></label>' +
+      '<label class="field"><span>等级</span><select id="pfVerdict">' +
+        '<option value=""' + (!p.verdict ? ' selected' : '') + '>还没说好不好</option>' +
+        ['good', 'soso', 'bad'].map(k => '<option value="' + k + '"' + (p.verdict === k ? ' selected' : '') + '>' + gl(k) + '</option>').join('') +
+      '</select></label>' +
+    '</div>' +
+    '<label class="field"><span>整体评价 / 这家的特点</span>' +
+      '<textarea id="pfFeature" rows="2" placeholder="比如：环境吵，但菜是真好吃。">' + esc(p.feature) + '</textarea></label>' +
+    '<div class="field"><span>标签（点一下就选上）</span>' +
+      '<div class="chipline" id="pfTags">' +
+        (allTags.length
+          ? allTags.map(t => '<button class="chip' + (sel.indexOf(t) > -1 ? ' on' : '') + '" data-act="pf-tag" data-tag="' + esc(t) + '">' + esc(t) + '</button>').join('')
+          : '') +
+      '</div>' +
+      '<div class="addrow"><input id="pfNewTag" placeholder="自己加个标签，回车就加上"></div>' +
+    '</div>' +
+    '<label class="field"><span>备注 / 那天的事</span>' +
+      '<textarea id="pfNote" rows="3" placeholder="比如：她点了鸳鸯锅，说下次还要来。">' + esc(p.note) + '</textarea></label>' +
+    '<div class="toolrow" style="margin:6px 0 0">' +
+      '<button class="btn primary" data-act="save-place">保存</button>' +
+      '<button class="btn ghost" data-act="cancel-place">算了</button></div>';
+  const n = $('#pfName');
+  if (n) n.focus();
+}
+
+function savePlace() {
+  collectPlaceForm();
+  const p = placeDraft;
+  if (!String(p.name || '').trim()) {
+    toast('先给它起个名字吧。');
+    const el = $('#pfName');
+    if (el) el.focus();
+    return;
+  }
+  if (p.id) {
+    const idx = state.places.findIndex(x => x.id === p.id);
+    if (idx > -1) state.places[idx] = Object.assign(state.places[idx], p);
+  } else {
+    p.id = uid();
+    p.createdAt = Date.now();
+    state.places.push(p);
+  }
+  save();
+  placeDraft = null;
+  pendingDel = null;
+  renderPlaceForm();
+  renderPlaceFilters(true);
+  renderPlaceList();
+  toast('记好了。你们的事，一条都不会丢。');
+}
+
+function onPlaceClick(e) {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+  const find = id => state.places.filter(x => x.id === id)[0];
+
+  if (act === 'new-place') {
+    /* 每个字段都写全——内存结构和落盘结构不一致的话，测试会逮出来 */
+    placeDraft = { id: '', name: '', kind: 'food', verdict: '', tags: [], date: '', feature: '', note: '' };
+    renderPlaceForm();
+    return;
+  }
+  if (act === 'cancel-place') { placeDraft = null; renderPlaceForm(); renderPlaceFilters(true); return; }
+  if (act === 'save-place') { savePlace(); return; }
+  if (act === 'pf-tag') {
+    collectPlaceForm();
+    const t = b.dataset.tag, i = placeDraft.tags.indexOf(t);
+    if (i > -1) placeDraft.tags.splice(i, 1); else placeDraft.tags.push(t);
+    b.classList.toggle('on');  /* 局部更新：不再全量重绘，焦点和滚动不跳 */
+    return;
+  }
+  if (act === 'ftag') { b.classList.toggle('on'); renderPlaceList(); return; }
+  if (act === 'reset-filter') { renderPlaceFilters(false); renderPlaceList(); return; }
+  if (act === 'set-verdict') {
+    const p = find(b.dataset.id);
+    if (p) {
+      const v = b.dataset.v;
+      p.verdict = (p.verdict === v) ? '' : v; /* 再点一次取消 */
+      save();
+      renderPlaceList();
+      const fun = p.kind === 'fun';
+      toast(p.verdict === 'good' ? (fun ? '好玩，记住了，下次还去。' : '好吃，记住了，下次还带她去。')
+        : p.verdict === 'bad' ? (fun ? '这个不爱玩，记下了。' : '这家不去了，记下了。')
+        : p.verdict === 'soso' ? '一般般，记下了。'
+        : '先不评，想好再说。');
+    }
+    return;
+  }
+  if (act === 'edit-place') {
+    const p = find(b.dataset.id);
+    if (!p) return;
+    placeDraft = JSON.parse(JSON.stringify(p));
+    renderPlaceForm();
+    $('#pFormWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (act === 'del-place') {
+    const id = b.dataset.id;
+    if (pendingDel !== id) { pendingDel = id; renderPlaceList(); toast('再点一次就删掉了。'); return; }
+    state.places = state.places.filter(x => x.id !== id);
+    pendingDel = null;
+    save();
+    renderPlaceFilters(true);
+    renderPlaceList();
+    toast('删掉了。回忆本来就不在纸上。');
+  }
+}
+
+function onPlaceKey(e) {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'pfNewTag') {
+    e.preventDefault();
+    const t = e.target.value.trim();
+    if (!t || !placeDraft) return;
+    collectPlaceForm();
+    if (placeDraft.tags.indexOf(t) < 0) placeDraft.tags.push(t);
+    renderPlaceForm();
+    renderPlaceFilters(true); /* 新标签立刻进筛选栏（tagUniverse 含草稿标签） */
+    const el = $('#pfNewTag');
+    if (el) { el.value = ''; el.focus(); }
+    const saved = $('#pfNote');
+    if (saved) saved.value = placeDraft.note;
+  }
+}
+
+function onPlaceChange(e) {
+  const t = e.target;
+  if (t.id === 'fKind' || t.id === 'fGrade' || t.id === 'fSort' || t.id === 'fQ') {
+    renderPlaceList();
+    return;
+  }
+  if (t.id === 'pfKind' && placeDraft) {
+    collectPlaceForm();
+    placeDraft.kind = t.value;
+    renderPlaceForm(); /* 等级那栏的措辞要跟着「吃 / 玩」换 */
+  }
+}
+
+/* ================= 模块三 · 故事日记 ================= */
+
+let diaryDraft = null;
+let editingDiaryId = null;
+let pendingDelDiary = null;
+
+function mountDiary() {
+  $('#view-diary').innerHTML =
+    '<div class="toolrow">' +
+      '<button class="btn primary" data-act="new-diary">写今天</button>' +
+      '<span class="hint" id="dHint"></span>' +
+    '</div>' +
+    '<div class="card hidden" id="dFormWrap"></div>' +
+    '<div id="dList"></div>';
+
+  const v = $('#view-diary');
+  v.addEventListener('click', onDiaryClick);
+  v.addEventListener('input', onDiaryInput);
+  v.addEventListener('change', onDiaryInput);
+  v.addEventListener('keydown', onDiaryKey);
+}
+
+function lastMeetEntry() {
+  const arr = state.diary.filter(e => e.meetNo).slice()
+    .sort((a, b) => (a.date < b.date ? -1 : (a.date > b.date ? 1 : 0)));
+  return arr.length ? arr[arr.length - 1] : null;
+}
+
+function renderDiaryHint() {
+  const el = $('#dHint');
+  if (!el) return;
+  const last = lastMeetEntry();
+  el.textContent = last
+    ? '上一篇是第 ' + last.meetNo + ' 次（' + last.date + '）'
+    : '还没记过见面。第一次就从 1 开始吧。';
+}
+
+function renderDiaryForm() {
+  const wrap = $('#dFormWrap');
+  const d = diaryDraft;
+  if (!d) { wrap.classList.add('hidden'); wrap.innerHTML = ''; return; }
+  wrap.classList.remove('hidden');
+  const last = lastMeetEntry();
+  wrap.innerHTML =
+    '<div class="card-hd"><h2>' + (editingDiaryId ? '改这一篇' : '写一篇') + '</h2>' +
+      '<button class="btn sm ghost" data-act="cancel-diary">收起</button></div>' +
+    '<div class="grid2">' +
+      '<label class="field"><span>哪天</span><input type="date" id="dfDate" value="' + esc(d.date) + '"></label>' +
+      '<label class="field"><span>第几次见面</span><input type="number" min="1" step="1" id="dfMeet" value="' +
+        (d.meetNo == null ? '' : d.meetNo) + '" placeholder="' + (last ? ('上一篇是 ' + last.meetNo) : '1') + '"></label>' +
+    '</div>' +
+    '<div class="derived" id="dfFest" style="margin-top:0"></div>' +
+    '<label class="field"><span>标题（可以空着）</span><input id="dfTitle" value="' + esc(d.title) + '" placeholder="给这天起个名字"></label>' +
+    '<label class="field"><span>正文</span><textarea id="dfBody" rows="7" placeholder="写下来吧——今天哪一个瞬间，让你觉得认识她真好。">' + esc(d.body) + '</textarea></label>' +
+    '<label class="field"><span>再加个标记（回车就好）</span><input id="dfExtra" placeholder="比如：第一次牵手 / 她那天不太高兴"></label>' +
+    '<div class="derived" id="dfExtraList">' +
+      (d.extra || []).map(t => '<span class="badge rose">' + esc(t) + '</span>').join('') +
+    '</div>' +
+    '<div class="toolrow" style="margin:8px 0 0">' +
+      '<button class="btn primary" data-act="save-diary">存下来</button>' +
+      '<button class="btn ghost" data-act="cancel-diary">算了</button></div>';
+  renderDiaryFestPreview();
+  const t = $('#dfTitle');
+  if (t) t.focus();
+}
+
+function renderDiaryFestPreview() {
+  const el = $('#dfFest');
+  if (!el || !diaryDraft) return;
+  const fs = festivalsOn(diaryDraft.date);
+  el.innerHTML = fs.length
+    ? fs.map(f => '<span class="badge ' + f.tone + '">' + esc(f.name) + '</span>').join('')
+    : '<span class="badge">这天没有节日。普通的一天也不错。</span>';
+}
+
+function collectDiaryForm() {
+  const d = diaryDraft;
+  if (!d) return;
+  const g = id => $('#' + id);
+  if (g('dfDate')) d.date = g('dfDate').value;
+  if (g('dfMeet')) d.meetNo = g('dfMeet').value === '' ? null : Number(g('dfMeet').value);
+  if (g('dfTitle')) d.title = g('dfTitle').value;
+  if (g('dfBody')) d.body = g('dfBody').value;
+}
+
+function saveDiary() {
+  collectDiaryForm();
+  const d = diaryDraft;
+  if (!d.date) { toast('先选个日期吧。'); return; }
+  if (!String(d.body || '').trim() && !String(d.title || '').trim()) {
+    toast('空着也行——想说的时候，随时写。');
+    return;
+  }
+  if (editingDiaryId) {
+    const idx = state.diary.findIndex(x => x.id === editingDiaryId);
+    if (idx > -1) state.diary[idx] = Object.assign(state.diary[idx], d);
+  } else {
+    d.id = uid();
+    d.createdAt = Date.now();
+    state.diary.push(d);
+  }
+  save();
+  diaryDraft = null;
+  editingDiaryId = null;
+  renderDiaryForm();
+  renderDiaryHint();
+  renderDiaryList();
+  renderCounters();
+  toast('记好了。你们的事，一条都不会丢。');
+}
+
+function diaryHTML(e) {
+  const fs = festivalsOn(e.date);
+  const badges = fs.map(f => '<span class="badge ' + f.tone + '">' + esc(f.name) + '</span>').join('') +
+    (e.meetNo ? '<span class="badge">第 ' + e.meetNo + ' 次见面</span>' : '') +
+    (e.extra || []).map(t => '<span class="badge">' + esc(t) + '</span>').join('');
+  return '<article class="diary">' +
+    '<div class="d-date"><b>' + esc(e.date.slice(5)) + '</b><span>' + esc(weekCn(e.date)) + '</span></div>' +
+    '<div class="d-body">' +
+      (badges ? '<div class="d-badges">' + badges + '</div>' : '') +
+      (e.title ? '<h3>' + esc(e.title) + '</h3>' : '') +
+      (e.body ? '<p class="d-text">' + esc(e.body) + '</p>' : '') +
+      '<div class="d-actions">' +
+        '<button class="btn sm ghost" data-act="edit-diary" data-id="' + e.id + '">改一下</button>' +
+        '<button class="btn sm ghost danger" data-act="del-diary" data-id="' + e.id + '">' +
+          (pendingDelDiary === e.id ? '确定删？' : '删掉') + '</button>' +
+      '</div>' +
+    '</div>' +
+  '</article>';
+}
+
+function renderDiaryList() {
+  const host = $('#dList');
+  if (!host) return;
+  if (!state.diary.length) {
+    host.innerHTML = '<p class="empty">还没有故事。空白也是一种故事，不过我不太推荐。</p>';
+    return;
+  }
+  const arr = state.diary.slice().sort((a, b) => (a.date < b.date ? 1 : (a.date > b.date ? -1 : 0)));
+  const byMonth = {}, order = [];
+  arr.forEach(e => {
+    const k = String(e.date).slice(0, 7);
+    if (!byMonth[k]) { byMonth[k] = []; order.push(k); }
+    byMonth[k].push(e);
+  });
+  host.innerHTML = order.map(k => {
+    const parts = k.split('-');
+    return '<p class="month-hd">' + parts[0] + ' 年 ' + Number(parts[1]) + ' 月</p>' +
+      byMonth[k].map(diaryHTML).join('');
+  }).join('');
+}
+
+function onDiaryClick(e) {
+  const b = e.target.closest('[data-act]');
+  if (!b) return;
+  const act = b.dataset.act;
+
+  if (act === 'new-diary') {
+    const last = lastMeetEntry();
+    diaryDraft = { date: todayStr(), title: '', body: '', meetNo: last ? last.meetNo + 1 : 1, extra: [] };
+    editingDiaryId = null;
+    renderDiaryForm();
+    return;
+  }
+  if (act === 'cancel-diary') { diaryDraft = null; editingDiaryId = null; renderDiaryForm(); return; }
+  if (act === 'save-diary') { saveDiary(); return; }
+  if (act === 'edit-diary') {
+    const d = state.diary.filter(x => x.id === b.dataset.id)[0];
+    if (!d) return;
+    diaryDraft = JSON.parse(JSON.stringify(d));
+    editingDiaryId = d.id;
+    renderDiaryForm();
+    $('#dFormWrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (act === 'del-diary') {
+    const id = b.dataset.id;
+    if (pendingDelDiary !== id) { pendingDelDiary = id; renderDiaryList(); toast('再点一次就删掉了。'); return; }
+    state.diary = state.diary.filter(x => x.id !== id);
+    pendingDelDiary = null;
+    save();
+    renderDiaryList();
+    renderDiaryHint();
+    renderCounters();
+    toast('删掉了。回忆本来就不在纸上。');
+  }
+}
+
+function onDiaryInput(e) {
+  if (e.target.id === 'dfDate') { collectDiaryForm(); renderDiaryFestPreview(); }
+}
+
+function onDiaryKey(e) {
+  if (e.key !== 'Enter' || e.target.id !== 'dfExtra') return;
+  e.preventDefault();
+  const t = e.target.value.trim();
+  if (!t || !diaryDraft) return;
+  collectDiaryForm();
+  if (!diaryDraft.extra) diaryDraft.extra = [];
+  if (diaryDraft.extra.indexOf(t) < 0) diaryDraft.extra.push(t);
+  renderDiaryForm();
+  const el = $('#dfExtra');
+  if (el) { el.value = ''; el.focus(); }
+}
+
+/* ================= 启动与备份 ================= */
+
+function switchTab(t) {
+  state.ui.tab = t;
+  saveLocalOnly();
+  $$('#tabs .tab').forEach(b => b.classList.toggle('active', b.dataset.tab === t));
+  $$('.view').forEach(v => v.classList.toggle('hidden', v.id !== 'view-' + t));
+  renderCounters();
+  if (t === 'profile') renderProfileFull();
+  else if (t === 'date') {
+    if (!$('#fKind')) renderPlaceFilters(false);
+    renderPlaceList();
+  } else if (t === 'diary') {
+    renderDiaryHint();
+    renderDiaryList();
+  }
+}
+
+function exportBackup() {
+  try {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '我的夹心-备份-' + todayStr() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+    toast('导出好了。收好这一份。');
+  } catch (err) {
+    toast('导出失败了。浏览器不让下载，换个浏览器再试。');
+  }
+}
+
+function importBackup(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(String(r.result));
+      if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('bad');
+      state = migrate(data);
+      save();
+      placeDraft = null; diaryDraft = null; editingDiaryId = null;
+      pendingDel = null; pendingDelDiary = null;
+      renderPlaceForm();
+      renderDiaryForm();
+      renderPlaceFilters(false);
+      switchTab(state.ui && state.ui.tab ? state.ui.tab : 'profile');
+      renderPlaceList();
+      renderDiaryHint();
+      renderDiaryList();
+      toast('读进来了，收好了。');
+    } catch (err) {
+      toast('这文件读不了。确认一下是不是从这里导出的备份？');
+    }
+  };
+  r.onerror = () => toast('文件读不动，再试一次？');
+  r.readAsText(file);
+}
+
+function boot() {
+  state = loadLocal();          // 同步首屏：本地缓存 / 内置种子
+  mountProfile();
+  mountPlaces();
+  mountDiary();
+
+  renderPlaceHint();
+  $('#tabs').addEventListener('click', e => {
+    const b = e.target.closest('.tab');
+    if (b) switchTab(b.dataset.tab);
+  });
+  $('#btnExport').addEventListener('click', exportBackup);
+  $('#btnImport').addEventListener('click', () => $('#fileImport').click());
+  $('#fileImport').addEventListener('change', e => {
+    const f = e.target.files && e.target.files[0];
+    if (f) importBackup(f);
+    e.target.value = '';
+  });
+
+  switchTab(state.ui && state.ui.tab ? state.ui.tab : 'profile');
+  renderDiaryHint();
+  renderDiaryList();
+
+  /* 首屏用本地数据渲染完，再异步对齐服务器（不阻塞首屏，无白屏）。 */
+  syncFromServer();
+
+  if (state.meta.herBirthday && daysToBirthday(state.meta.herBirthday, todayStr()) === 0) {
+    toast('今天是她生日。记得说一句。');
+  }
+}
+
+function initTheme(){
+  const t = localStorage.getItem('woDeJiaXin.theme');
+  const dark = t ? t === 'dark' : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.classList.toggle('dark', dark);
+  const btn = $('#themeToggle');
+  const sync = () => { btn.textContent = document.documentElement.classList.contains('dark') ? '☀' : '☾'; };
+  sync();
+  btn.addEventListener('click', () => {
+    const now = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('woDeJiaXin.theme', now ? 'dark' : 'light');
+    sync();
+  });
+}
+initTheme();
+
+/* 樱花飘落：随机生成 12 片，各自随机大小/速度/漂移 */
+function initPetals(){
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var layer = document.getElementById('petalLayer');
+  if (!layer) return;
+  var glyphs = ['❀','✿','❁','✾'];
+  for (var i = 0; i < 12; i++) {
+    var el = document.createElement('span');
+    el.className = 'petal';
+    el.textContent = glyphs[i % glyphs.length];
+    var size = 10 + Math.random() * 14;
+    el.style.left = (Math.random() * 100) + 'vw';
+    el.style.fontSize = size + 'px';
+    el.style.setProperty('--dur', (9 + Math.random() * 8) + 's');
+    el.style.setProperty('--delay', (Math.random() * 12) + 's');
+    el.style.setProperty('--dx', (Math.random() * 140 - 70) + 'px');
+    el.style.opacity = '0';
+    layer.appendChild(el);
+  }
+}
+initPetals();
+
+boot();
+</script>
+
+
+</body></html>

@@ -1,0 +1,11 @@
+{
+  "win-asus": {
+    "name": "咕嘎五号（ASUS 笔记本）",
+    "kind": "own",
+    "os": "windows",
+    "via": "reverse",
+    "listen_port": 22022,
+    "tunnel_identity": "guga_tunnel_win_asus",
+    "user": "ASUS"
+  }
+}
